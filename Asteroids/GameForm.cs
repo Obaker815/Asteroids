@@ -7,6 +7,8 @@ namespace Asteroids
         public GameForm()
         {
             InitializeComponent();
+            this.Text = "Asteroids";
+            Wrapable.SetBounds(this.ClientSize);
         }
 
         private Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
@@ -64,6 +66,7 @@ namespace Asteroids
                 { "Shoot", new Keybind(Keys.Space) },
             };
         }
+
         /// <summary>
         /// Duplicate a keybinding dictionary
         /// </summary>

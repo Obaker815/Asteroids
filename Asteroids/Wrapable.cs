@@ -65,5 +65,25 @@ namespace Asteroids
 
             base.position = pos;
         }
+
+        
+        public void Draw(Graphics g)
+        {
+            // Get the quadrant signs
+            Vector2 Quadrant = new Vector2(
+                float.Sign(width / 2 - position.X),
+                float.Sign(height / 2 - position.Y)
+                );
+
+            // Draw in the 4 directions
+            Draw(g, position);
+            Draw(g, position + new Vector2(Quadrant.X * width, 0));
+            Draw(g, position + new Vector2(0, Quadrant.Y * height));
+            Draw(g, position + new Vector2(Quadrant.X * width, Quadrant.Y * height));
+        }
+        public virtual void Draw(Graphics g, Vector2 Position)
+        {
+            throw new NotImplementedException($"Update method not implemented in {this.GetType()}");
+        }
     }
 }
