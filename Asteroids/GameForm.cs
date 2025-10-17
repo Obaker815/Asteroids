@@ -11,9 +11,10 @@ namespace Asteroids
 
         private void GameForm_Shown(object sender, EventArgs e)
         {
-            Wrapable.SetBounds(this.ClientSize);
+            Wrapable.SetBounds(this.ClientRectangle.Size);
             new Ship(new(0, 0));
         }
+
 
         private Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
         private Controller Gamepad = new(UserIndex.One);
@@ -88,7 +89,8 @@ namespace Asteroids
 
         private void GameForm_Paint(object sender, PaintEventArgs e)
         {
-            using Graphics g = e.Graphics;
+            Graphics g = e.Graphics;
+
             g.Clear(Color.Black);
             foreach (Wrapable w in Wrapable.Wrapables)
             {
