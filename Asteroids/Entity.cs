@@ -4,7 +4,7 @@ namespace Asteroids
 {
     internal class Entity
     {
-        public static List<Entity> Entities = new List<Entity>();
+        public static List<Entity> Entities = [];
         internal Vector2 position;
         internal Vector2 velocity;
 
@@ -16,6 +16,7 @@ namespace Asteroids
         {
             position = startPosition;
             velocity = Vector2.Zero;
+            Entities.Add(this);
         }
         public Vector2 Velocity
         {

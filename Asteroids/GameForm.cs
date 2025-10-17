@@ -7,12 +7,16 @@ namespace Asteroids
         public GameForm()
         {
             InitializeComponent();
-            this.Text = "Asteroids";
+        }
+
+        private void GameForm_Shown(object sender, EventArgs e)
+        {
             Wrapable.SetBounds(this.ClientSize);
+            new Ship(new(0, 0));
         }
 
         private Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
-        private Controller Gamepad = new Controller(UserIndex.One);
+        private Controller Gamepad = new(UserIndex.One);
         // key down and key up event
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
@@ -80,6 +84,16 @@ namespace Asteroids
                 keys[key] = old[key];
             }
             return keys;
+        }
+
+        private void GameForm_Paint(object sender, PaintEventArgs e)
+        {
+            using Graphics g = e.Graphics;
+            g.Clear(Color.Black);
+            foreach (Wrapable w in Wrapable.Wrapables)
+            {
+                w.Draw(g);
+            }
         }
     }
 }

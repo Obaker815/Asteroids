@@ -36,7 +36,10 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Name = "GameForm";
-            Text = "GameForm";
+            Text = "Asteroids";
+            DoubleBuffered = true;
+            Shown += GameForm_Shown;
+            Paint += GameForm_Paint;
             KeyDown += GameForm_KeyDown;
             KeyUp += GameForm_KeyUp;
             ResumeLayout(false);

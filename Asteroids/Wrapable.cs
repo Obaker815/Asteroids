@@ -34,7 +34,11 @@ namespace Asteroids
         public Wrapable(Vector2 startPosition) : base(startPosition)
         {
             if (width == 0) throw new Exception("Wrapable width not set");
-            if (height == 0) throw new Exception("Wrapable height not set");
+            else if (height == 0) throw new Exception("Wrapable height not set");
+            else
+            {
+                Wrapables.Add(this);
+            }
         }
 
         /// <summary>
@@ -66,7 +70,10 @@ namespace Asteroids
             base.position = pos;
         }
 
-        
+        /// <summary>
+        /// Actual drawing method that handles wrapping
+        /// </summary>
+        /// <param name="g">Graphics object to be drawn to</param>
         public void Draw(Graphics g)
         {
             // Get the quadrant signs
@@ -81,6 +88,12 @@ namespace Asteroids
             Draw(g, position + new Vector2(0, Quadrant.Y * height));
             Draw(g, position + new Vector2(Quadrant.X * width, Quadrant.Y * height));
         }
+
+        /// <summary>
+        /// Generic Draw method to be overridden by subclasses
+        /// </summary>
+        /// <param name="g">Graphics object to be drawn to</param>
+        /// <param name="Position">Position to be drawn to</param>
         public virtual void Draw(Graphics g, Vector2 Position)
         {
             throw new NotImplementedException($"Update method not implemented in {this.GetType()}");
