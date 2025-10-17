@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 
 namespace Asteroids
 {
     internal class Entity
     {
+        public static List<Entity> Entities = new List<Entity>();
         internal Vector2 position;
         internal Vector2 velocity;
 

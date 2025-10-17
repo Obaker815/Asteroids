@@ -4,6 +4,8 @@ namespace Asteroids
 {
     internal class Wrapable : Entity
     {
+        public static List<Wrapable> Wrapables = new List<Wrapable>();
+
         private static float width = 0;
         private static float height = 0;
 
@@ -20,6 +22,7 @@ namespace Asteroids
         /// <param name="h">Height of the screen</param>
         public static void SetBounds(float w, float h)
         {
+            if (w <= 0 || h <= 0) throw new Exception("Wrapable bounds must be greater than zero");
             width = w;
             height = h;
         }
