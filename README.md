@@ -1,3 +1,3 @@
 # Asteroids
 
-Why dit I add a readme, this repo is private??
+Why did I add a readme, this repo is private??
