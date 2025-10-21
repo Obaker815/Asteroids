@@ -7,6 +7,7 @@ namespace Asteroids
         public static List<Entity> Entities = [];
         internal Vector2 position;
         internal Vector2 velocity;
+        internal float radius;
 
         /// <summary>
         /// Constructor for the Entity class
