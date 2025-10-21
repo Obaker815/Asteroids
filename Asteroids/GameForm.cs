@@ -47,6 +47,8 @@ namespace Asteroids
             running = true;
 
             Stopwatch deltatimeSW = Stopwatch.StartNew();
+            Stopwatch elapsedtimeSW = Stopwatch.StartNew();
+            int lastTitleUpdate = 0;
             while (running)
             {
                 float dt = (float)deltatimeSW.Elapsed.TotalSeconds;
@@ -97,13 +99,20 @@ namespace Asteroids
                 else
                     frameTime = 0;
 
-                if (Global.DEBUG)
-                    InvokeAction(() => { this.Text = ($"Frame Time: {dt * 1000:0.00} ms - FrameRate: {1f / dt:0.00}"); });
-                else
-                    InvokeAction(() => { this.Text = "Asteroids"; });
+                if ((int)elapsedtimeSW.Elapsed.TotalSeconds > lastTitleUpdate)
+                {
+                    lastTitleUpdate = (int)elapsedtimeSW.Elapsed.TotalSeconds;
+                    if (Global.DEBUG)
+                        InvokeAction(() => { this.Text = ($"Frame Time: {dt * 1000:0.00} ms - FrameRate: {1f / dt:0.00}"); });
+                    else
+                        InvokeAction(() => { this.Text = "Asteroids"; });
+                }
 
                 while (deltatimeSW.Elapsed.TotalMilliseconds < frameTime) { }
             }
+
+            deltatimeSW.Stop();
+            elapsedtimeSW.Stop();
         }
 
         private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();

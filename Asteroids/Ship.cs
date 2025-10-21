@@ -14,7 +14,7 @@ namespace Asteroids
         // Constants
         private const float ACCELERATION = 400f;
         private const float ANGULAR_ACCELERATION = float.Pi * 2f;
-        private const float MAX_VELOCITY = 600f;
+        private const float MAX_VELOCITY = 400f;
         private const float DEADZONE = 0.25f;
 
         public Ship(Vector2 startPosition) : base(startPosition)
@@ -114,6 +114,8 @@ namespace Asteroids
                 moveDir = Global.Normalize(moveDir);
                 lookDir = Global.Normalize(lookDir);
 
+                accelerating = (moveDir.LengthSquared() > 0 && lookDir.LengthSquared() == 0);
+
                 base.velocity += ACCELERATION * moveDir * dt;
 
                 if (base.velocity.LengthSquared() > MAX_VELOCITY * MAX_VELOCITY)
@@ -121,7 +123,7 @@ namespace Asteroids
 
                 this.lookDir = lookDir;
                 this.moveDir = Global.Normalize(velocity);
-                if (this.moveDir == Vector2.Zero) this.moveDir = Global.Normalize(this.moveDir);
+                if (lookDir == Vector2.Zero) this.lookDir = moveDir;
             };
 
 
