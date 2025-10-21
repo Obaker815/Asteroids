@@ -22,31 +22,37 @@ namespace Asteroids
 
             float radius = this.radius / 1.2f;
             position.Y += this.radius * 1.5f;
+
             // Make an action to draw the saucer
             Action<Color, int> DrawSaucer = (Color c, int thickness) =>
             {
                 Pen pen = new(c, thickness);
 
-                // Draws a quarter-circle arc
+                // Draw the top of the saucer
                 g.DrawArc(pen, position.X - radius, position.Y - 2*radius, 2*radius, 2*radius, 180, 180);
 
+                // Draw the top level of the saucer
                 DrawLine(pen, new Vector2(position.X - radius, position.Y - radius), new Vector2(position.X + radius, position.Y - radius));
 
                 float layerTwoWidth = 2f;
                 float layerTwoHeight = 0.3f;
                 float layerThreeHeight = -0.4f;
 
+                // Draw the connecting parts of the top - second level of the saucer
                 DrawLine(pen, new Vector2(position.X - radius, position.Y - radius), new Vector2(position.X - radius * layerTwoWidth, position.Y - radius * layerTwoHeight));
                 DrawLine(pen, new Vector2(position.X + radius * layerTwoWidth, position.Y - radius * layerTwoHeight), new Vector2(position.X + radius, position.Y - radius));
 
+                // Draw the second level of the saucer
                 DrawLine(pen, new Vector2(position.X + radius * layerTwoWidth, position.Y - radius * layerTwoHeight), new Vector2(position.X - radius * layerTwoWidth, position.Y - radius * layerTwoHeight));
 
+
+                // Draw the connecting parts of the second - third level of the saucer
                 DrawLine(pen, new Vector2(position.X - radius, position.Y - radius * layerThreeHeight), new Vector2(position.X - radius * layerTwoWidth, position.Y - radius * layerTwoHeight));
                 DrawLine(pen, new Vector2(position.X + radius * layerTwoWidth, position.Y - radius * layerTwoHeight), new Vector2(position.X + radius, position.Y - radius * layerThreeHeight));
 
+                // Draw the third level of the saucer
                 DrawLine(pen, new Vector2(position.X - radius, position.Y - radius * layerThreeHeight), new Vector2(position.X + radius, position.Y - radius * layerThreeHeight));
 
-                g.DrawEllipse(pen, this.position.X - this.radius, this.position.Y, this.radius * 2f, this.radius * 2f);
             };
 
             // Draw the saucer in white with thickness 1
