@@ -99,6 +99,8 @@ namespace Asteroids
 
                 if (Global.DEBUG)
                     InvokeAction(() => { this.Text = ($"Frame Time: {dt * 1000:0.00} ms - FrameRate: {1f / dt:0.00}"); });
+                else
+                    InvokeAction(() => { this.Text = "Asteroids"; });
 
                 while (deltatimeSW.Elapsed.TotalMilliseconds < frameTime) { }
             }

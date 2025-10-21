@@ -92,7 +92,11 @@ namespace Asteroids
         {
             Action<Vector2, float, float> Classic = (moveDir, throttle, brake) =>
             {
-                Global.Normalize(moveDir);
+                accelerating = throttle > 0f;
+
+                moveDir = Global.Normalize(moveDir);
+                if (moveDir == Vector2.Zero)
+                    moveDir = this.lookDir;
 
                 Vector2 velocity = Vector2.Zero;
                 velocity += ACCELERATION * moveDir * throttle * dt;
@@ -152,8 +156,6 @@ namespace Asteroids
                     float throttle = Keys["Up"].IsPressed ? 1f : 0f;
                     float brake = Keys["Down"].IsPressed ? 1f : 0f;
 
-                    accelerating = throttle > 0f;
-
                     Classic(moveDir, throttle, brake);
                 }
                 else if (Global.CONTROL_STYLE == 1)
@@ -183,12 +185,15 @@ namespace Asteroids
             float rightX = gamepad.RightThumbX / 32768f;
             float rightY = gamepad.RightThumbY / 32768f;
 
-            if (float.Abs(leftX) < deadzone) leftX = 0;
-            if (float.Abs(leftY) < deadzone) leftY = 0;
-            if (float.Abs(rightX) < deadzone) rightX = 0;
-            if (float.Abs(rightY) < deadzone) rightY = 0;
+            Vector2 leftStick = new(leftX, -leftY);
+            Vector2 rightStick = new(rightX, -rightY);
 
-            return (new(leftX, -leftY), new(rightX, -rightY));
+            if (leftStick.LengthSquared() < deadzone * deadzone)
+                leftStick = Vector2.Zero;
+            if (rightStick.LengthSquared() < deadzone * deadzone)
+                rightStick = Vector2.Zero;
+
+            return (leftStick, rightStick);
         }
     }
 }
