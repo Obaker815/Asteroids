@@ -1,4 +1,5 @@
 ﻿using SharpDX.XInput;
+using System.Drawing.Drawing2D;
 
 namespace Asteroids
 {
@@ -12,9 +13,8 @@ namespace Asteroids
         private void GameForm_Shown(object sender, EventArgs e)
         {
             Wrapable.SetBounds(this.ClientRectangle.Size);
-            new Ship(new(0, 0));
+            new Ship(new(this.ClientRectangle.Width / 2, this.ClientRectangle.Height / 2));
         }
-
 
         private Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
         private Controller Gamepad = new(UserIndex.One);
