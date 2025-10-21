@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 
 namespace Asteroids
 {
@@ -6,8 +7,7 @@ namespace Asteroids
     {
         public static List<Wrapable> Wrapables = new List<Wrapable>();
 
-        private static float width = 0;
-        private static float height = 0;
+        internal static RectangleF Bounds = new Rectangle(0, 0, 0, 0);
 
         /// <summary>
         /// Overload for SetBounds(float, float) using Size
@@ -23,8 +23,16 @@ namespace Asteroids
         public static void SetBounds(float w, float h)
         {
             if (w <= 0 || h <= 0) throw new Exception("Wrapable bounds must be greater than zero");
-            width = w;
-            height = h;
+            Bounds.Width = w;
+            Bounds.Height = h;
+
+            if (Global.DEBUG)
+            {
+                Bounds.Width /= 2f;
+                Bounds.Height /= 2f;
+                Bounds.X = Bounds.Width / 2f;
+                Bounds.Y = Bounds.Height / 2f;
+            }
         }
 
         /// <summary>
@@ -33,8 +41,8 @@ namespace Asteroids
         /// <param name="startPosition">The starting position of the wrapable object</param>
         public Wrapable(Vector2 startPosition) : base(startPosition)
         {
-            if (width == 0) throw new Exception("Wrapable width not set");
-            else if (height == 0) throw new Exception("Wrapable height not set");
+            if (Bounds.Width == 0) throw new Exception("Wrapable Width not set");
+            else if (Bounds.Height == 0) throw new Exception("Wrapable Bounds.Height not set");
             else
             {
                 Wrapables.Add(this);
@@ -50,21 +58,21 @@ namespace Asteroids
             // vertical wrapping
             while (pos.X < 0)
             {
-                pos.X += width;
+                pos.X += Bounds.Width;
             }
-            while (pos.X > width)
+            while (pos.X > Bounds.Width)
             {
-                pos.X -= width;
+                pos.X -= Bounds.Width;
             }
 
             // horizontal wrapping
             while (pos.Y < 0)
             {
-                pos.Y += height;
+                pos.Y += Bounds.Height;
             }
-            while (pos.Y > height)
+            while (pos.Y > Bounds.Height)
             {
-                pos.Y -= height;
+                pos.Y -= Bounds.Height;
             }
 
             base.position = pos;
@@ -76,17 +84,24 @@ namespace Asteroids
         /// <param name="g">Graphics object to be drawn to</param>
         public void Draw(Graphics g)
         {
-            // Get the quadrant signs
-            Vector2 Quadrant = new Vector2(
-                float.Sign(width / 2 - position.X),
-                float.Sign(height / 2 - position.Y)
-                );
+            Vector2[] positions = GetPositions();
 
             // Draw in the 4 directions
-            Draw(g, position);
-            Draw(g, position + new Vector2(Quadrant.X * width, 0));
-            Draw(g, position + new Vector2(0, Quadrant.Y * height));
-            Draw(g, position + new Vector2(Quadrant.X * width, Quadrant.Y * height));
+            Draw(g, positions[0] + new Vector2(Bounds.X, Bounds.Y) );
+            Draw(g, positions[1] + new Vector2(Bounds.X, Bounds.Y) );
+            Draw(g, positions[2] + new Vector2(Bounds.X, Bounds.Y) );
+            Draw(g, positions[3] + new Vector2(Bounds.X, Bounds.Y) );
+
+            if (Global.DEBUG)
+            {
+                g.DrawEllipse(Pens.Red, 
+                    position.X + Bounds.X - base.radius, 
+                    position.Y + Bounds.Y - base.radius, 
+                    base.radius * 2, 
+                    base.radius * 2);
+
+                g.DrawRectangle(Pens.Blue, Bounds);
+            }
         }
 
         /// <summary>
@@ -97,6 +112,39 @@ namespace Asteroids
         public virtual void Draw(Graphics g, Vector2 Position)
         {
             throw new NotImplementedException($"Update method not implemented in {this.GetType()}");
+        }
+
+        /// <summary>
+        /// Gets the 4 positions of the ojbect for wrapping
+        /// </summary>
+        /// <returns>An array length 4 of Vector2</returns>
+        public Vector2[] GetPositions()
+        {
+            // Get the quadrant signs
+            Vector2 Quadrant = new Vector2(
+                float.Sign(Bounds.Width / 2 - position.X),
+                float.Sign(Bounds.Height / 2 - position.Y)
+                );
+
+            return
+            [
+                position,
+                position + new Vector2(Quadrant.X * Bounds.Width, 0),
+                position + new Vector2(0, Quadrant.Y * Bounds.Height),
+                position + new Vector2(Quadrant.X * Bounds.Width, Quadrant.Y * Bounds.Height)
+            ];
+        }
+
+        public Vector2 GetClosest(Vector2 Position)
+        {
+            Vector2[] positions = GetPositions();
+            Array.Sort(positions, (a, b) =>
+            {
+                float distA = Vector2.DistanceSquared(a, Position);
+                float distB = Vector2.DistanceSquared(b, Position);
+                return distA.CompareTo(distB);
+            });
+            return positions[0];
         }
     }
 }

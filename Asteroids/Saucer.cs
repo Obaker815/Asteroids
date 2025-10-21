@@ -6,10 +6,28 @@ namespace Asteroids
     internal class Saucer : Wrapable
     {
         public static List<Saucer> Saucers = new();
+        public Vector2 shootDir;
         public Saucer(Vector2 startPosition) : base(startPosition)
         {
             Saucers.Add(this);
-            this.radius = 12;
+            this.radius = 10;
+            shootDir = new Vector2(1,0);
+        }
+
+        public void Updates(float dt)
+        {
+            Vector2 closest = new Vector2(100000, 100000);
+            foreach (Ship s in Ship.ships)
+            {
+                Vector2 pos = s.GetClosest(base.position);
+                Vector2 contender = pos - base.position;
+                float distance = contender.LengthSquared();
+                if (distance < closest.LengthSquared())
+                {
+                    closest = contender;
+                }
+            }
+            shootDir = Global.Normalize(closest);
         }
 
         public override void Draw(Graphics g, Vector2 position)
@@ -21,7 +39,7 @@ namespace Asteroids
             };
 
             float radius = this.radius / 1.2f;
-            position.Y += this.radius * 1.5f;
+            position.Y += this.radius * 0.6f;
 
             // Make an action to draw the saucer
             Action<Color, int> DrawSaucer = (Color c, int thickness) =>
@@ -52,11 +70,19 @@ namespace Asteroids
 
                 // Draw the third level of the saucer
                 DrawLine(pen, new Vector2(position.X - radius, position.Y - radius * layerThreeHeight), new Vector2(position.X + radius, position.Y - radius * layerThreeHeight));
-
             };
 
             // Draw the saucer in white with thickness 1
             DrawSaucer(Color.White, 1);
+
+            if (Global.DEBUG)
+            {
+                Vector2 tmpPosition = base.position + new Vector2(Bounds.X, Bounds.Y);
+
+                g.DrawLine(Pens.Red, tmpPosition.X, tmpPosition.Y, 
+                    tmpPosition.X + shootDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH, 
+                    tmpPosition.Y + shootDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
+            }
         }
     }
 }

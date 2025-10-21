@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 
 namespace Asteroids
 {
@@ -7,7 +8,7 @@ namespace Asteroids
         public static List<Entity> Entities = [];
         internal Vector2 position;
         internal Vector2 velocity;
-        internal float radius;
+        internal float radius = 0;
 
         /// <summary>
         /// Constructor for the Entity class
@@ -22,6 +23,8 @@ namespace Asteroids
 
         public void Update(float dt)
         {
+            if (velocity.LengthSquared() < 0.001f)
+                velocity = Vector2.Zero;
             position += velocity * dt;
         }
 

@@ -1,4 +1,5 @@
 ﻿using SharpDX.XInput;
+using System.Diagnostics;
 using System.Drawing.Drawing2D;
 
 namespace Asteroids
@@ -13,11 +14,101 @@ namespace Asteroids
         private void GameForm_Shown(object sender, EventArgs e)
         {
             Wrapable.SetBounds(this.ClientRectangle.Size);
-            new Saucer(new(this.ClientRectangle.Width / 2, this.ClientRectangle.Height / 2));
+            new Saucer(new(this.ClientRectangle.Width / 8 * 3, this.ClientRectangle.Height / 8 * 3));
+            new Ship(new(this.ClientRectangle.Width / 2, this.ClientRectangle.Height / 2));
+
+            Task.Run(GameMainLoop);
         }
 
-        private Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
-        private Controller Gamepad = new(UserIndex.One);
+        private void InvokeAction(Action action)
+        {
+            if (this.InvokeRequired)
+            {
+                try
+                {
+                    this.Invoke(action);
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Form is closed, return
+                    return;
+                }
+            }
+            else
+            {
+                action();
+            }
+        }
+
+        bool running = false;
+        private void GameMainLoop()
+        {
+            if (running) return;
+            running = true;
+
+            Stopwatch deltatimeSW = Stopwatch.StartNew();
+            while (running)
+            {
+                float dt = (float)deltatimeSW.Elapsed.TotalSeconds;
+                deltatimeSW.Restart();
+
+                // Update keybinds
+                Dictionary<string, Keybind> currentKeyBindings = DuplicateKeybindings(KeyBindings);
+                foreach (string Key in KeyBindings.Keys)
+                {
+                    Keybind kb = KeyBindings[Key];
+                    if (kb.FirstPress)
+                    {
+                        kb.FirstPress = false;
+                    }
+                    KeyBindings[Key] = kb;
+                }
+
+                // Update Ships
+                foreach (Ship ship in Ship.ships)
+                {
+                    ship.Update(currentKeyBindings, controller, dt);
+                }
+
+                // Update Saucers
+                foreach (Saucer saucer in Saucer.Saucers)
+                {
+                    saucer.Updates(dt);
+                }
+
+                // Update all entities
+                foreach (Entity e in Entity.Entities)
+                {
+                    e.Update(dt);
+                }
+
+                // Wrap all wrapables
+                foreach (Wrapable w in Wrapable.Wrapables)
+                {
+                    w.WrapPosition();
+                }
+
+                // Redraw the screen
+                InvokeAction(this.Invalidate);
+                InvokeAction(Application.DoEvents);
+                float frameTime;
+                if (Global.FPS != 0)
+                    frameTime = 1000f / Global.FPS;
+                else
+                    frameTime = 0;
+
+                if (Global.DEBUG)
+                    InvokeAction(() => { this.Text = ($"Frame Time: {dt * 1000:0.00} ms - FrameRate: {1f / dt:0.00}"); });
+
+                while (deltatimeSW.Elapsed.TotalMilliseconds < frameTime) { }
+            }
+        }
+
+        private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
+        private readonly Controller controller = new(UserIndex.One);
+
+        private const string DEBUG_STRING = "UUDDLRLR";
+        private string lastKeysPressed = "";
         // key down and key up event
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
@@ -28,15 +119,23 @@ namespace Asteroids
                 {
                     // edit the Keybind in the dictionary
                     Keybind kb = KeyBindings[Key];
-                    if (!kb.IsPressed)
-                    {
-                        kb.FirstPress = true;
-                    }
+                    kb.FirstPress = true;
                     kb.IsPressed = true;
                     KeyBindings[Key] = kb;
+
+                    // Debug code for cheat code detection
+                    lastKeysPressed += Key.First();
                 }
             }
+            if (lastKeysPressed.Length > 8) lastKeysPressed = lastKeysPressed.Substring(1, 8);
+            if (DEBUG_STRING == lastKeysPressed)
+            {
+                Global.DEBUG = !Global.DEBUG;
+                Wrapable.SetBounds(this.ClientRectangle.Size);
+                lastKeysPressed = "";
+            }
         }
+
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
         {
             foreach (string Key in KeyBindings.Keys)
@@ -96,6 +195,11 @@ namespace Asteroids
             {
                 w.Draw(g);
             }
+        }
+
+        private void GameForm_ResizeEnd(object sender, EventArgs e)
+        {
+            Wrapable.SetBounds(this.ClientRectangle.Size);
         }
     }
 }

@@ -5,21 +5,22 @@ namespace Asteroids
 {
     internal class Ship : Wrapable
     {
+        // Other shit idk
         public static List<Ship> ships = [];
         private Vector2 lookDir = new(1, 0);
-        private Vector2 moveDir = new(1, 0);
+        private Vector2 moveDir = new(-1, 0);
         private bool accelerating = false;
 
-        // 0 = Classic, 1 = TwoStick
-        int controlStyle;
-        float deadzone = 0.25f;
-
-        private const float ACCELERATION = 200f;
-        private const float MAX_VELOCITY = 300f;
+        // Constants
+        private const float ACCELERATION = 400f;
+        private const float ANGULAR_ACCELERATION = float.Pi * 2f;
+        private const float MAX_VELOCITY = 600f;
+        private const float DEADZONE = 0.25f;
 
         public Ship(Vector2 startPosition) : base(startPosition)
         {
             ships.Add(this);
+            base.radius = 10f;
         }
         
         /// <summary>
@@ -35,8 +36,8 @@ namespace Asteroids
             float ratio = 0.8f;
 
             // Ship Length
-            float length = 20;
-            position += Vector2.Transform(new(length * ratio, 0), Matrix3x2.CreateRotation(rotation));
+            float length = base.radius * 3f;
+            position -= Vector2.Transform(new(base.radius * 1.6f, 0), Matrix3x2.CreateRotation(rotation));
 
             // Calculate arm vector
             Vector2 leftArm = Vector2.Transform(new(length, 0), Matrix3x2.CreateRotation(rotation + angleOffset));
@@ -51,7 +52,7 @@ namespace Asteroids
             Vector2 barRight = position + rightArm * ratio;
 
             // Calculate the tip of the "flame"
-            Vector2 centerBase = (leftArmEnd + rightArmEnd) / 2;
+            Vector2 centerBase = (leftArm + rightArm) / 2f * 1.2f + position;
 
             Action<Color, int> DrawShip = (Color c, int thickness) =>
             {
@@ -72,62 +73,107 @@ namespace Asteroids
 
             // Draw the ship in white with thickness 1
             DrawShip(Color.White, 1);
+
+            if (Global.DEBUG)
+            {
+                Vector2 tmpPosition = base.position + new Vector2(Bounds.X, Bounds.Y);
+
+                g.DrawLine(Pens.Red, tmpPosition.X, 
+                    tmpPosition.Y, tmpPosition.X + lookDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH, 
+                    tmpPosition.Y + lookDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
+
+                g.DrawLine(Pens.Green, tmpPosition.X, 
+                    tmpPosition.Y, tmpPosition.X + moveDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH, 
+                    tmpPosition.Y + moveDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
+            }
         }
 
         public void Update(Dictionary<string, Keybind> Keys, Controller controller, float dt)
         {
             Action<Vector2, float, float> Classic = (moveDir, throttle, brake) =>
             {
-                Vector2.Normalize(moveDir);
+                Global.Normalize(moveDir);
 
                 Vector2 velocity = Vector2.Zero;
                 velocity += ACCELERATION * moveDir * throttle * dt;
-                velocity -= Vector2.Normalize(base.velocity) * ACCELERATION * brake * dt;
+                velocity -= Global.Normalize(base.velocity) * ACCELERATION * brake * dt;
 
                 base.velocity += velocity;
                 this.moveDir = moveDir;
-                this.lookDir = this.moveDir;
+                this.lookDir = -moveDir;
 
                 if (base.velocity.LengthSquared() > MAX_VELOCITY * MAX_VELOCITY)
-                    base.velocity = Vector2.Normalize(base.velocity) * MAX_VELOCITY;
+                    base.velocity = Global.Normalize(base.velocity) * MAX_VELOCITY;
             };
             Action<Vector2, Vector2> TwoStick = (moveDir, lookDir) =>
             {
+                moveDir = Global.Normalize(moveDir);
+                lookDir = Global.Normalize(lookDir);
+
                 base.velocity += ACCELERATION * moveDir * dt;
 
                 if (base.velocity.LengthSquared() > MAX_VELOCITY * MAX_VELOCITY)
-                    base.velocity = Vector2.Normalize(base.velocity) * MAX_VELOCITY;
+                    base.velocity = Global.Normalize(base.velocity) * MAX_VELOCITY;
 
                 this.lookDir = lookDir;
-                this.moveDir = Vector2.Normalize(velocity);
-                if (this.moveDir == Vector2.Zero) this.moveDir = Vector2.Normalize(this.moveDir);
+                this.moveDir = Global.Normalize(velocity);
+                if (this.moveDir == Vector2.Zero) this.moveDir = Global.Normalize(this.moveDir);
             };
 
 
             if (controller.IsConnected)
             {
                 Gamepad gamepad = controller.GetState().Gamepad;
-                if (controlStyle == 0)
+                (Vector2 Lstick, Vector2 Rstick) = GetStickPositions(gamepad, DEADZONE);
+
+                // 0 = Classic, 1 = TwoStick
+
+                if (Global.CONTROL_STYLE == 0)
                 {
+                    float throttle = gamepad.RightTrigger / 255;
+                    float brake = gamepad.LeftTrigger / 255;
 
+                    Classic(Lstick, throttle, brake);
 
-                } else if (controlStyle == 1)
+                } else if (Global.CONTROL_STYLE == 1)
                 {
-
+                    TwoStick(Lstick, Rstick);
                 }
             }
             else
             {
-                if (controlStyle == 0)
+                if (Global.CONTROL_STYLE == 0)
                 {
+                    Vector2 moveDir = this.moveDir;
+                    
+                    if (Keys["Left"].IsPressed) moveDir = Vector2.Transform(moveDir, Matrix3x2.CreateRotation(-ANGULAR_ACCELERATION * dt));
+                    if (Keys["Right"].IsPressed) moveDir = Vector2.Transform(moveDir, Matrix3x2.CreateRotation(ANGULAR_ACCELERATION * dt));
 
+                    float throttle = Keys["Up"].IsPressed ? 1f : 0f;
+                    float brake = Keys["Down"].IsPressed ? 1f : 0f;
+
+                    accelerating = throttle > 0f;
+
+                    Classic(moveDir, throttle, brake);
                 }
-                else if (controlStyle == 1)
+                else if (Global.CONTROL_STYLE == 1)
                 {
+                    Vector2 moveDir = Vector2.Zero;
+                    Vector2 lookDir = Vector2.Zero;
+                    
+                    if (Keys["Up"].IsPressed) moveDir.Y -= 1;
+                    if (Keys["Down"].IsPressed) moveDir.Y += 1;
+                    if (Keys["Left"].IsPressed) moveDir.X -= 1;
+                    if (Keys["Right"].IsPressed) moveDir.X += 1;
 
+                    if (Keys["UpAlt"].IsPressed) lookDir.Y -= 1;
+                    if (Keys["DownAlt"].IsPressed) lookDir.Y += 1;
+                    if (Keys["LeftAlt"].IsPressed) lookDir.X -= 1;
+                    if (Keys["RightAlt"].IsPressed) lookDir.X += 1;
+
+                    TwoStick(moveDir, -lookDir);
                 }
             }
-
         }
 
         private (Vector2, Vector2) GetStickPositions(Gamepad gamepad, float deadzone)

@@ -35,10 +35,12 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Name = "GameForm";
-            Text = "Asteroids";
             DoubleBuffered = true;
+            Name = "GameForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Asteroids";
             Shown += GameForm_Shown;
+            ResizeEnd += GameForm_ResizeEnd;
             Paint += GameForm_Paint;
             KeyDown += GameForm_KeyDown;
             KeyUp += GameForm_KeyUp;
