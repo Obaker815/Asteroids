@@ -56,7 +56,7 @@ namespace Asteroids
             // Calculate the tip of the "flame"
             Vector2 centerBase = (leftArm + rightArm) / 2f * 1.2f + position;
 
-            Action<Color, int> DrawShip = (Color c, int thickness) =>
+            void DrawShip(Color c, int thickness)
             {
                 Pen pen = new(c, thickness);
 
@@ -71,7 +71,7 @@ namespace Asteroids
                     g.DrawLine(pen, barLeft.X, barLeft.Y, centerBase.X, centerBase.Y);
                     g.DrawLine(pen, barRight.X, barRight.Y, centerBase.X, centerBase.Y);
                 }
-            };
+            }
 
             // Draw the ship in white with thickness 1
             DrawShip(Color.White, 1);
@@ -90,7 +90,7 @@ namespace Asteroids
 
         public void Update(Dictionary<string, Keybind> Keys, Controller controller, float dt)
         {
-            Action<Vector2, float, float> Classic = (moveDir, throttle, brake) =>
+            void Classic(Vector2 moveDir, float throttle, float brake)
             {
                 accelerating = throttle > 0f;
 
@@ -108,8 +108,8 @@ namespace Asteroids
 
                 if (base.velocity.LengthSquared() > MAX_VELOCITY * MAX_VELOCITY)
                     base.velocity = Global.Normalize(base.velocity) * MAX_VELOCITY;
-            };
-            Action<Vector2, Vector2> TwoStick = (moveDir, lookDir) =>
+            }
+            void TwoStick(Vector2 moveDir, Vector2 lookDir)
             {
                 moveDir = Global.Normalize(moveDir);
                 lookDir = Global.Normalize(lookDir);
@@ -124,8 +124,7 @@ namespace Asteroids
                 this.lookDir = lookDir;
                 this.moveDir = Global.Normalize(velocity);
                 if (lookDir == Vector2.Zero) this.lookDir = moveDir;
-            };
-
+            }
 
             if (controller.IsConnected)
             {
@@ -180,7 +179,7 @@ namespace Asteroids
             }
         }
 
-        private (Vector2, Vector2) GetStickPositions(Gamepad gamepad, float deadzone)
+        private static (Vector2, Vector2) GetStickPositions(Gamepad gamepad, float deadzone)
         {
             float leftX = gamepad.LeftThumbX / 32768f;
             float leftY = gamepad.LeftThumbY / 32768f;
