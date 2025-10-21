@@ -19,6 +19,12 @@ namespace Asteroids
             velocity = Vector2.Zero;
             Entities.Add(this);
         }
+
+        public void Update(float dt)
+        {
+            position += velocity * dt;
+        }
+
         public Vector2 Velocity
         {
             get { return velocity; }
