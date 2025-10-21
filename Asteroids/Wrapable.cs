@@ -100,6 +100,13 @@ namespace Asteroids
                     base.radius * 2, 
                     base.radius * 2);
 
+                Vector2 velocity = Global.Normalize(this.velocity);
+                g.DrawLine(Pens.Green, 
+                    Bounds.X + position.X,
+                    Bounds.Y + position.Y, 
+                    Bounds.X + position.X + velocity.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH,
+                    Bounds.Y + position.Y + velocity.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
+
                 g.DrawRectangle(Pens.Blue, Bounds);
             }
         }

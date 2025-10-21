@@ -10,7 +10,7 @@ namespace Asteroids
     internal static class Global
     {
         public static bool DEBUG = false;
-        public const float DEBUG_DIRECTION_LINE_LENGTH = 2f;
+        public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;
         public static int FPS = 0;
         public static int CONTROL_STYLE = 1; // 0 = Classic, 1 = TwoStick
 

@@ -30,6 +30,8 @@ namespace Asteroids
         /// <param name="position">Position to be drawn</param>
         public override void Draw(Graphics g, Vector2 position)
         {
+            Vector2 lookDir = -this.lookDir;
+
             // Rotation angle and offset
             float rotation = MathF.Atan2(lookDir.Y, lookDir.X);
             float angleOffset = float.Pi / 12;
@@ -78,13 +80,11 @@ namespace Asteroids
             {
                 Vector2 tmpPosition = base.position + new Vector2(Bounds.X, Bounds.Y);
 
-                g.DrawLine(Pens.Red, tmpPosition.X, 
-                    tmpPosition.Y, tmpPosition.X + lookDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH, 
-                    tmpPosition.Y + lookDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
-
-                g.DrawLine(Pens.Green, tmpPosition.X, 
-                    tmpPosition.Y, tmpPosition.X + moveDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH, 
-                    tmpPosition.Y + moveDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
+                g.DrawLine(Pens.Red, 
+                    tmpPosition.X, 
+                    tmpPosition.Y, 
+                    tmpPosition.X + this.lookDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH, 
+                    tmpPosition.Y + this.lookDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
             }
         }
 
@@ -100,7 +100,7 @@ namespace Asteroids
 
                 base.velocity += velocity;
                 this.moveDir = moveDir;
-                this.lookDir = -moveDir;
+                this.lookDir = moveDir;
 
                 if (base.velocity.LengthSquared() > MAX_VELOCITY * MAX_VELOCITY)
                     base.velocity = Global.Normalize(base.velocity) * MAX_VELOCITY;
@@ -171,7 +171,7 @@ namespace Asteroids
                     if (Keys["LeftAlt"].IsPressed) lookDir.X -= 1;
                     if (Keys["RightAlt"].IsPressed) lookDir.X += 1;
 
-                    TwoStick(moveDir, -lookDir);
+                    TwoStick(moveDir, lookDir);
                 }
             }
         }
@@ -188,7 +188,7 @@ namespace Asteroids
             if (float.Abs(rightX) < deadzone) rightX = 0;
             if (float.Abs(rightY) < deadzone) rightY = 0;
 
-            return (new(leftX, leftY), new(rightX, rightY));
+            return (new(leftX, -leftY), new(rightX, -rightY));
         }
     }
 }
