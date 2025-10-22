@@ -18,7 +18,7 @@ namespace Asteroids
         private const float ANGULAR_ACCELERATION = float.Pi * 2f;
         private const float MAX_VELOCITY = 400f;
         private const float DEADZONE = 0.25f;
-        private const int MAX_BULLETS = 4;
+        private const int MAX_BULLETS = 10;
 
         public Ship(Vector2 startPosition) : base(startPosition)
         {
@@ -190,7 +190,7 @@ namespace Asteroids
                 if (Keys["Shoot"].FirstPress && numBullets < MAX_BULLETS)
                 {
                     numBullets++;
-                    new Bullet(position + lookDir * radius * 1.2f, velocity, lookDir, 200, this);
+                    new Bullet(position + lookDir * radius * 1.2f, velocity, lookDir, 200, 1000, this);
                 }
             }
         }

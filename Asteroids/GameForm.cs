@@ -227,9 +227,12 @@ namespace Asteroids
             Graphics g = e.Graphics;
 
             g.Clear(Color.Black);
-            foreach (Wrapable w in Wrapable.Wrapables)
+
+            Wrapable[] wrapables = Wrapable.Wrapables.ToArray();
+            foreach (Wrapable wrapable in wrapables)
             {
-                w.Draw(g);
+                if (wrapable is not null)
+                    wrapable.Draw(g);
             }
         }
 

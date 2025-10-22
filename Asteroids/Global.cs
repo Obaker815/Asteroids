@@ -11,7 +11,7 @@ namespace Asteroids
     {
         public static bool DEBUG = false;
         public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;
-        public static int FPS = 0;
+        public static int FPS = 165;
         public static int CONTROL_STYLE = 0; // 0 = Classic, 1 = TwoStick
 
         public static Vector2 Normalize(Vector2 v)

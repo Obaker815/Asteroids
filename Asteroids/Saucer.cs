@@ -33,7 +33,7 @@ namespace Asteroids
             ShootTimer.Interval = shootMS;
             ShootTimer.Tick += (sender, e) =>
             {
-                new Bullet(position, Vector2.Zero, shootDir, 100, this);
+                new Bullet(position, Vector2.Zero, shootDir, 200, 2000, this);
             };
             ShootTimer.Start();
         }

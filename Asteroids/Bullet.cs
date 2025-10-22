@@ -1,18 +1,19 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
-using Timer = System.Timers.Timer;
 
 namespace Asteroids
 {
     internal class Bullet : Wrapable, IDisposable
     {
         public static List<Bullet> Bullets = new List<Bullet>();
-        private object parent;
 
-        private const int REMOVE_TIME = 1000;
-        public Bullet(Vector2 Position, Vector2 InitialVelocity, Vector2 Direction, float speed, object Parent) : base(Position)
+        private object parent;
+        Stopwatch lifeTimer;
+        private int removeTime = 1000;
+        public Bullet(Vector2 Position, Vector2 InitialVelocity, Vector2 Direction, float speed, int RemoveTime, object Parent) : base(Position)
         {
             Velocity = Direction * speed + InitialVelocity;
+            removeTime = RemoveTime;
             parent = Parent;
             radius = 2;
 
@@ -20,11 +21,10 @@ namespace Asteroids
 
             lifeTimer = Stopwatch.StartNew();
         }
-        Stopwatch lifeTimer;
         public void Update()
         {
             if (disposing) return;
-            if (lifeTimer.Elapsed.TotalMilliseconds >= REMOVE_TIME)
+            if (lifeTimer.Elapsed.TotalMilliseconds >= removeTime)
             {
                 Dispose();
             }
