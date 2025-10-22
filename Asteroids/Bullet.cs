@@ -1,0 +1,53 @@
+﻿using System.Diagnostics;
+using System.Numerics;
+using Timer = System.Timers.Timer;
+
+namespace Asteroids
+{
+    internal class Bullet : Wrapable, IDisposable
+    {
+        public static List<Bullet> Bullets = new List<Bullet>();
+        private object parent;
+
+        private const int REMOVE_TIME = 1000;
+        public Bullet(Vector2 Position, Vector2 InitialVelocity, Vector2 Direction, float speed, object Parent) : base(Position)
+        {
+            Velocity = Direction * speed + InitialVelocity;
+            parent = Parent;
+            radius = 2;
+
+            Bullets.Add(this);
+
+            lifeTimer = Stopwatch.StartNew();
+        }
+        Stopwatch lifeTimer;
+        public void Update()
+        {
+            if (disposing) return;
+            if (lifeTimer.Elapsed.TotalMilliseconds >= REMOVE_TIME)
+            {
+                Dispose();
+            }
+        }
+
+        public override void Draw(Graphics g, Vector2 Position)
+        {
+            g.DrawEllipse(Pens.White, Position.X - radius, Position.Y - radius, 2 * radius, 2 * radius);
+        }
+
+        private bool disposing = false;
+        public void Dispose()
+        {
+            if (disposing) return;
+            disposing = true;
+
+            if (parent is Ship p)
+            {
+                p.numBullets--;
+            }
+
+            toRemove.Add(this);
+            lifeTimer.Stop();
+        }
+    }
+}

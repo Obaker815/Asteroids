@@ -1,23 +1,47 @@
 ﻿using System.Drawing;
 using System.Numerics;
+using Timer = System.Windows.Forms.Timer;
 
 namespace Asteroids
 {
     internal class Saucer : Wrapable
     {
         public static List<Saucer> Saucers = new();
-        public Vector2 shootDir;
-        public Saucer(Vector2 startPosition) : base(startPosition)
+        private Vector2 shootDir;
+        private float speed;
+        private int shootMS;
+
+        public Saucer(bool isSmall, Vector2 startPosition) : base(startPosition)
         {
             Saucers.Add(this);
-            this.radius = 10;
             shootDir = new Vector2(1,0);
+
+            if (isSmall)
+            {
+                speed = 125;
+                radius = 7;
+                shootMS = 1000;
+            }
+            else
+            {
+                speed = 75;
+                radius = 10;
+                shootMS = 1500;
+            }
+
+            Timer ShootTimer = new Timer();
+            ShootTimer.Interval = shootMS;
+            ShootTimer.Tick += (sender, e) =>
+            {
+                new Bullet(position, Vector2.Zero, shootDir, 100, this);
+            };
+            ShootTimer.Start();
         }
 
         public void Updates(float dt)
         {
             Vector2 closest = new Vector2(100000, 100000);
-            foreach (Ship s in Ship.ships)
+            foreach (Ship s in Ship.Ships)
             {
                 Vector2 pos = s.GetClosest(base.position);
                 Vector2 contender = pos - base.position;
@@ -28,6 +52,9 @@ namespace Asteroids
                 }
             }
             shootDir = Global.Normalize(closest);
+
+            velocity = new Vector2(speed, shootDir.Y * speed / 2);
+
         }
 
         public override void Draw(Graphics g, Vector2 position)
@@ -83,6 +110,11 @@ namespace Asteroids
                     tmpPosition.X + shootDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH, 
                     tmpPosition.Y + shootDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
             }
+        }
+        public override void Remove()
+        {
+            base.Remove();
+            Saucers.Remove(this);
         }
     }
 }

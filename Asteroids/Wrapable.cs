@@ -6,7 +6,6 @@ namespace Asteroids
     internal class Wrapable : Entity
     {
         public static List<Wrapable> Wrapables = new List<Wrapable>();
-
         internal static RectangleF Bounds = new Rectangle(0, 0, 0, 0);
 
         /// <summary>
@@ -152,6 +151,12 @@ namespace Asteroids
                 return distA.CompareTo(distB);
             });
             return positions[0];
+        }
+
+        public override void Remove()
+        {
+            base.Remove();
+            Wrapables.Remove(this);
         }
     }
 }

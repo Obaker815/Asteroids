@@ -14,7 +14,8 @@ namespace Asteroids
         private void GameForm_Shown(object sender, EventArgs e)
         {
             Wrapable.SetBounds(this.ClientRectangle.Size);
-            new Saucer(new(this.ClientRectangle.Width / 8 * 3, this.ClientRectangle.Height / 8 * 3));
+            new Saucer(true, new(this.ClientRectangle.Width / 8, this.ClientRectangle.Height / 8));
+            new Saucer(false, new(this.ClientRectangle.Width / 8, this.ClientRectangle.Height / 8));
             new Ship(new(this.ClientRectangle.Width / 2, this.ClientRectangle.Height / 2));
 
             Task.Run(GameMainLoop);
@@ -67,32 +68,55 @@ namespace Asteroids
                 }
 
                 // Update Ships
-                foreach (Ship ship in Ship.ships)
+                Ship[] ships = Ship.Ships.ToArray();
+                foreach (Ship ship in ships)
                 {
-                    ship.Update(currentKeyBindings, controller, dt);
+                    if (ship is not null)
+                        ship.Update(currentKeyBindings, controller, dt);
                 }
 
                 // Update Saucers
-                foreach (Saucer saucer in Saucer.Saucers)
+                Saucer[] saucers = Saucer.Saucers.ToArray();
+                foreach (Saucer saucer in saucers)
                 {
-                    saucer.Updates(dt);
+                    if (saucer is not null)
+                        saucer.Updates(dt);
+                }
+
+                // Update Bullets
+                Bullet[] bullets = Bullet.Bullets.ToArray();
+                foreach (Bullet bullet in bullets)
+                {
+                    if (bullet is not null)
+                        bullet.Update();
                 }
 
                 // Update all entities
-                foreach (Entity e in Entity.Entities)
+                Entity[] entities = Entity.Entities.ToArray();
+                foreach (Entity entity in entities)
                 {
-                    e.Update(dt);
+                    if (entity is not null)
+                        entity.Update(dt);
                 }
 
                 // Wrap all wrapables
-                foreach (Wrapable w in Wrapable.Wrapables)
+                Wrapable[] wrapables = Wrapable.Wrapables.ToArray();
+                foreach (Wrapable wrapable in wrapables)
                 {
-                    w.WrapPosition();
+                    if (wrapable is not null)
+                        wrapable.WrapPosition();
                 }
 
                 // Redraw the screen
                 InvokeAction(this.Invalidate);
-                InvokeAction(Application.DoEvents);
+
+                // Remove destroyed entities
+                foreach (Entity e in Entity.toRemove)
+                {
+                    e.Remove();
+                }
+                Entity.toRemove = [];
+
                 float frameTime;
                 if (Global.FPS != 0)
                     frameTime = 1000f / Global.FPS;
@@ -138,6 +162,7 @@ namespace Asteroids
                     lastKeysPressed += Key.First();
                 }
             }
+
             if (lastKeysPressed.Length > 8) lastKeysPressed = lastKeysPressed.Substring(1, 8);
             if (DEBUG_STRING == lastKeysPressed)
             {

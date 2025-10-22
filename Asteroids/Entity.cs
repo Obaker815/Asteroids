@@ -5,6 +5,7 @@ namespace Asteroids
 {
     internal class Entity
     {
+        public static List<Entity> toRemove = new List<Entity>();
         public static List<Entity> Entities = [];
         internal Vector2 position;
         internal Vector2 velocity;
@@ -36,6 +37,11 @@ namespace Asteroids
                 // implement value validation later
                 velocity = value;
             }
+        }
+
+        public virtual void Remove()
+        {
+            Entities.Remove(this);
         }
     }
 }

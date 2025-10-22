@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using SharpDX.XInput;
 
 namespace Asteroids
@@ -6,20 +7,22 @@ namespace Asteroids
     internal class Ship : Wrapable
     {
         // Other shit idk
-        public static List<Ship> ships = [];
+        public static List<Ship> Ships = [];
         private Vector2 lookDir = new(1, 0);
         private Vector2 moveDir = new(-1, 0);
         private bool accelerating = false;
+        public int numBullets = 0;
 
         // Constants
         private const float ACCELERATION = 400f;
         private const float ANGULAR_ACCELERATION = float.Pi * 2f;
         private const float MAX_VELOCITY = 400f;
         private const float DEADZONE = 0.25f;
+        private const int MAX_BULLETS = 4;
 
         public Ship(Vector2 startPosition) : base(startPosition)
         {
-            ships.Add(this);
+            Ships.Add(this);
             base.radius = 10f;
         }
         
@@ -56,7 +59,7 @@ namespace Asteroids
             // Calculate the tip of the "flame"
             Vector2 centerBase = (leftArm + rightArm) / 2f * 1.2f + position;
 
-            Action<Color, int> DrawShip = (Color c, int thickness) =>
+            void DrawShip(Color c, int thickness)
             {
                 Pen pen = new(c, thickness);
 
@@ -71,7 +74,7 @@ namespace Asteroids
                     g.DrawLine(pen, barLeft.X, barLeft.Y, centerBase.X, centerBase.Y);
                     g.DrawLine(pen, barRight.X, barRight.Y, centerBase.X, centerBase.Y);
                 }
-            };
+            }
 
             // Draw the ship in white with thickness 1
             DrawShip(Color.White, 1);
@@ -85,18 +88,25 @@ namespace Asteroids
                     tmpPosition.Y, 
                     tmpPosition.X + this.lookDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH, 
                     tmpPosition.Y + this.lookDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
+
+                g.DrawLine(Pens.Blue,
+                    tmpPosition.X,
+                    tmpPosition.Y,
+                    tmpPosition.X + this.moveDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH,
+                    tmpPosition.Y + this.moveDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
             }
         }
 
         public void Update(Dictionary<string, Keybind> Keys, Controller controller, float dt)
         {
-            Action<Vector2, float, float> Classic = (moveDir, throttle, brake) =>
+            void Classic(Vector2 moveDir, float throttle, float brake)
             {
                 accelerating = throttle > 0f;
 
-                moveDir = Global.Normalize(moveDir);
                 if (moveDir == Vector2.Zero)
                     moveDir = this.lookDir;
+
+                moveDir = Global.Normalize(moveDir);
 
                 Vector2 velocity = Vector2.Zero;
                 velocity += ACCELERATION * moveDir * throttle * dt;
@@ -108,8 +118,8 @@ namespace Asteroids
 
                 if (base.velocity.LengthSquared() > MAX_VELOCITY * MAX_VELOCITY)
                     base.velocity = Global.Normalize(base.velocity) * MAX_VELOCITY;
-            };
-            Action<Vector2, Vector2> TwoStick = (moveDir, lookDir) =>
+            }
+            void TwoStick(Vector2 moveDir, Vector2 lookDir)
             {
                 moveDir = Global.Normalize(moveDir);
                 lookDir = Global.Normalize(lookDir);
@@ -124,8 +134,7 @@ namespace Asteroids
                 this.lookDir = lookDir;
                 this.moveDir = Global.Normalize(velocity);
                 if (lookDir == Vector2.Zero) this.lookDir = moveDir;
-            };
-
+            }
 
             if (controller.IsConnected)
             {
@@ -177,10 +186,16 @@ namespace Asteroids
 
                     TwoStick(moveDir, lookDir);
                 }
+
+                if (Keys["Shoot"].FirstPress && numBullets < MAX_BULLETS)
+                {
+                    numBullets++;
+                    new Bullet(position + lookDir * radius * 1.2f, velocity, lookDir, 200, this);
+                }
             }
         }
 
-        private (Vector2, Vector2) GetStickPositions(Gamepad gamepad, float deadzone)
+        private static (Vector2, Vector2) GetStickPositions(Gamepad gamepad, float deadzone)
         {
             float leftX = gamepad.LeftThumbX / 32768f;
             float leftY = gamepad.LeftThumbY / 32768f;
@@ -196,6 +211,11 @@ namespace Asteroids
                 rightStick = Vector2.Zero;
 
             return (leftStick, rightStick);
+        }
+        public override void Remove()
+        {
+            base.Remove();
+            Ships.Remove(this);
         }
     }
 }
