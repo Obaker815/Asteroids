@@ -206,7 +206,7 @@ namespace Asteroids
 
             void collisionHandle(Entity collided)
             {
-                iFrames = 0.5f;
+                iFrames = 1f;
                 GameForm.AddFreezeTime(0.5f, 0.5f);
                 toRemove.Add(collided);
             }
@@ -214,6 +214,7 @@ namespace Asteroids
             if (iFrames > 0)
             {
                 iFrames -= dt;
+                iFrames = float.Max(0, iFrames);
             } else
             {
                 Entity? collided = CollisionCheck(this);
