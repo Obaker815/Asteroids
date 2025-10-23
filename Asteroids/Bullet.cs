@@ -7,12 +7,12 @@ namespace Asteroids
     {
         public static List<Bullet> Bullets = new List<Bullet>();
 
-        private object parent;
+        public object parent;
         Stopwatch lifeTimer;
         private int removeTime = 1000;
         public Bullet(Vector2 Position, Vector2 InitialVelocity, Vector2 Direction, float speed, int RemoveTime, object Parent) : base(Position)
         {
-            Velocity = Direction * speed + InitialVelocity;
+            velocity = Direction * speed + InitialVelocity;
             removeTime = RemoveTime;
             parent = Parent;
             radius = 2;

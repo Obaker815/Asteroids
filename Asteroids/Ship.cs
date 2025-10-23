@@ -7,11 +7,13 @@ namespace Asteroids
     internal class Ship : Wrapable
     {
         // Other shit idk
-        public static List<Ship> Ships = [];
         private Vector2 lookDir = new(1, 0);
         private Vector2 moveDir = new(-1, 0);
         private bool accelerating = false;
+        private float iFrames = 0f;
+        public static List<Ship> Ships = [];
         public int numBullets = 0;
+
 
         // Constants
         private const float ACCELERATION = 400f;
@@ -24,6 +26,7 @@ namespace Asteroids
         {
             Ships.Add(this);
             base.radius = 10f;
+            iFrames = 1f;
         }
         
         /// <summary>
@@ -124,7 +127,7 @@ namespace Asteroids
                 moveDir = Global.Normalize(moveDir);
                 lookDir = Global.Normalize(lookDir);
 
-                accelerating = (moveDir.LengthSquared() > 0 && lookDir.LengthSquared() == 0);
+                accelerating = (Vector2.Dot(moveDir, ((lookDir.LengthSquared() > 0)? lookDir : moveDir)) > 0.5f);
 
                 base.velocity += ACCELERATION * moveDir * dt;
 
@@ -190,7 +193,44 @@ namespace Asteroids
                 if (Keys["Shoot"].FirstPress && numBullets < MAX_BULLETS)
                 {
                     numBullets++;
-                    new Bullet(position + lookDir * radius * 1.2f, velocity, lookDir, 200, 1000, this);
+
+                    Vector2 lookDir = (this.lookDir != Vector2.Zero) ? this.lookDir : new(1, 0);
+
+                    Vector2 StartVelocity = base.velocity * Vector2.Dot(base.velocity, lookDir) / base.velocity.LengthSquared();
+                    if (StartVelocity.X is float.NaN || StartVelocity.Y is float.NaN)
+                        StartVelocity = Vector2.Zero;
+
+                    new Bullet(position + lookDir * radius * 1.2f, StartVelocity, lookDir, 200, 1000, this);
+                }
+            }
+
+            void collisionHandle(Entity collided)
+            {
+                iFrames = 0.5f;
+                GameForm.AddFreezeTime(0.5f, 0.5f);
+                toRemove.Add(collided);
+            }
+
+            if (iFrames > 0)
+            {
+                iFrames -= dt;
+            } else
+            {
+                Entity? collided = CollisionCheck(this);
+                if (collided is not null)
+                {
+                    if (collided is Bullet)
+                    {
+                        Bullet? b = collided as Bullet;
+                        if (b.parent != this)
+                        {
+                            collisionHandle(collided);
+                        }
+                    }
+                    else
+                    {
+                        collisionHandle(collided);
+                    }
                 }
             }
         }

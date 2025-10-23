@@ -19,17 +19,17 @@ namespace Asteroids
             if (isSmall)
             {
                 speed = 125;
-                radius = 7;
+                radius = 8f;
                 shootMS = 1000;
             }
             else
             {
                 speed = 75;
-                radius = 10;
+                radius = 12;
                 shootMS = 1500;
             }
 
-            Timer ShootTimer = new Timer();
+            ShootTimer = new Timer();
             ShootTimer.Interval = shootMS;
             ShootTimer.Tick += (sender, e) =>
             {
@@ -37,6 +37,7 @@ namespace Asteroids
             };
             ShootTimer.Start();
         }
+        Timer ShootTimer;
 
         public void Updates(float dt)
         {
@@ -55,6 +56,19 @@ namespace Asteroids
 
             velocity = new Vector2(speed, shootDir.Y * speed / 2);
 
+            Entity? collided = CollisionCheck(this);
+            if (collided is not null)
+            {
+                if (collided is Bullet)
+                {
+                    Bullet? b = collided as Bullet;
+                    if (b.parent is Ship)
+                    {
+                        toRemove.Add(collided);
+                        toRemove.Add(this);
+                    }
+                }
+            }
         }
 
         public override void Draw(Graphics g, Vector2 position)
@@ -65,7 +79,7 @@ namespace Asteroids
                 g.DrawLine(p, v1.X, v1.Y, v2.X, v2.Y);
             };
 
-            float radius = this.radius / 1.2f;
+            float radius = this.radius;
             position.Y += this.radius * 0.6f;
 
             // Make an action to draw the saucer
@@ -114,6 +128,7 @@ namespace Asteroids
         public override void Remove()
         {
             base.Remove();
+            ShootTimer.Stop();
             Saucers.Remove(this);
         }
     }

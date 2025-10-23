@@ -24,24 +24,33 @@ namespace Asteroids
 
         public void Update(float dt)
         {
-            if (velocity.LengthSquared() < 0.001f)
+            if (velocity.LengthSquared() < 0.01f)
                 velocity = Vector2.Zero;
             position += velocity * dt;
-        }
-
-        public Vector2 Velocity
-        {
-            get { return velocity; }
-            set
-            {
-                // implement value validation later
-                velocity = value;
-            }
         }
 
         public virtual void Remove()
         {
             Entities.Remove(this);
+        }
+
+        public static Entity? CollisionCheck(Entity entity)
+        {
+            Entity[] entities = Entities.ToArray();
+            foreach (Entity e in entities)
+            {
+                if (e == entity) continue;
+
+                float distSq = Vector2.DistanceSquared(entity.position, e.position);
+                float radiusSum = entity.radius + e.radius;
+
+                if (distSq <= radiusSum * radiusSum)
+                {
+                    return e;
+                }
+            }
+
+            return null;
         }
     }
 }

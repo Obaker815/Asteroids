@@ -41,6 +41,15 @@ namespace Asteroids
             }
         }
 
+        public static void AddFreezeTime(float time, float modifier)
+        {
+            freezetime = time;
+            dtModifier = modifier;
+        }
+
+        static float freezetime = 0f;
+        static float dtModifier = 1f;
+
         bool running = false;
         private void GameMainLoop()
         {
@@ -54,6 +63,13 @@ namespace Asteroids
             {
                 float dt = (float)deltatimeSW.Elapsed.TotalSeconds;
                 deltatimeSW.Restart();
+
+                if (freezetime > 0f)
+                {
+                    freezetime -= dt;
+                    if (freezetime < 0f) freezetime = 0f;
+                    dt *= dtModifier;
+                }
 
                 // Update keybinds
                 Dictionary<string, Keybind> currentKeyBindings = DuplicateKeybindings(KeyBindings);
