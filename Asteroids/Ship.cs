@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Numerics;
+﻿using System.Numerics;
 using SharpDX.XInput;
 
 namespace Asteroids
@@ -7,33 +6,41 @@ namespace Asteroids
     internal class Ship : Wrapable
     {
         // Other shit idk
+        private Vector2 respawnLocation;
         private Vector2 lookDir = new(1, 0);
         private Vector2 moveDir = new(-1, 0);
         private bool accelerating = false;
+        private bool respawning = false;
+        private float respawnTime = 0f;
         private float iFrames = 0f;
+
         public static List<Ship> Ships = [];
         public int numBullets = 0;
-
 
         // Constants
         private const float ACCELERATION = 400f;
         private const float ANGULAR_ACCELERATION = float.Pi * 2f;
         private const float MAX_VELOCITY = 400f;
         private const float DEADZONE = 0.25f;
-        private const int MAX_BULLETS = 10;
+        private const int MAX_BULLETS = 4;
 
+        /// <summary>
+        /// Constructor for the <see cref="Ship"/> class
+        /// </summary>
+        /// <param name="startPosition">The start, and respawn <see cref="Vector2"> position of the <see cref="Ship"></param>
         public Ship(Vector2 startPosition) : base(startPosition)
         {
+            respawnLocation = startPosition;
             Ships.Add(this);
             base.radius = 10f;
             iFrames = 1f;
         }
         
         /// <summary>
-        /// Override Draw method from Wrapable
+        /// Override Draw method from <see cref="Wrapable"/>
         /// </summary>
-        /// <param name="g">Graphics object to be drawn to</param>
-        /// <param name="position">Position to be drawn</param>
+        /// <param name="g"><see cref="Graphics"> to be drawn to</param>
+        /// <param name="position"><see cref="Vector2"> position to be drawn</param>
         public override void Draw(Graphics g, Vector2 position)
         {
             Vector2 lookDir = -this.lookDir;
@@ -100,8 +107,46 @@ namespace Asteroids
             }
         }
 
+        /// <summary>
+        /// Handles how the <see cref="Ship"/> respawns
+        /// </summary>
+        private void Respawn()
+        {
+            base.velocity = Vector2.Zero;
+            respawnTime = 1.5f;
+            respawning = true;
+        }
+
+        /// <summary>
+        /// Handles all the updating logic of the <see cref="Ship"/> class
+        /// </summary>
+        /// <param name="Keys">This frame's keybinds <see cref="Dictionary{string, Keybind}"></param>
+        /// <param name="controller">The controller</param>
+        /// <param name="dt">Deltatime in seconds</param>
         public void Update(Dictionary<string, Keybind> Keys, Controller controller, float dt)
         {
+            if (respawning)
+            {
+                float respawnSpeed = 5f;
+                float lerpFactor = 1f - (float)Math.Exp(-respawnSpeed * dt);
+                position = Global.Lerp(position, respawnLocation, lerpFactor);
+
+
+                GameForm.AddFreezeTime(time: 0.5f, modifier: 0.5f);
+                accelerating = false;
+
+                respawnTime -= dt;
+                if (respawnTime <= 0f)
+                {
+                    respawning = false;
+                    respawnTime = 0f;
+                    iFrames = 1f;
+                }
+
+                return;
+            }
+
+            // Classic control method
             void Classic(Vector2 moveDir, float throttle, float brake)
             {
                 accelerating = throttle > 0f;
@@ -122,6 +167,7 @@ namespace Asteroids
                 if (base.velocity.LengthSquared() > MAX_VELOCITY * MAX_VELOCITY)
                     base.velocity = Global.Normalize(base.velocity) * MAX_VELOCITY;
             }
+            // Two-stick control method
             void TwoStick(Vector2 moveDir, Vector2 lookDir)
             {
                 moveDir = Global.Normalize(moveDir);
@@ -163,9 +209,12 @@ namespace Asteroids
                 if (Global.CONTROL_STYLE == 0)
                 {
                     Vector2 moveDir = this.moveDir;
-                    
-                    if (Keys["Left"].IsPressed) moveDir = Vector2.Transform(moveDir, Matrix3x2.CreateRotation(-ANGULAR_ACCELERATION * dt));
-                    if (Keys["Right"].IsPressed) moveDir = Vector2.Transform(moveDir, Matrix3x2.CreateRotation(ANGULAR_ACCELERATION * dt));
+
+                    float angularVelocity = 0f;
+                    if (Keys["Left"].IsPressed) angularVelocity -= ANGULAR_ACCELERATION * dt;
+                    if (Keys["Right"].IsPressed) angularVelocity += ANGULAR_ACCELERATION * dt;
+
+                    moveDir = Vector2.Transform(moveDir, Matrix3x2.CreateRotation(angularVelocity));
 
                     float throttle = Keys["Up"].IsPressed ? 1f : 0f;
                     float brake = Keys["Down"].IsPressed ? 1f : 0f;
@@ -200,15 +249,17 @@ namespace Asteroids
                     if (StartVelocity.X is float.NaN || StartVelocity.Y is float.NaN)
                         StartVelocity = Vector2.Zero;
 
-                    new Bullet(position + lookDir * radius * 1.2f, StartVelocity, lookDir, 200, 1000, this);
+                    _ = new Bullet(position + (lookDir * radius * 1.2f), StartVelocity, lookDir, 200, 1000, this);
                 }
             }
 
             void collisionHandle(Entity collided)
             {
-                iFrames = 1f;
-                GameForm.AddFreezeTime(0.5f, 0.5f);
-                toRemove.Add(collided);
+                if (collided is not Ship)
+                {
+                    toRemove.Add(collided);
+                    Respawn();
+                }
             }
 
             if (iFrames > 0)
@@ -223,7 +274,7 @@ namespace Asteroids
                     if (collided is Bullet)
                     {
                         Bullet? b = collided as Bullet;
-                        if (b.parent != this)
+                        if (b?.parent != this)
                         {
                             collisionHandle(collided);
                         }
@@ -236,6 +287,12 @@ namespace Asteroids
             }
         }
 
+        /// <summary>
+        /// Gets the stick positions as <see cref="Vector2"> from the <paramref name="gamepad"/> whilst also applying deadzone
+        /// </summary>
+        /// <param name="gamepad">The <see cref="Gamepad"> to take stick postions from</param>
+        /// <param name="deadzone">The deadzone of the sticks</param>
+        /// <returns>two <see cref="Vector2"> of the stick positions</returns>
         private static (Vector2, Vector2) GetStickPositions(Gamepad gamepad, float deadzone)
         {
             float leftX = gamepad.LeftThumbX / 32768f;
@@ -253,6 +310,7 @@ namespace Asteroids
 
             return (leftStick, rightStick);
         }
+
         public override void Remove()
         {
             base.Remove();

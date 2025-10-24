@@ -1,6 +1,5 @@
 ﻿using SharpDX.XInput;
 using System.Diagnostics;
-using System.Drawing.Drawing2D;
 
 namespace Asteroids
 {
@@ -14,9 +13,10 @@ namespace Asteroids
         private void GameForm_Shown(object sender, EventArgs e)
         {
             Wrapable.SetBounds(this.ClientRectangle.Size);
-            new Saucer(true, new(this.ClientRectangle.Width / 8, this.ClientRectangle.Height / 8));
-            new Saucer(false, new(this.ClientRectangle.Width / 8, this.ClientRectangle.Height / 8));
-            new Ship(new(this.ClientRectangle.Width / 2, this.ClientRectangle.Height / 2));
+
+            _ = new Saucer(true, new(ClientRectangle.Width / 8, ClientRectangle.Height / 8));
+            _ = new Saucer(false, new(ClientRectangle.Width / 8, ClientRectangle.Height / 8));
+            _ = new Ship(new(ClientRectangle.Width / 2, ClientRectangle.Height / 2));
 
             Task.Run(GameMainLoop);
         }
@@ -84,43 +84,38 @@ namespace Asteroids
                 }
 
                 // Update Ships
-                Ship[] ships = Ship.Ships.ToArray();
+                Ship[] ships = [.. Ship.Ships];
                 foreach (Ship ship in ships)
                 {
-                    if (ship is not null)
-                        ship.Update(currentKeyBindings, controller, dt);
+                    ship?.Update(currentKeyBindings, controller, dt);
                 }
 
                 // Update Saucers
-                Saucer[] saucers = Saucer.Saucers.ToArray();
+                Saucer[] saucers = [.. Saucer.Saucers];
                 foreach (Saucer saucer in saucers)
                 {
-                    if (saucer is not null)
-                        saucer.Updates(dt);
+                    saucer?.Update();
                 }
 
                 // Update Bullets
-                Bullet[] bullets = Bullet.Bullets.ToArray();
+                Bullet[] bullets = [.. Bullet.Bullets];
                 foreach (Bullet bullet in bullets)
                 {
-                    if (bullet is not null)
-                        bullet.Update();
+                    bullet?.Update();
                 }
 
                 // Update all entities
-                Entity[] entities = Entity.Entities.ToArray();
+                Entity[] entities = [.. Entity.Entities];
                 foreach (Entity entity in entities)
                 {
-                    if (entity is not null)
-                        entity.Update(dt);
+                    entity?.Update(dt);
                 }
 
                 // Wrap all wrapables
-                Wrapable[] wrapables = Wrapable.Wrapables.ToArray();
+                Wrapable[] wrapables = [.. Wrapable.Wrapables];
                 foreach (Wrapable wrapable in wrapables)
                 {
-                    if (wrapable is not null)
-                        wrapable.WrapPosition();
+                    wrapable?.WrapPosition();
                 }
 
                 // Redraw the screen
@@ -244,11 +239,10 @@ namespace Asteroids
 
             g.Clear(Color.Black);
 
-            Wrapable[] wrapables = Wrapable.Wrapables.ToArray();
+            Wrapable[] wrapables = [.. Wrapable.Wrapables];
             foreach (Wrapable wrapable in wrapables)
             {
-                if (wrapable is not null)
-                    wrapable.Draw(g);
+                wrapable?.Draw(g);
             }
         }
 

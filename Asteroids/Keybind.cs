@@ -1,17 +1,9 @@
 ﻿namespace Asteroids
 {
-    internal struct Keybind
+    internal struct Keybind(Keys key)
     {
-        public Keys Key { get; }
-        public bool IsPressed { get; set; }
-        public bool FirstPress { get; set; }
-
-        // take a key and make the keybind
-        public Keybind(Keys key)
-        {
-            Key = key;
-            IsPressed = false;
-            FirstPress = false;
-        }
+        public Keys Key { get; } = key;
+        public bool IsPressed { get; set; } = false;
+        public bool FirstPress { get; set; } = false;
     }
 }
