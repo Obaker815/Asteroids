@@ -288,7 +288,7 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Gets the stick positions as <see cref="Vector2"> from the <paramref name="gamepad"/> whilst also applying deadzone
+        /// Gets the stick positions as <see cref="Vector2"> from the <paramref name="gamepad"/> whilst also applying <paramref name="deadzone"/>
         /// </summary>
         /// <param name="gamepad">The <see cref="Gamepad"> to take stick postions from</param>
         /// <param name="deadzone">The deadzone of the sticks</param>

@@ -43,11 +43,11 @@ namespace Asteroids
 
         public static void AddFreezeTime(float time, float modifier)
         {
-            freezetime = time;
+            freezeTime = time;
             dtModifier = modifier;
         }
 
-        static float freezetime = 0f;
+        static float freezeTime = 0f;
         static float dtModifier = 1f;
 
         bool running = false;
@@ -64,10 +64,10 @@ namespace Asteroids
                 float dt = (float)deltatimeSW.Elapsed.TotalSeconds;
                 deltatimeSW.Restart();
 
-                if (freezetime > 0f)
+                if (freezeTime > 0f)
                 {
-                    freezetime -= dt;
-                    if (freezetime < 0f) freezetime = 0f;
+                    freezeTime -= dt;
+                    freezeTime = float.Max(freezeTime, 0);
                     dt *= dtModifier;
                 }
 
