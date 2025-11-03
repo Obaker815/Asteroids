@@ -8,10 +8,9 @@ namespace Asteroids
         public static List<Asteroid> AsteroidEntities = [];
 
         private const int MAX_ASTEROIDS = 26;
-        private static int numAsteroids = 0;
 
+        private readonly int size;
         private Vector2[] points = [];
-        private int size;
 
         private readonly static Dictionary<int, (float radius, float speed)> SizePropertyDict = new()
         {
@@ -27,9 +26,8 @@ namespace Asteroids
         /// <returns>The created <see cref="Asteroid"/></returns>
         public static Asteroid? NewAsteroid(Rectangle screen, int size)
         {
-            if (!SizePropertyDict.Keys.Contains(size) || numAsteroids >= MAX_ASTEROIDS)
+            if (!SizePropertyDict.ContainsKey(size) || AsteroidEntities.Count >= MAX_ASTEROIDS)
                 return null;
-            numAsteroids++;
 
             Random rnd = new();
 
@@ -59,9 +57,8 @@ namespace Asteroids
 
             for (int i = 0; i < 3; i++)
             {
-                if (!SizePropertyDict.Keys.Contains(size) || numAsteroids >= MAX_ASTEROIDS)
+                if (!SizePropertyDict.ContainsKey(size) || AsteroidEntities.Count >= MAX_ASTEROIDS)
                     break;
-                numAsteroids++;
 
                 _ = new Asteroid(position, size - 1, rnd);
             }
@@ -105,10 +102,11 @@ namespace Asteroids
 
         public override void Remove()
         {
+            AsteroidEntities.Remove(this);
+
             if (size > 1)
                 SpawnChildren();
 
-            AsteroidEntities.Remove(this);
             base.Remove();
         }
     }

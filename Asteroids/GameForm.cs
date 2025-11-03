@@ -15,10 +15,9 @@ namespace Asteroids
             Wrapable.SetBounds(this.ClientRectangle.Size);
 
             _ = new Ship(new(ClientRectangle.Width / 2, ClientRectangle.Height / 2));
-            _ = new Saucer(false, new(0, 0));
-            _ = new Saucer(true, new(0, 0));
 
-            _ = Asteroid.NewAsteroid(this.ClientRectangle, 3);
+            for (int i = 0; i < 25; i++)
+                _ = Asteroid.NewAsteroid(this.ClientRectangle, 3);
 
             Task.Run(GameMainLoop);
         }
