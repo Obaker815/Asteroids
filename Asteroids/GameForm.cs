@@ -14,9 +14,11 @@ namespace Asteroids
         {
             Wrapable.SetBounds(this.ClientRectangle.Size);
 
-            _ = new Saucer(true, new(ClientRectangle.Width / 8, ClientRectangle.Height / 8));
-            _ = new Saucer(false, new(ClientRectangle.Width / 8, ClientRectangle.Height / 8));
             _ = new Ship(new(ClientRectangle.Width / 2, ClientRectangle.Height / 2));
+            _ = new Saucer(false, new(0, 0));
+            _ = new Saucer(true, new(0, 0));
+
+            _ = Asteroid.NewAsteroid(this.ClientRectangle, 3);
 
             Task.Run(GameMainLoop);
         }
@@ -95,6 +97,13 @@ namespace Asteroids
                 foreach (Saucer saucer in saucers)
                 {
                     saucer?.Update();
+                }
+
+                // Update Asteroids
+                Asteroid[] asteroids = [.. Asteroid.AsteroidEntities];
+                foreach (Asteroid asteroid in asteroids)
+                {
+                    asteroid?.Update();
                 }
 
                 // Update Bullets

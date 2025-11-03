@@ -27,7 +27,7 @@ namespace Asteroids
         /// <param name="dt">Deltatime in seconds</param>
         public void Update(float dt)
         {
-            if (velocity.LengthSquared() < 1f)
+            if (velocity.LengthSquared() < 1f * dt)
                 velocity = Vector2.Zero;
             position += velocity * dt;
         }
@@ -37,12 +37,12 @@ namespace Asteroids
         /// </summary>
         /// <param name="entity">The <see cref="Entity"> to be compared</param>
         /// <returns>The first <see cref="Entity"> in <see cref="Entities"> to overlap <paramref name="entity"/></returns>
-        public static Entity? CollisionCheck(Entity entity)
+        public static Entity? CollisionCheck(Entity entity, Type targetType)
         {
             Entity[] entities = [.. Entities];
             foreach (Entity e in entities)
             {
-                if (e == entity) continue;
+                if (e == entity || e is null || e.GetType() != targetType) continue;
 
                 float distSq = Vector2.DistanceSquared(entity.position, e.position);
                 float radiusSum = entity.radius + e.radius;

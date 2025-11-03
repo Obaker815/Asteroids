@@ -66,17 +66,14 @@ namespace Asteroids
 
             velocity = new Vector2(speed, shootDir.Y * speed / 2);
 
-            Entity? collided = CollisionCheck(this);
+            Entity? collided = CollisionCheck(this, typeof(Bullet));
             if (collided is not null)
             {
-                if (collided is Bullet)
+                Bullet? b = collided as Bullet;
+                if (b?.parent is Ship)
                 {
-                    Bullet? b = collided as Bullet;
-                    if (b?.parent is Ship)
-                    {
-                        toRemove.Add(collided);
-                        toRemove.Add(this);
-                    }
+                    toRemove.Add(collided);
+                    toRemove.Add(this);
                 }
             }
         }

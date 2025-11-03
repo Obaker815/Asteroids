@@ -131,7 +131,6 @@ namespace Asteroids
                 float lerpFactor = 1f - (float)Math.Exp(-respawnSpeed * dt);
                 position = Global.Lerp(position, respawnLocation, lerpFactor);
 
-
                 GameForm.AddFreezeTime(time: 0.5f, modifier: 0.5f);
                 accelerating = false;
 
@@ -262,27 +261,32 @@ namespace Asteroids
                 }
             }
 
-            if (iFrames > 0)
+            if (iFrames > 0 || !Global.PLAYER_COLLISION)
             {
                 iFrames -= dt;
                 iFrames = float.Max(0, iFrames);
             } else
             {
-                Entity? collided = CollisionCheck(this);
-                if (collided is not null)
+                Entity? collidedBullet = CollisionCheck(this, typeof(Bullet));
+                if (collidedBullet is not null)
                 {
-                    if (collided is Bullet)
+                    Bullet? b = collidedBullet as Bullet;
+                    if (b?.parent != this)
                     {
-                        Bullet? b = collided as Bullet;
-                        if (b?.parent != this)
-                        {
-                            collisionHandle(collided);
-                        }
+                        collisionHandle(collidedBullet);
                     }
-                    else
-                    {
-                        collisionHandle(collided);
-                    }
+                }
+
+                Entity? collidedAsteroid = CollisionCheck(this, typeof(Asteroid));
+                if (collidedAsteroid is not null)
+                {
+                    collisionHandle(collidedAsteroid);
+                }
+
+                Entity? collidedSaucer = CollisionCheck(this, typeof(Saucer));
+                if (collidedSaucer is not null)
+                {
+                    collisionHandle(collidedSaucer);
                 }
             }
         }
