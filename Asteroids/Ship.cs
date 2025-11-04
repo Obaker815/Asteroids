@@ -18,8 +18,8 @@ namespace Asteroids
         public int numBullets = 0;
 
         // Constants
-        private const float ACCELERATION = 400f;
         private const float ANGULAR_ACCELERATION = float.Pi * 2f;
+        private const float ACCELERATION = 400f;
         private const float MAX_VELOCITY = 400f;
         private const float DEADZONE = 0.25f;
         private const int MAX_BULLETS = 4;

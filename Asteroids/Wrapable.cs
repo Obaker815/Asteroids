@@ -23,14 +23,6 @@ namespace Asteroids
             if (w <= 0 || h <= 0) throw new Exception("Wrapable bounds must be greater than zero");
             Bounds.Width = w;
             Bounds.Height = h;
-
-            if (Global.DEBUG)
-            {
-                Bounds.Width /= 2f;
-                Bounds.Height /= 2f;
-                Bounds.X = Bounds.Width / 2f;
-                Bounds.Y = Bounds.Height / 2f;
-            }
         }
 
         /// <summary>

@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace Asteroids
 {
@@ -7,7 +6,7 @@ namespace Asteroids
     {
         public static bool DEBUG = false;
         public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;
-        public const bool PLAYER_COLLISION = true;
+        public const bool PLAYER_COLLISION = false;
 
         public static int FPS = 0;
         public static int CONTROL_STYLE = 0; // 0 = Classic, 1 = TwoStick
@@ -38,6 +37,7 @@ namespace Asteroids
         {
             return new(Lerp(a.X, b.X, t), Lerp(a.Y, b.Y, t));
         }
+
         /// <summary>
         /// A linear interpolation function of <see cref="float"/> values
         /// </summary>

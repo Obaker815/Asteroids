@@ -1,10 +1,15 @@
 ﻿using SharpDX.XInput;
 using System.Diagnostics;
+using System.Drawing.Drawing2D;
 
 namespace Asteroids
 {
     public partial class GameForm : Form
     {
+        Size preferredSize = new(800, 480);
+        Rectangle preferredRect = new(0, 0, 800, 480);
+        float ratio = 480 / 800f;
+
         public GameForm()
         {
             InitializeComponent();
@@ -12,12 +17,12 @@ namespace Asteroids
 
         private void GameForm_Shown(object sender, EventArgs e)
         {
-            Wrapable.SetBounds(this.ClientRectangle.Size);
+            Wrapable.SetBounds(preferredSize);
 
-            _ = new Ship(new(ClientRectangle.Width / 2, ClientRectangle.Height / 2));
+            _ = new Ship(new(preferredSize.Width / 2, preferredSize.Height / 2));
 
-            for (int i = 0; i < 25; i++)
-                _ = Asteroid.NewAsteroid(this.ClientRectangle, 3);
+            for (int i = 0; i < 5; i++)
+                _ = Asteroid.NewAsteroid(this.preferredRect, 3);
 
             Task.Run(GameMainLoop);
         }
@@ -59,6 +64,7 @@ namespace Asteroids
 
             Stopwatch deltatimeSW = Stopwatch.StartNew();
             Stopwatch elapsedtimeSW = Stopwatch.StartNew();
+
             int lastTitleUpdate = 0;
             while (running)
             {
@@ -102,7 +108,7 @@ namespace Asteroids
                 Asteroid[] asteroids = [.. Asteroid.AsteroidEntities];
                 foreach (Asteroid asteroid in asteroids)
                 {
-                    asteroid?.Update();
+                    asteroid?.Update(dt);
                 }
 
                 // Update Bullets
@@ -186,7 +192,7 @@ namespace Asteroids
             if (DEBUG_STRING == lastKeysPressed)
             {
                 Global.DEBUG = !Global.DEBUG;
-                Wrapable.SetBounds(this.ClientRectangle.Size);
+                Wrapable.SetBounds(preferredSize);
                 lastKeysPressed = "";
             }
         }
@@ -244,6 +250,17 @@ namespace Asteroids
         private void GameForm_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            float scaleX = (float)this.ClientSize.Width / preferredSize.Width;
+            float scaleY = (float)this.ClientSize.Height / preferredSize.Height;
+
+            g.ScaleTransform(scaleX, scaleY);
+            if (Global.DEBUG)
+            {
+                g.ScaleTransform(1/2f, 1/2f);
+                g.TranslateTransform(preferredSize.Width / 2, preferredSize.Height / 2);
+            }
 
             g.Clear(Color.Black);
 
@@ -252,11 +269,15 @@ namespace Asteroids
             {
                 wrapable?.Draw(g);
             }
+
+            g.ScaleTransform(1 / scaleX, 1 / scaleY);
         }
 
         private void GameForm_ResizeEnd(object sender, EventArgs e)
         {
-            Wrapable.SetBounds(this.ClientRectangle.Size);
+            int xOffset = (this.Size.Width - this.ClientSize.Width);
+            int YOffset = (this.Size.Height - this.ClientSize.Height);
+            this.Size = new Size(this.ClientSize.Width + xOffset, (int)(this.ClientSize.Width * ratio) + YOffset);
         }
     }
 }

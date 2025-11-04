@@ -7,14 +7,18 @@ namespace Asteroids
     {
         public static List<Asteroid> AsteroidEntities = [];
 
+        private const float MAX_POINT_OFFSET = 1.3f;
+        private const float MIN_POINT_OFFSET = 0.7f;
         private const int MAX_ASTEROIDS = 26;
+        private const int NUM_POINTS = 10;
 
+        private readonly float angularVelocity;
         private readonly int size;
-        private Vector2[] points = [];
+        private Vector2[] points;
 
         private readonly static Dictionary<int, (float radius, float speed)> SizePropertyDict = new()
         {
-            { 1, (10, 80) },
+            { 1, (13, 80) },
             { 2, (20, 60) },
             { 3, (30, 50) },
         };
@@ -75,13 +79,23 @@ namespace Asteroids
             base.velocity = Vector2.Transform(new(1, 0), Matrix3x2.CreateRotation(velocityAngle)) * SizePropertyDict[size].speed;
             base.radius = SizePropertyDict[size].radius;
 
+            this.angularVelocity = ((float)rnd.NextDouble() * 2f) - 1f;
             this.size = size;
+            GenShape();
 
             AsteroidEntities.Add(this);
         }
 
-        public void Update()
+        /// <summary>
+        /// The update procedure for <see cref="Asteroid"/>
+        /// </summary>
+        public new void Update(float dt)
         {
+            for (int i = 0; i < points.Length; i++)
+            {
+                points[i] = Vector2.Transform(points[i], Matrix3x2.CreateRotation(angularVelocity * dt));
+            }
+
             Entity? collided = CollisionCheck(this, typeof(Bullet));
 
             if (collided is not null && collided is Bullet)
@@ -95,9 +109,37 @@ namespace Asteroids
             }
         }
 
+        public void GenShape()
+        {
+            List<Vector2> shape = [];
+
+            Random rnd = new();
+            float angleIncrement = 2 * float.Pi / NUM_POINTS;
+
+            Vector2 vector = new(1, 0);
+            vector = Vector2.Transform(vector, Matrix3x2.CreateRotation(angleIncrement * (float)rnd.NextDouble()));
+
+            for (int i = 0; i < NUM_POINTS; i++)
+            {
+                Vector2 current = vector;
+                vector = Vector2.Transform(vector, Matrix3x2.CreateRotation(angleIncrement));
+
+                current *= (MAX_POINT_OFFSET - MIN_POINT_OFFSET) * (float)rnd.NextDouble() + MIN_POINT_OFFSET;
+                shape.Add(current);
+            }
+
+            points = [.. shape];
+        }
+
         public override void Draw(Graphics g, Vector2 Position)
         {
-            g.FillEllipse(Brushes.Blue, new RectangleF(Position.X - radius, Position.Y - radius, 2 * radius, 2 * radius));
+            for (int i = 0; i < points.Length; i++)
+            {
+                Vector2 start = Position + points[i] * radius;
+                Vector2 end = Position + points[(i + 1) % points.Length] * radius;
+
+                g.DrawLine(Pens.White, start.X, start.Y, end.X, end.Y);
+            }
         }
 
         public override void Remove()
