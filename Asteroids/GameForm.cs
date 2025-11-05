@@ -35,15 +35,15 @@ namespace Asteroids
                                                 lifetimeRange: (-0.4f, 0.5f),
                                                 maxTriggers: -1,
                                                 impulse: 200,
-                                                count: 15,
+                                                count: 100,
                                                 radius: 30,
                                                 angle: -float.Pi / 3 * 2,
                                                 sweepAngle: float.Pi / 3);
             particleEffect.Start();
 
-            // _ = new Saucer(false, new(preferredSize.Width / 2, preferredSize.Height / 2));
-            // for (int i = 0; i < 5; i++)
-            //     _ = Asteroid.NewAsteroid(this.preferredRect, 3);
+            _ = new Saucer(false, new(preferredSize.Width / 2, preferredSize.Height / 2));
+            for (int i = 0; i < 5; i++)
+                _ = Asteroid.NewAsteroid(this.preferredRect, 3);
 
             Task.Run(GameMainLoop);
         }

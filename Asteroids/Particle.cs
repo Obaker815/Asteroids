@@ -89,7 +89,7 @@ namespace Asteroids
             Particle[] particles = [.. Particle.Particles];
             foreach (Particle p in particles)
             {
-                p.Draw(g);
+                p?.Draw(g);
             }
         }
 

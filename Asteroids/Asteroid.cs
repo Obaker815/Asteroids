@@ -38,7 +38,7 @@ namespace Asteroids
             float yPos;
             float xPos;
 
-            if (rnd.Next(0, 2) == 0)
+            if (rnd.Next(0, 2) == 1)
             {
                 yPos = (float)rnd.NextDouble() * screen.Height + screen.Y;
                 xPos = 0;
