@@ -24,6 +24,7 @@ namespace Asteroids
         private readonly float sweepAngle;
         private readonly float angle;
 
+        private CancellationTokenSource cts;
         private Task animationTask;
 
         /// <summary>
@@ -71,7 +72,9 @@ namespace Asteroids
             this.lifetimeRange = lifetimeRange;
         }
 
-        private CancellationTokenSource cts;
+        /// <summary>
+        /// Starts the <see cref="ParticleEffect"/> animation.
+        /// </summary>
         public void Start()
         {
             if (isPlaying) return;
@@ -79,20 +82,23 @@ namespace Asteroids
             animationTask = Task.Run(() => Animate(cts.Token));
         }
 
+        /// <summary>
+        /// Stops the <see cref="ParticleEffect"/> animation.
+        /// </summary>
         public void Stop()
         {
             if (!isPlaying) return;
             cts.Cancel();
             animationTask?.Wait();
-            animationTask = null;
+            animationTask = null!;
         }
 
-
+        /// <summary>
+        /// The animation loop for the <see cref="ParticleEffect"/> class
+        /// </summary>
+        /// <param name="token">The <see cref="CancellationToken"/> used for the <see cref="Task"/></param>
         private async Task Animate(CancellationToken token)
         {
-            if (isPlaying) return;
-            isPlaying = true;
-
             float lastEmitTime = 0f;
             elapsedTimeSW = Stopwatch.StartNew();
 
@@ -115,7 +121,9 @@ namespace Asteroids
             isPlaying = false;
         }
 
-
+        /// <summary>
+        /// Emits a single <see cref="Particle"/> from the <see cref="ParticleEffect"/>
+        /// </summary>
         private void EmitParticle()
         {
             var rnd = random.Value!;
