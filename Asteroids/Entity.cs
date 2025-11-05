@@ -57,6 +57,24 @@ namespace Asteroids
             return null;
         }
 
+        /// <summary>
+        /// Removes all <see cref="Entity"/> in <see cref="toRemove"/> from <see cref="Entities"/>
+        /// </summary>
+        public static void RemoveAll()
+        {
+            foreach (Entity e in toRemove)
+            {
+                try
+                {
+                    Entities.Remove(e);
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+        }
+
         public virtual void Remove()
         {
             Entities.Remove(this);

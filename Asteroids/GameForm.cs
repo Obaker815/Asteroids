@@ -137,12 +137,11 @@ namespace Asteroids
                 // Redraw the screen
                 InvokeAction(this.Invalidate);
 
-                // Remove destroyed entities
-                foreach (Entity e in Entity.toRemove)
-                {
-                    e.Remove();
-                }
-                Entity.toRemove = [];
+                // Remove entities
+                Entity.RemoveAll();
+
+                // Remove particles
+                Particle.RemoveAll();
 
                 float frameTime;
                 if (Global.FPS != 0)
