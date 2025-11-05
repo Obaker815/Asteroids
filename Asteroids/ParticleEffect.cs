@@ -29,9 +29,9 @@ namespace Asteroids
         private CancellationTokenSource cts;
         private Task animationTask;
 
-        public Vector2 Position => position;
-        public float SweepAngle => sweepAngle;
-        public float Angle => angle;
+        public Vector2 Position { get { return position; } set { position = value; } }
+        public float SweepAngle { get { return sweepAngle; } set { sweepAngle = value; } }
+        public float Angle      { get { return angle; } set { angle = value; } }
 
         public ParticleEffect(
             Type particleType,
@@ -145,7 +145,7 @@ namespace Asteroids
             float angularVel = (float)rnd.NextDouble() * (angularVelocity.Max - angularVelocity.Min) + angularVelocity.Min;
             float lifetime = this.lifetime + (float)rnd.NextDouble() * (lifetimeRange.Max - lifetimeRange.Min) + lifetimeRange.Min;
 
-            Particle particle = (Particle)Activator.CreateInstance(particleType, emitPosition, velocity, angularVel, lifetime);
+            Particle particle = (Particle)Activator.CreateInstance(particleType, emitPosition, velocity, angularVel, lifetime)!;
         }
     }
 }
