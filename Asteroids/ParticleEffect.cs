@@ -10,7 +10,6 @@ namespace Asteroids
         private (float Min, float Max) lifetimeRange;
         private (float Min, float Max) angularVelocity;
         private readonly Type particleType;
-        private readonly Vector2 position;
         private readonly float lifetime;
         private readonly float impulse;
         private readonly float radius;
@@ -19,25 +18,21 @@ namespace Asteroids
         private Stopwatch elapsedTimeSW;
         private readonly float interval;
         private readonly float duration;
+        private readonly int maxTriggers;
+        private int numTriggers;
         private bool isPlaying;
 
-        private readonly float sweepAngle;
-        private readonly float angle;
+        private Vector2 position;
+        private float sweepAngle;
+        private float angle;
 
         private CancellationTokenSource cts;
         private Task animationTask;
 
-        /// <summary>
-        /// Creates a new particle effect with configurable emission pattern and lifespan.
-        /// </summary>
-        /// <param name="Position">The center position where particles originate.</param>
-        /// <param name="Impulse">The initial speed or force applied to each particle.</param>
-        /// <param name="Count">Number of particles to emit.</param>
-        /// <param name="Radius">Optional spawn radius around the center position.</param>
-        /// <param name="Duration">Duration (in seconds) before the particles expire. Use -1 for infinite.</param>
-        /// <param name="Angle">Starting angle (in radians) of the emission arc.</param>
-        /// <param name="SweepAngle">Total angular range (in radians) for particle emission.</param>
-        /// <param name="AngularVelocity">Optional random angular velocity range (Min, Max) in radians per second.</param>
+        public Vector2 Position => position;
+        public float SweepAngle => sweepAngle;
+        public float Angle => angle;
+
         public ParticleEffect(
             Type particleType,
             Vector2 position,
@@ -47,6 +42,7 @@ namespace Asteroids
             int count = 1,
             float radius = 0f,
             float duration = -1f,
+            int maxTriggers = -1,
             float angle = 0f,
             float sweepAngle = 2 * float.Pi,
             (float Min, float Max) angularVelocity = default,
@@ -64,12 +60,16 @@ namespace Asteroids
             this.interval = interval;
             this.lifetime = lifetime;
             this.impulse = impulse;
+            this.count = count;
             this.radius = radius;
             this.duration = duration;
+            this.maxTriggers = maxTriggers;
             this.angle = angle;
             this.sweepAngle = sweepAngle;
             this.angularVelocity = angularVelocity;
             this.lifetimeRange = lifetimeRange;
+
+            numTriggers = 0;
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace Asteroids
             float lastEmitTime = 0f;
             elapsedTimeSW = Stopwatch.StartNew();
 
-            while (!token.IsCancellationRequested)
+            while (!token.IsCancellationRequested && (numTriggers < maxTriggers || maxTriggers < 0))
             {
                 if (duration > 0f && elapsedTimeSW.Elapsed.TotalSeconds >= duration)
                     break;
@@ -113,6 +113,7 @@ namespace Asteroids
                     lastEmitTime += interval;
                     for (int i = 0; i < count; i++)
                         EmitParticle();
+                    numTriggers++;
                 }
 
                 await Task.Delay(1, token);
@@ -144,7 +145,7 @@ namespace Asteroids
             float angularVel = (float)rnd.NextDouble() * (angularVelocity.Max - angularVelocity.Min) + angularVelocity.Min;
             float lifetime = this.lifetime + (float)rnd.NextDouble() * (lifetimeRange.Max - lifetimeRange.Min) + lifetimeRange.Min;
 
-            _ = (Particle)Activator.CreateInstance(particleType, emitPosition, velocity, angularVel, lifetime)!;
+            Particle particle = (Particle)Activator.CreateInstance(particleType, emitPosition, velocity, angularVel, lifetime);
         }
     }
 }

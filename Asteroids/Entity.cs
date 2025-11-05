@@ -64,15 +64,9 @@ namespace Asteroids
         {
             foreach (Entity e in toRemove)
             {
-                try
-                {
-                    Entities.Remove(e);
-                }
-                catch
-                {
-                    continue;
-                }
+                e.Remove();
             }
+            toRemove.Clear();
         }
 
         public virtual void Remove()

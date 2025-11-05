@@ -12,8 +12,8 @@ namespace Asteroids
         private readonly Vector2 velocity;
         private readonly float lifetime;
 
-        private Vector2 position;
-        private float rotation;
+        internal Vector2 position;
+        internal float rotation;
         private float age;
 
         /// <summary>
@@ -31,6 +31,8 @@ namespace Asteroids
             lifetime = Lifetime;
 
             age = 0;
+
+            Particles.Add(this);
         }
 
         /// <summary>
@@ -49,6 +51,8 @@ namespace Asteroids
 
             rotation = 0;
             age = 0;
+
+            Particles.Add(this);
         }
 
         /// <summary>
@@ -75,6 +79,18 @@ namespace Asteroids
         public virtual void Draw(Graphics g)
         {
             throw new NotImplementedException();
+        }
+        /// <summary>
+        /// Draws all the particles
+        /// </summary>
+        /// <param name="g">The <see cref="Graphics"/> object to draw the <see cref="Particle"/>(s) to</param>
+        public static void DrawAll(Graphics g)
+        {
+            Particle[] particles = [.. Particle.Particles];
+            foreach (Particle p in particles)
+            {
+                p.Draw(g);
+            }
         }
 
         /// <summary>

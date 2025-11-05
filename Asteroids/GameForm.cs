@@ -1,6 +1,7 @@
 ﻿using SharpDX.XInput;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
+using System.Numerics;
 
 namespace Asteroids
 {
@@ -20,15 +21,29 @@ namespace Asteroids
             borderSize = new Size(this.Size.Width - this.ClientSize.Width, this.Size.Height - this.ClientSize.Height);
         }
 
+        ParticleEffect particleEffect;
         private void GameForm_Shown(object sender, EventArgs e)
         {
             Wrapable.SetBounds(preferredSize);
 
             _ = new Ship(new(preferredSize.Width / 2, preferredSize.Height / 2));
-            _ = new Saucer(false, new(preferredSize.Width / 2, preferredSize.Height / 2));
 
-            for (int i = 0; i < 5; i++)
-                _ = Asteroid.NewAsteroid(this.preferredRect, 3);
+            particleEffect = new ParticleEffect(typeof(ParticleDot),
+                                                position: new Vector2(preferredSize.Width / 2, preferredSize.Height / 2),
+                                                interval: 0.01f,
+                                                lifetime: 0.5f,
+                                                lifetimeRange: (-0.4f, 0.5f),
+                                                maxTriggers: -1,
+                                                impulse: 200,
+                                                count: 15,
+                                                radius: 30,
+                                                angle: -float.Pi / 3 * 2,
+                                                sweepAngle: float.Pi / 3);
+            particleEffect.Start();
+
+            // _ = new Saucer(false, new(preferredSize.Width / 2, preferredSize.Height / 2));
+            // for (int i = 0; i < 5; i++)
+            //     _ = Asteroid.NewAsteroid(this.preferredRect, 3);
 
             Task.Run(GameMainLoop);
         }
@@ -132,6 +147,13 @@ namespace Asteroids
                 foreach (Wrapable wrapable in wrapables)
                 {
                     wrapable?.WrapPosition();
+                }
+
+                // Update all particles
+                Particle[] particles = [.. Particle.Particles];
+                foreach (Particle particle in particles)
+                {
+                    particle?.Update(dt);
                 }
 
                 // Redraw the screen
@@ -271,6 +293,11 @@ namespace Asteroids
             return keys;
         }
 
+        /// <summary>
+        /// The paint event for the <see cref="GameForm"/> class
+        /// </summary>
+        /// <param name="sender">I have no fucking clue</param>
+        /// <param name="e">The paint event arguments</param>
         private void GameForm_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
@@ -279,6 +306,7 @@ namespace Asteroids
             float scaleX = (float)this.ClientSize.Width / preferredSize.Width;
             float scaleY = (float)this.ClientSize.Height / preferredSize.Height;
 
+            // Scale the graphics object to fit the window
             g.ScaleTransform(scaleX, scaleY);
             if (Global.DEBUG)
             {
@@ -286,14 +314,20 @@ namespace Asteroids
                 g.TranslateTransform(preferredSize.Width / 2, preferredSize.Height / 2);
             }
 
+            // Fill the background black
             g.Clear(Color.Black);
 
+            // Draw all wrapables
             Wrapable[] wrapables = [.. Wrapable.Wrapables];
             foreach (Wrapable wrapable in wrapables)
             {
                 wrapable?.Draw(g);
             }
 
+            // Draw all particles
+            Particle.DrawAll(g);
+
+            // scale back the graphics object
             g.ScaleTransform(1 / scaleX, 1 / scaleY);
         }
 
