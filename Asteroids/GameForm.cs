@@ -21,7 +21,6 @@ namespace Asteroids
             borderSize = new Size(this.Size.Width - this.ClientSize.Width, this.Size.Height - this.ClientSize.Height);
         }
 
-        ParticleEffect particleEffect;
         private void GameForm_Shown(object sender, EventArgs e)
         {
             Wrapable.SetBounds(preferredSize);

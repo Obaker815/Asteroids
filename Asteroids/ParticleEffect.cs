@@ -33,20 +33,19 @@ namespace Asteroids
         public float SweepAngle { get { return sweepAngle; } set { sweepAngle = value; } }
         public float Angle      { get { return angle; } set { angle = value; } }
 
-        public ParticleEffect(
-            Type particleType,
-            Vector2 position,
-            float interval,
-            float lifetime,
-            float impulse,
-            int count = 1,
-            float radius = 0f,
-            float duration = -1f,
-            int maxTriggers = -1,
-            float angle = 0f,
-            float sweepAngle = 2 * float.Pi,
-            (float Min, float Max) angularVelocity = default,
-            (float Min, float Max) lifetimeRange = default)
+        public ParticleEffect(Type particleType,
+                              Vector2 position,
+                              float interval,
+                              float lifetime,
+                              float impulse,
+                              int count = 1,
+                              float radius = 0f,
+                              float duration = -1f,
+                              int maxTriggers = -1,
+                              float angle = 0f,
+                              float sweepAngle = 2 * float.Pi,
+                              (float Min, float Max) angularVelocity = default,
+                              (float Min, float Max) lifetimeRange = default)
         {
             if (count <= 0)
                 throw new ArgumentOutOfRangeException(nameof(count), "Count must be greater than zero.");
@@ -69,6 +68,9 @@ namespace Asteroids
             this.angularVelocity = angularVelocity;
             this.lifetimeRange = lifetimeRange;
 
+            elapsedTimeSW = null!;
+            animationTask = null!;
+            cts = null!;
             numTriggers = 0;
         }
 
@@ -145,7 +147,7 @@ namespace Asteroids
             float angularVel = (float)rnd.NextDouble() * (angularVelocity.Max - angularVelocity.Min) + angularVelocity.Min;
             float lifetime = this.lifetime + (float)rnd.NextDouble() * (lifetimeRange.Max - lifetimeRange.Min) + lifetimeRange.Min;
 
-            Particle particle = (Particle)Activator.CreateInstance(particleType, emitPosition, velocity, angularVel, lifetime)!;
+            _ = (Particle)Activator.CreateInstance(particleType, emitPosition, velocity, angularVel, lifetime)!;
         }
     }
 }
