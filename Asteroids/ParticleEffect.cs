@@ -5,24 +5,24 @@ namespace Asteroids
 {
     internal class ParticleEffect
     {
-        private static readonly Random random = new Random();
-        private readonly int count;
+        private static readonly ThreadLocal<Random> random = new(() => new Random());
 
         private (float Min, float Max) lifetimeRange;
         private (float Min, float Max) angularVelocity;
-        private Type particleType;
-        private Vector2 position;
-        private float lifetime;
-        private float impulse;
-        private float radius;
+        private readonly Type particleType;
+        private readonly Vector2 position;
+        private readonly float lifetime;
+        private readonly float impulse;
+        private readonly float radius;
+        private readonly int count;
 
         private Stopwatch elapsedTimeSW;
-        private float interval;
-        private float duration;
+        private readonly float interval;
+        private readonly float duration;
         private bool isPlaying;
 
-        private float sweepAngle;
-        private float angle;
+        private readonly float sweepAngle;
+        private readonly float angle;
 
         private Task animationTask;
 
@@ -71,47 +71,56 @@ namespace Asteroids
             this.lifetimeRange = lifetimeRange;
         }
 
+        private CancellationTokenSource cts;
         public void Start()
         {
-            animationTask = Task.Run(Animate);
-        }
-        public void Stop()
-        {
-            isPlaying = false;
-            animationTask.Dispose();
+            if (isPlaying) return;
+            cts = new CancellationTokenSource();
+            animationTask = Task.Run(() => Animate(cts.Token));
         }
 
-        private void Animate()
+        public void Stop()
         {
-            if (isPlaying)
-                return;
+            if (!isPlaying) return;
+            cts.Cancel();
+            animationTask?.Wait();
+            animationTask = null;
+        }
+
+
+        private async Task Animate(CancellationToken token)
+        {
+            if (isPlaying) return;
             isPlaying = true;
 
             float lastEmitTime = 0f;
             elapsedTimeSW = Stopwatch.StartNew();
-            while (isPlaying)
+
+            while (!token.IsCancellationRequested)
             {
                 if (duration > 0f && elapsedTimeSW.Elapsed.TotalSeconds >= duration)
-                {
-                    isPlaying = false;
-                    return;
-                }
-                float elapsedSeconds = (float)elapsedTimeSW.Elapsed.TotalSeconds;
+                    break;
 
+                float elapsedSeconds = (float)elapsedTimeSW.Elapsed.TotalSeconds;
                 if (elapsedSeconds - lastEmitTime >= interval)
                 {
                     lastEmitTime += interval;
                     for (int i = 0; i < count; i++)
-                    {
                         EmitParticle();
-                    }
                 }
+
+                await Task.Delay(1, token);
             }
+
+            isPlaying = false;
         }
+
 
         private void EmitParticle()
         {
-            float angleOffset = (float)random.NextDouble() * sweepAngle;
+            var rnd = random.Value!;
+
+            float angleOffset = (float)rnd.NextDouble() * sweepAngle;
             float emitAngle = angle + angleOffset;
 
             Vector2 velocity = Vector2.Transform(
@@ -120,12 +129,14 @@ namespace Asteroids
                 );
 
             Vector2 emitPosition = position + Vector2.Transform(
-                new((float)random.NextDouble() * radius, 0), 
-                Matrix3x2.CreateRotation((float)random.NextDouble() * 2*float.Pi)
+                new((float)rnd.NextDouble() * radius, 0), 
+                Matrix3x2.CreateRotation((float)rnd.NextDouble() * 2*float.Pi)
                 );
 
-            float angularVel = (float)random.NextDouble() * (angularVelocity.Max - angularVelocity.Min) + angularVelocity.Min;
-            _ = (Particle)Activator.CreateInstance(particleType, emitPosition, velocity, lifetime)!;
+            float angularVel = (float)rnd.NextDouble() * (angularVelocity.Max - angularVelocity.Min) + angularVelocity.Min;
+            float lifetime = this.lifetime + (float)rnd.NextDouble() * (lifetimeRange.Max - lifetimeRange.Min) + lifetimeRange.Min;
+
+            _ = (Particle)Activator.CreateInstance(particleType, emitPosition, velocity, angularVel, lifetime)!;
         }
     }
 }
