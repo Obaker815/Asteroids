@@ -35,7 +35,7 @@ namespace Asteroids
         /// <summary>
         /// Checks for collision between the given <see cref="Entity"/> and all other <paramref name="targetType"/> <see cref="Entity"/> in <see cref="Entities"/>
         /// </summary>
-        /// <param name="entity">The <see cref="Entity"/> to check collisions</param>
+        /// <param name="entity">The <see cref="Entity"/> to check collisions for</param>
         /// <param name="targetType">The <see cref="Type"/> of <see cref="Entity"/> to check collisions with</param>
         /// <returns>The first <see cref="Entity"/> of <paramref name="targetType"/> in <see cref="Entity.Entities"/></returns>
         public static Entity? CollisionCheck(Entity entity, Type targetType)

@@ -103,7 +103,7 @@ namespace Asteroids
                 Saucer[] saucers = [.. Saucer.Saucers];
                 foreach (Saucer saucer in saucers)
                 {
-                    saucer?.Update();
+                    saucer?.Update(dt);
                 }
 
                 // Update Asteroids

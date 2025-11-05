@@ -7,10 +7,11 @@ namespace Asteroids
     {
         public static List<Saucer> Saucers = [];
 
-        private readonly Timer ShootTimer;
+        private readonly float ShootInterval;
         private readonly float speed;
-        private readonly int shootMS;
+
         private Vector2 shootDir;
+        private float shootTime;
 
         /// <summary>
         /// The constructor for the <see cref="Saucer"/> class
@@ -26,31 +27,23 @@ namespace Asteroids
             {
                 speed = 125;
                 radius = 8f;
-                shootMS = 1000;
+                ShootInterval = 1;
             }
             else
             {
                 speed = 75;
                 radius = 12;
-                shootMS = 1500;
+                ShootInterval = 1.5f;
             }
-
-            ShootTimer = new()
-            {
-                Interval = shootMS
-            };
-            ShootTimer.Tick += (sender, e) =>
-            {
-                _ = new Bullet(position, Vector2.Zero, shootDir, 200, 2000, this);
-            };
-            ShootTimer.Start();
         }
 
         /// <summary>
         /// The update method for the <see cref="Saucer"/> class
         /// </summary>
-        public void Update()
+        public new void Update(float dt)
         {
+            shootTime += dt;
+
             Vector2 closest = new(100000, 100000);
             foreach (Ship s in Ship.Ships)
             {
@@ -63,6 +56,12 @@ namespace Asteroids
                 }
             }
             shootDir = Global.Normalize(closest);
+
+            if (shootTime >= ShootInterval)
+            {
+                shootTime -= ShootInterval;
+                _ = new Bullet(position, Vector2.Zero, shootDir, 200, 2000, this);
+            };
 
             velocity = new Vector2(speed, shootDir.Y * speed / 2);
 
@@ -140,7 +139,6 @@ namespace Asteroids
         public override void Remove()
         {
             base.Remove();
-            ShootTimer.Stop();
             Saucers.Remove(this);
         }
     }
