@@ -23,8 +23,6 @@ namespace Asteroids
             { 3, (30, 50, 1) },
         };
 
-        public int Size { get { return size; } }
-
         /// <summary>
         /// Creates a new <see cref="Asteroid"/> at a <see cref="Random"/> position on the boundry of the <see cref="Rectangle"/>
         /// </summary>
@@ -106,23 +104,6 @@ namespace Asteroids
                 Bullet? collidedBullet = collided as Bullet;
                 if (collidedBullet?.parent is Ship)
                 {
-                    if (collidedBullet is not null)
-                    {
-                        float angle = MathF.Atan2(collidedBullet.Velocity.Y, collidedBullet.Velocity.X);
-
-                        ParticleEffect p = new ParticleEffect(typeof(ParticleDot),
-                                                    position: this.position,
-                                                    interval: 0.01f,
-                                                    lifetime: 0.5f,
-                                                    lifetimeRange: (-0.4f, 0.5f),
-                                                    maxTriggers: 2,
-                                                    impulse: 100,
-                                                    count: 10 * size,
-                                                    radius: radius,
-                                                    angle: angle - float.Pi / 3,
-                                                    sweepAngle: float.Pi / 3 * 2);
-                        p.Start();
-                    }
                     toRemove.Add(this);
                     toRemove.Add(collided);
                 }
