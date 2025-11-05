@@ -10,6 +10,10 @@ namespace Asteroids
         internal Vector2 velocity;
         internal float radius = 0;
 
+        public float Radius { get { return radius; } }
+        public Vector2 Position { get { return position; } }
+        public Vector2 Velocity { get { return velocity; } }
+
         /// <summary>
         /// Constructor for the <see cref="Entity"/> class
         /// </summary>

@@ -28,19 +28,6 @@ namespace Asteroids
 
             _ = new Ship(new(preferredSize.Width / 2, preferredSize.Height / 2));
 
-            particleEffect = new ParticleEffect(typeof(ParticleDot),
-                                                position: new Vector2(preferredSize.Width / 2, preferredSize.Height / 2),
-                                                interval: 0.01f,
-                                                lifetime: 0.5f,
-                                                lifetimeRange: (-0.4f, 0.5f),
-                                                maxTriggers: -1,
-                                                impulse: 200,
-                                                count: 100,
-                                                radius: 30,
-                                                angle: -float.Pi / 3 * 2,
-                                                sweepAngle: float.Pi / 3);
-            particleEffect.Start();
-
             _ = new Saucer(false, new(preferredSize.Width / 2, preferredSize.Height / 2));
             for (int i = 0; i < 5; i++)
                 _ = Asteroid.NewAsteroid(this.preferredRect, 3);
@@ -82,7 +69,7 @@ namespace Asteroids
             Stopwatch deltatimeSW = Stopwatch.StartNew();
             Stopwatch elapsedtimeSW = Stopwatch.StartNew();
 
-            int lastTitleUpdate = 0;
+            int lastFrameTimesUpdate = 0;
             while (running)
             {
                 float dt = (float)deltatimeSW.Elapsed.TotalSeconds;
@@ -171,13 +158,11 @@ namespace Asteroids
                 else
                     frameTime = 0;
 
-                if ((int)elapsedtimeSW.Elapsed.TotalSeconds > lastTitleUpdate)
+                if ((int)elapsedtimeSW.Elapsed.TotalSeconds > lastFrameTimesUpdate)
                 {
-                    lastTitleUpdate = (int)elapsedtimeSW.Elapsed.TotalSeconds;
-                    if (Global.DEBUG)
-                        InvokeAction(() => { this.Text = ($"Frame Time: {dt * 1000:0.00} ms - FrameRate: {1f / dt:0.00}"); });
-                    else
-                        InvokeAction(() => { this.Text = "Asteroids"; });
+                    this.frameRate = $"{1f / dt:0.00}";
+                    this.frameTime = $"{dt * 1000:0.00}";
+                    lastFrameTimesUpdate = (int)elapsedtimeSW.Elapsed.TotalSeconds;
                 }
 
                 while (deltatimeSW.Elapsed.TotalMilliseconds < frameTime) { }
@@ -186,6 +171,8 @@ namespace Asteroids
             deltatimeSW.Stop();
             elapsedtimeSW.Stop();
         }
+        private string frameRate = "";
+        private string frameTime = "";
 
         private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
         private readonly Controller controller = new(UserIndex.One);
@@ -306,6 +293,9 @@ namespace Asteroids
             float scaleX = (float)this.ClientSize.Width / preferredSize.Width;
             float scaleY = (float)this.ClientSize.Height / preferredSize.Height;
 
+            // Fill the background black
+            g.Clear(Color.Black);
+
             // Scale the graphics object to fit the window
             g.ScaleTransform(scaleX, scaleY);
             if (Global.DEBUG)
@@ -313,9 +303,8 @@ namespace Asteroids
                 g.ScaleTransform(1/2f, 1/2f);
                 g.TranslateTransform(preferredSize.Width / 2, preferredSize.Height / 2);
             }
-
-            // Fill the background black
-            g.Clear(Color.Black);
+            g.DrawString($"Framerate: {frameRate}", this.Font, Brushes.White, 10, preferredSize.Height - 40);
+            g.DrawString($"Frametime: {frameTime}", this.Font, Brushes.White, 10, preferredSize.Height - 20);
 
             // Draw all wrapables
             Wrapable[] wrapables = [.. Wrapable.Wrapables];

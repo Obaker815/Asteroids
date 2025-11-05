@@ -275,6 +275,23 @@ namespace Asteroids
                     if (b?.parent != this)
                     {
                         collisionHandle(collidedBullet);
+                        if (b is not null)
+                        {
+                            float angle = MathF.Atan2(velocity.Y, velocity.X) + float.Pi;
+
+                            ParticleEffect p = new ParticleEffect(typeof(ParticleDot),
+                                                        position: this.position,
+                                                        interval: 0.01f,
+                                                        lifetime: 0.5f,
+                                                        lifetimeRange: (-0.4f, 0.5f),
+                                                        maxTriggers: 2,
+                                                        impulse: 100,
+                                                        count: 10,
+                                                        radius: radius,
+                                                        angle: angle - float.Pi / 3,
+                                                        sweepAngle: float.Pi / 3 * 2);
+                            p.Start();
+                        }
                     }
                 }
 
@@ -282,12 +299,48 @@ namespace Asteroids
                 if (collidedAsteroid is not null)
                 {
                     collisionHandle(collidedAsteroid);
+                    if (collidedAsteroid is not null)
+                    {
+                        Asteroid? a = collidedAsteroid as Asteroid;
+                        float angle = MathF.Atan2(velocity.Y, velocity.X);
+
+                        ParticleEffect p = new ParticleEffect(typeof(ParticleDot),
+                                                    position: this.position,
+                                                    interval: 0.01f,
+                                                    lifetime: 0.5f,
+                                                    lifetimeRange: (-0.4f, 0.5f),
+                                                    maxTriggers: 2,
+                                                    impulse: 100,
+                                                    count: a!.Size * 10,
+                                                    radius: a!.Radius,
+                                                    angle: angle - float.Pi / 3,
+                                                    sweepAngle: float.Pi / 3 * 2);
+                        p.Start();
+                    }
                 }
 
                 Entity? collidedSaucer = CollisionCheck(this, typeof(Saucer));
                 if (collidedSaucer is not null)
                 {
                     collisionHandle(collidedSaucer);
+                    if (collidedSaucer is not null)
+                    {
+                        Saucer? s = collidedSaucer as Saucer;
+                        float angle = MathF.Atan2(velocity.Y, velocity.X);
+
+                        ParticleEffect p = new ParticleEffect(typeof(ParticleDot),
+                                                    position: this.position,
+                                                    interval: 0.01f,
+                                                    lifetime: 0.5f,
+                                                    lifetimeRange: (-0.4f, 0.5f),
+                                                    maxTriggers: 2,
+                                                    impulse: 100,
+                                                    count: 30,
+                                                    radius: s!.Radius,
+                                                    angle: angle - float.Pi / 3,
+                                                    sweepAngle: float.Pi / 3 * 2);
+                        p.Start();
+                    }
                 }
             }
         }

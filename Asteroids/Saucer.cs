@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Drawing;
+using System.Numerics;
 using Timer = System.Windows.Forms.Timer;
 
 namespace Asteroids
@@ -71,6 +72,24 @@ namespace Asteroids
                 Bullet? b = collided as Bullet;
                 if (b?.parent is Ship)
                 {
+                    if (b is not null)
+                    {
+                        float angle = MathF.Atan2(b.Velocity.Y, b.Velocity.X);
+
+                        ParticleEffect p = new ParticleEffect(typeof(ParticleDot),
+                                                    position: this.position,
+                                                    interval: 0.01f,
+                                                    lifetime: 0.5f,
+                                                    lifetimeRange: (-0.4f, 0.5f),
+                                                    maxTriggers: 2,
+                                                    impulse: 100,
+                                                    count: 30,
+                                                    radius: radius,
+                                                    angle: angle - float.Pi / 3,
+                                                    sweepAngle: float.Pi / 3 * 2);
+                        p.Start();
+                    }
+
                     toRemove.Add(collided);
                     toRemove.Add(this);
                 }
