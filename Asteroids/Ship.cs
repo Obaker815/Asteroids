@@ -22,6 +22,7 @@ namespace Asteroids
         private const float ACCELERATION = 400f;
         private const float MAX_VELOCITY = 400f;
         private const float DEADZONE = 0.25f;
+        private const int BULLET_TIME = 2000;
         private const int MAX_BULLETS = 4;
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace Asteroids
             base.radius = 10f;
             iFrames = 1f;
         }
-        
+
         /// <summary>
         /// Override Draw method from <see cref="Wrapable"/>
         /// </summary>
@@ -248,7 +249,7 @@ namespace Asteroids
                     if (StartVelocity.X is float.NaN || StartVelocity.Y is float.NaN)
                         StartVelocity = Vector2.Zero;
 
-                    _ = new Bullet(position + (lookDir * radius * 1.2f), StartVelocity, lookDir, 200, 1000, this);
+                    _ = new Bullet(position + (lookDir * radius * 1.2f), StartVelocity, lookDir, 200, BULLET_TIME, this);
                 }
             }
 

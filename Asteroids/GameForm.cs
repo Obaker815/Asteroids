@@ -6,13 +6,18 @@ namespace Asteroids
 {
     public partial class GameForm : Form
     {
-        Size preferredSize = new(800, 480);
-        Rectangle preferredRect = new(0, 0, 800, 480);
-        float ratio = 480 / 800f;
+        private readonly Rectangle preferredRect = new(0, 0, 800, 480);
+        private readonly Size preferredSize = new(800, 480);
+        private readonly float ratio = 480 / 800f;
+        private readonly Size borderSize;
+
+        private static float freezeTime = 0f;
+        private static float dtModifier = 1f;
 
         public GameForm()
         {
             InitializeComponent();
+            borderSize = new Size(this.Size.Width - this.ClientSize.Width, this.Size.Height - this.ClientSize.Height);
         }
 
         private void GameForm_Shown(object sender, EventArgs e)
@@ -20,6 +25,7 @@ namespace Asteroids
             Wrapable.SetBounds(preferredSize);
 
             _ = new Ship(new(preferredSize.Width / 2, preferredSize.Height / 2));
+            _ = new Saucer(false, new(preferredSize.Width / 2, preferredSize.Height / 2));
 
             for (int i = 0; i < 5; i++)
                 _ = Asteroid.NewAsteroid(this.preferredRect, 3);
@@ -37,7 +43,6 @@ namespace Asteroids
                 }
                 catch (ObjectDisposedException)
                 {
-                    // Form is closed, return
                     return;
                 }
             }
@@ -52,9 +57,6 @@ namespace Asteroids
             freezeTime = time;
             dtModifier = modifier;
         }
-
-        static float freezeTime = 0f;
-        static float dtModifier = 1f;
 
         bool running = false;
         private void GameMainLoop()
@@ -167,11 +169,34 @@ namespace Asteroids
         private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
         private readonly Controller controller = new(UserIndex.One);
 
+        private const Keys FULLSCREEN_KEY = Keys.F11;
+        private const Keys CLOSE_KEY = Keys.Escape;
+
         private const string DEBUG_STRING = "UUDDLRLR";
         private string lastKeysPressed = "";
         // key down and key up event
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode == CLOSE_KEY)
+                this.Close();
+
+            if (e.KeyCode == FULLSCREEN_KEY)
+            {
+                if (this.FormBorderStyle == FormBorderStyle.None)
+                {
+                    this.FormBorderStyle = FormBorderStyle.Sizable;
+                    this.WindowState = FormWindowState.Normal;
+
+                    this.Width = preferredSize.Width + borderSize.Width;
+
+                    GameForm_ResizeEnd(sender, e);
+                }
+                else
+                {
+                    this.FormBorderStyle = FormBorderStyle.None;
+                    this.WindowState = FormWindowState.Maximized;
+                }
+            }
             foreach (string Key in KeyBindings.Keys)
             {
                 // check if the key pressed matches any keybinds
@@ -275,9 +300,7 @@ namespace Asteroids
 
         private void GameForm_ResizeEnd(object sender, EventArgs e)
         {
-            int xOffset = (this.Size.Width - this.ClientSize.Width);
-            int YOffset = (this.Size.Height - this.ClientSize.Height);
-            this.Size = new Size(this.ClientSize.Width + xOffset, (int)(this.ClientSize.Width * ratio) + YOffset);
+            this.Size = new Size(this.ClientSize.Width + borderSize.Width, (int)((this.ClientSize.Width + borderSize.Height) * ratio));
         }
     }
 }

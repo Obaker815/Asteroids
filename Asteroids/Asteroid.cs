@@ -13,14 +13,14 @@ namespace Asteroids
         private const int NUM_POINTS = 10;
 
         private readonly float angularVelocity;
+        private readonly Vector2[] points;
         private readonly int size;
-        private Vector2[] points;
 
-        private readonly static Dictionary<int, (float radius, float speed)> SizePropertyDict = new()
+        private readonly static Dictionary<int, (float radius, float speed, float rotateSpeed)> SizePropertyDict = new()
         {
-            { 1, (13, 80) },
-            { 2, (20, 60) },
-            { 3, (30, 50) },
+            { 1, (13, 80, 4) },
+            { 2, (20, 60, 2) },
+            { 3, (30, 50, 1) },
         };
 
         /// <summary>
@@ -79,9 +79,9 @@ namespace Asteroids
             base.velocity = Vector2.Transform(new(1, 0), Matrix3x2.CreateRotation(velocityAngle)) * SizePropertyDict[size].speed;
             base.radius = SizePropertyDict[size].radius;
 
-            this.angularVelocity = ((float)rnd.NextDouble() * 2f) - 1f;
+            this.angularVelocity = (((float)rnd.NextDouble() * 2) - 1f) * SizePropertyDict[size].rotateSpeed;
             this.size = size;
-            GenShape();
+            this.points = GenShape();
 
             AsteroidEntities.Add(this);
         }
@@ -109,7 +109,7 @@ namespace Asteroids
             }
         }
 
-        public void GenShape()
+        public Vector2[] GenShape()
         {
             List<Vector2> shape = [];
 
@@ -128,7 +128,7 @@ namespace Asteroids
                 shape.Add(current);
             }
 
-            points = [.. shape];
+            return [.. shape];
         }
 
         public override void Draw(Graphics g, Vector2 Position)
