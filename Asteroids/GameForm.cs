@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Asteroids
 {
@@ -23,18 +24,31 @@ namespace Asteroids
 
         private void GameForm_Shown(object sender, EventArgs e)
         {
+            ParticleEffect p = new(typeof(ParticleDot),
+                                   new Vector2(400, 240),
+                                   0.01f,
+                                   1f,
+                                   200,
+                                   count: 100,
+                                   lifetimeRange: (0.0f, 0.2f),
+                                   angle: float.Pi / 3 * 2,
+                                   sweepAngle: float.Pi / 3,
+                                   radius: 10f,
+                                   gradient: [
+                                       (Color.Red, 0f),
+                                       (Color.Orange, 0.25f),
+                                       (Color.Yellow, 0.5f)
+                                       ]);
+            p.Start();
+
             Wrapable.SetBounds(preferredSize);
 
             _ = new Ship(new(preferredSize.Width / 2, preferredSize.Height / 2));
 
-            _ = new Saucer(false, new(preferredSize.Width / 2, preferredSize.Height / 2));
-            for (int i = 0; i < 5; i++)
-                _ = Asteroid.NewAsteroid(this.preferredRect, 3);
-
             Task.Run(GameMainLoop);
         }
 
-        private void InvokeAction(Action action)
+        public void InvokeAction(Action action)
         {
             if (this.InvokeRequired)
             {
@@ -301,9 +315,11 @@ namespace Asteroids
             {
                 g.ScaleTransform(1 / 2f, 1 / 2f);
                 g.TranslateTransform(preferredSize.Width / 2, preferredSize.Height / 2);
+
+                ParticleEffect.DebugDrawAll(g);
             }
-            g.DrawString($"Framerate: {frameRate}", this.Font, Brushes.White, 10, preferredSize.Height - 40);
-            g.DrawString($"Frametime: {frameTime}", this.Font, Brushes.White, 10, preferredSize.Height - 20);
+            g.DrawString($"Framerate: {frameRate}fps", this.Font, Brushes.White, 10, preferredSize.Height - 40);
+            g.DrawString($"Frametime: {frameTime}ms", this.Font, Brushes.White, 10, preferredSize.Height - 20);
 
             // Draw all wrapables
             Wrapable[] wrapables = [.. Wrapable.Wrapables];
