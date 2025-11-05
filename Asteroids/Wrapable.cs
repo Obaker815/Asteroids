@@ -26,9 +26,9 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Constructor for the <see cref="Wrapable"> class
+        /// Constructor for the <see cref="Wrapable"/> class
         /// </summary>
-        /// <param name="startPosition">The starting <see cref="Vector2"> position of the <see cref="Wrapable"> object</param>
+        /// <param name="startPosition">The starting <see cref="Vector2"/> position of the <see cref="Wrapable"/> object</param>
         public Wrapable(Vector2 startPosition) : base(startPosition)
         {
             if (Bounds.Width == 0) throw new Exception("Wrapable Width not set");
@@ -71,7 +71,7 @@ namespace Asteroids
         /// <summary>
         /// Draws the object to the specified <see cref="Graphics"/> object, handling wrapping around the screen or world bounds.
         /// </summary>
-        /// <param name="g">The <see cref="Graphics"> object to be drawn to</param>
+        /// <param name="g">The <see cref="Graphics"/> object to be drawn to</param>
         public void Draw(Graphics g)
         {
             Vector2[] positions = GetPositions();
@@ -104,17 +104,17 @@ namespace Asteroids
         /// <summary>
         /// Generic Draw method to be overridden by subclasses
         /// </summary>
-        /// <param name="g"><see cref="Graphics"> object to be drawn to</param>
-        /// <param name="Position"><see cref="Vector2"> Position to be drawn to</param>
+        /// <param name="g"><see cref="Graphics"/> object to be drawn to</param>
+        /// <param name="Position"><see cref="Vector2"/> Position to be drawn to</param>
         public virtual void Draw(Graphics g, Vector2 Position)
         {
             throw new NotImplementedException($"Update method not implemented in {this.GetType()}");
         }
 
         /// <summary>
-        /// Gets the 4 <see cref="Vector2"> positions of the ojbect for wrapping
+        /// Gets the 4 <see cref="Vector2"/> positions of the ojbect for wrapping
         /// </summary>
-        /// <returns>A <see cref="Vector2[]"> length 4</returns>
+        /// <returns>A <see cref="Vector2[]"/> length 4</returns>
         public Vector2[] GetPositions()
         {
             // Get the quadrant signs
@@ -133,10 +133,10 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Gets the closest wrapped <see cref="Vector2"> position to the given <see cref="Vector2"> position
+        /// Gets the closest wrapped <see cref="Vector2"/> position to the given <see cref="Vector2"/> position
         /// </summary>
         /// <param name="Position">position to test from</param>
-        /// <returns>The closest wrapped <see cref="Vector2"> position to the given <see cref="Vector2"> position</returns>
+        /// <returns>The closest wrapped <see cref="Vector2"/> position to the given <see cref="Vector2"/> position</returns>
         public Vector2 GetClosest(Vector2 Position)
         {
             Vector2[] positions = GetPositions();

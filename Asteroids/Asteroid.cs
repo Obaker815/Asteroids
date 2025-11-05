@@ -87,8 +87,9 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// The update procedure for <see cref="Asteroid"/>
+        /// The update procedure for the <see cref="Asteroid"/> class
         /// </summary>
+        /// <param name="dt">Deltatime in seconds</param>
         public new void Update(float dt)
         {
             for (int i = 0; i < points.Length; i++)
@@ -109,7 +110,11 @@ namespace Asteroids
             }
         }
 
-        public Vector2[] GenShape()
+        /// <summary>
+        /// Generates a random <see cref="Asteroid"/> shape using the constants <see cref="MAX_POINT_OFFSET"/>, <see cref="MIN_POINT_OFFSET"/>, and <see cref="NUM_POINTS"/>
+        /// </summary>
+        /// <returns><see cref="Vector2[]"/> of vectors relative to position</returns>
+        public static Vector2[] GenShape()
         {
             List<Vector2> shape = [];
 

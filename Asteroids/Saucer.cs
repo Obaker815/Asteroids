@@ -13,7 +13,7 @@ namespace Asteroids
         private Vector2 shootDir;
 
         /// <summary>
-        /// The constructor for the <see cref="Saucer"> class
+        /// The constructor for the <see cref="Saucer"/> class
         /// </summary>
         /// <param name="isSmall">Is the saucer small?</param>
         /// <param name="startPosition">The position for the saucer to spawn</param>
@@ -47,7 +47,7 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// The update method for the <see cref="Saucer"> class
+        /// The update method for the <see cref="Saucer"/> class
         /// </summary>
         public void Update()
         {
@@ -79,9 +79,9 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// The overridden draw method for the <see cref="Saucer"> class
+        /// The overridden draw method for the <see cref="Saucer"/> class
         /// </summary>
-        /// <param name="g"><see cref="Graphics"> object to be drawn to</param>
+        /// <param name="g"><see cref="Graphics"/> object to be drawn to</param>
         /// <param name="position">The <see cref="Vector2"/> position to draw a saucer</param>
         public override void Draw(Graphics g, Vector2 position)
         {

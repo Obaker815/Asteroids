@@ -28,7 +28,7 @@ namespace Asteroids
         /// <summary>
         /// Constructor for the <see cref="Ship"/> class
         /// </summary>
-        /// <param name="startPosition">The start, and respawn <see cref="Vector2"> position of the <see cref="Ship"></param>
+        /// <param name="startPosition">The start, and respawn <see cref="Vector2"/> position of the <see cref="Ship"/></param>
         public Ship(Vector2 startPosition) : base(startPosition)
         {
             respawnLocation = startPosition;
@@ -40,8 +40,8 @@ namespace Asteroids
         /// <summary>
         /// Override Draw method from <see cref="Wrapable"/>
         /// </summary>
-        /// <param name="g"><see cref="Graphics"> to be drawn to</param>
-        /// <param name="position"><see cref="Vector2"> position to be drawn</param>
+        /// <param name="g"><see cref="Graphics"/> to be drawn to</param>
+        /// <param name="position"><see cref="Vector2"/> position to be drawn</param>
         public override void Draw(Graphics g, Vector2 position)
         {
             Vector2 lookDir = -this.lookDir;
@@ -121,7 +121,7 @@ namespace Asteroids
         /// <summary>
         /// Handles all the updating logic of the <see cref="Ship"/> class
         /// </summary>
-        /// <param name="Keys">This frame's keybinds <see cref="Dictionary{string, Keybind}"></param>
+        /// <param name="Keys">This frame's keybinds <see cref="Dictionary{string, Keybind}"/></param>
         /// <param name="controller">The controller</param>
         /// <param name="dt">Deltatime in seconds</param>
         public void Update(Dictionary<string, Keybind> Keys, Controller controller, float dt)
@@ -293,9 +293,9 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Gets the stick positions as <see cref="Vector2"> from the <paramref name="gamepad"/> whilst also applying <paramref name="deadzone"/>
+        /// Gets the stick positions as <see cref="Vector2"/> from the <paramref name="gamepad"/> whilst also applying <paramref name="deadzone"/>
         /// </summary>
-        /// <param name="gamepad">The <see cref="Gamepad"> to take stick postions from</param>
+        /// <param name="gamepad">The <see cref="Gamepad"/> to take stick postions from</param>
         /// <param name="deadzone">The deadzone of the sticks</param>
         /// <returns>two <see cref="Vector2"> of the stick positions</returns>
         private static (Vector2, Vector2) GetStickPositions(Gamepad gamepad, float deadzone)

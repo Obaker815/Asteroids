@@ -20,7 +20,7 @@ namespace Asteroids
         /// <param name="InitialVelocity">The <see cref="Vector2"/> velocity for the <see cref="Bullet"/> to start with</param>
         /// <param name="Direction">The <see cref="Vector2"/> direction of travel for the <see cref="Bullet"/></param>
         /// <param name="speed">The <see cref="float"/> speed of the <see cref="Bullet"/></param>
-        /// <param name="RemoveTime">the <see cref="int"> lifetime of the <see cref="Bullet"/> in milliseconds</param>
+        /// <param name="RemoveTime">the <see cref="int"/> lifetime of the <see cref="Bullet"/> in milliseconds</param>
         /// <param name="Parent">the <see cref="object"/> parent of the <see cref="Bullet"/></param>
         public Bullet(Vector2 Position, Vector2 InitialVelocity, Vector2 Direction, float speed, int RemoveTime, object Parent) : base(Position)
         {
