@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace Asteroids
 {

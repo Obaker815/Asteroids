@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace Asteroids
 {

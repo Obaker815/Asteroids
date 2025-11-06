@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Timer = System.Windows.Forms.Timer;
 
 namespace Asteroids
 {
