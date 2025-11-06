@@ -24,13 +24,14 @@ namespace Asteroids
         /// <param name="Velocity">The <see cref="Vector2"/> velocity for the <see cref="Particle"/> to have</param>
         /// <param name="AngularVelocity">The <see cref="float"/> angular velocity for the <see cref="Particle"/> to have</param>
         /// <param name="Lifetime">The <see cref="float"/> lifetime of the <see cref="Particle"/></param>
-        protected Particle(Vector2 position, Vector2 velocity, float angularVelocity, float lifetime, (Color color, float t)[] gradient)
+        protected Particle(Vector2 position, Vector2 velocity, float angularVelocity, float lifetime, float rotation, (Color color, float t)[] gradient)
         {
             this.angularVelocity = angularVelocity;
             this.position = position;
             this.velocity = velocity;
             this.lifetime = lifetime;
             this.gradient = gradient;
+            this.rotation = rotation;
 
             age = 0;
 
@@ -44,15 +45,15 @@ namespace Asteroids
         /// <param name="Velocity">The <see cref="Vector2"/> velocity for the <see cref="Particle"/> to have</param>
         /// <param name="AngularVelocity">The <see cref="(float Min, float Max)"/> angular velocity for the <see cref="Particle"/> to have</param>
         /// <param name="Lifetime">The <see cref="float"/> lifetime of the <see cref="Particle"/></param>
-        protected Particle(Vector2 position, Vector2 velocity, (float Min, float Max) angularVelocity, float lifetime, (Color color, float t)[] gradient)
+        protected Particle(Vector2 position, Vector2 velocity, (float Min, float Max) angularVelocity, float lifetime, float rotation, (Color color, float t)[] gradient)
         {
             this.angularVelocity = (float)new Random().NextDouble() * (angularVelocity.Max - angularVelocity.Min) + angularVelocity.Min;
             this.position = position;
             this.velocity = velocity;
             this.lifetime = lifetime;
             this.gradient = gradient;
+            this.rotation = rotation;
 
-            rotation = 0;
             age = 0;
 
             Particles.Add(this);

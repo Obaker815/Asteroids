@@ -24,37 +24,33 @@ namespace Asteroids
 
         private void GameForm_Shown(object sender, EventArgs e)
         {
-            ParticleEffect p = new(typeof(ParticleDot),
-                                   new Vector2(400, 240),
-                                   0.01f,
-                                   1f,
-                                   200,
-                                   count: 100,
+            ParticleEffect p = new(typeof(ParticleLine),
+                                   new Vector2(500, 240),
+                                   args: [20f, 1],
+                                   interval: 0.01f,
+                                   lifetime: 1f,
+                                   impulse: 200,
+                                   count: 20,
                                    lifetimeRange: (0.0f, 0.2f),
-                                   angle: 0,
-                                   sweepAngle: 0,
+                                   angularVelocity: (-2f, 2f),
+                                   angle: float.Pi / 2f,
+                                   sweepAngle: float.Pi,
                                    radius: 10f,
                                    gradient: [
-                                       (Color.Red, 0f),
-                                       (Color.Orange, 0.25f),
-                                       (Color.Yellow, 0.5f)
+                                       (Color.White, 0f),
+                                       (Color.White, 0.5f)
                                        ]);
-            p.Start();
 
-            ParticleLine pL = new ParticleLine(new(preferredSize.Width / 4, preferredSize.Height / 4),
-                                  new(0, 0),
-                                  (-2f, 2f),
-                                  -1,
-                                  20,
-                                  1,
-                                  gradient: [
-                                      (Color.Red, 0f),
-                                      (Color.Blue, 1f)
-                                      ]);
+            p.Start();
 
             Wrapable.SetBounds(preferredSize);
             
             _ = new Ship(new(preferredSize.Width / 2, preferredSize.Height / 2));
+
+            for (int i = 0; i < 6; i++)
+            {
+                _ = Asteroid.NewAsteroid(preferredRect, 3);
+            }
 
             Task.Run(GameMainLoop);
         }

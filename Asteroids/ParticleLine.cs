@@ -12,16 +12,16 @@ namespace Asteroids
     {
         private readonly float length;
         private readonly int thickness;
-        public ParticleLine(Vector2 position, Vector2 velocity, (float Min, float Max) angularVelocity, float lifetime, float length, int thickness, (Color color, float t)[] gradient = null!) : base(position, velocity, angularVelocity, lifetime, gradient)
+        public ParticleLine(object[] args, Vector2 position, Vector2 velocity, float angularVelocity, float lifetime, float rotation, (Color color, float t)[] gradient = null!) : base(position, velocity, angularVelocity, lifetime, rotation, gradient)
         {
-            this.length = length;
-            this.thickness = thickness;
+            this.length = (float)args[0];
+            this.thickness = (int)args[1];
         }
 
-        public ParticleLine(Vector2 position, Vector2 velocity, (float Min, float Max) angularVelocity, float lifetime, (Color color, float t)[] gradient = null!) : base(position, velocity, angularVelocity, lifetime, gradient)
+        public ParticleLine(object[] args, Vector2 position, Vector2 velocity, (float Min, float Max) angularVelocity, float lifetime, float rotation, (Color color, float t)[] gradient = null!) : base(position, velocity, angularVelocity, lifetime, rotation, gradient)
         {
-            this.length = 10;
-            this.thickness = 2;
+            this.length = (float)args[0];
+            this.thickness = (int)args[1];
         }
 
         /// <summary>

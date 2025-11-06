@@ -102,12 +102,11 @@ namespace Asteroids
             {
                 Bullet? collidedBullet = collided as Bullet;
                 if (collidedBullet?.parent is Ship)
-                {
                     toRemove.Add(this);
-                    toRemove.Add(collided);
-                }
+                toRemove.Add(collided);
             }
-        }
+        }            
+        
 
         /// <summary>
         /// Generates a random <see cref="Asteroid"/> shape using the constants <see cref="MAX_POINT_OFFSET"/>, <see cref="MIN_POINT_OFFSET"/>, and <see cref="NUM_POINTS"/>

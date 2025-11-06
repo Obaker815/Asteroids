@@ -23,6 +23,7 @@ namespace Asteroids
         private int numTriggers;
         private bool isPlaying;
 
+        private readonly object[] args;
         private Vector2 position;
         private float sweepAngle;
         private float radius;
@@ -38,6 +39,7 @@ namespace Asteroids
 
         public ParticleEffect(Type particleType,
                               Vector2 position,
+                              object[] args,
                               float interval,
                               float lifetime,
                               float impulse,
@@ -60,6 +62,7 @@ namespace Asteroids
 
             this.particleType = particleType;
             this.position = position;
+            this.args = args;
             this.interval = interval;
             this.lifetime = lifetime;
             this.impulse = impulse;
@@ -152,8 +155,9 @@ namespace Asteroids
 
             float angularVel = (float)rnd.NextDouble() * (angularVelocity.Max - angularVelocity.Min) + angularVelocity.Min;
             float lifetime = this.lifetime + (float)rnd.NextDouble() * (lifetimeRange.Max - lifetimeRange.Min) + lifetimeRange.Min;
+            float rotation = (float)rnd.NextDouble() * float.Pi * 2;
 
-            _ = (Particle)Activator.CreateInstance(particleType, emitPosition, velocity, angularVel, lifetime, gradient)!;
+            _ = Activator.CreateInstance(particleType, args, emitPosition, velocity, angularVel, lifetime, rotation, gradient)!;
         }
 
         /// <summary>
@@ -186,56 +190,12 @@ namespace Asteroids
             Vector2 arm2Offset = Vector2.Transform(new(0, radius), Matrix3x2.CreateRotation(angle + sweepAngle)) + position;
             Vector2 arm2End = Vector2.Transform(new(armLength, 0), Matrix3x2.CreateRotation(angle + sweepAngle)) + arm2Offset;
 
+            Vector2 intersect = arm1Offset - Global.Normalize(arm1End - arm1Offset) * radius;
+            
             g.DrawEllipse(Pens.Red, position.X - radius, position.Y - radius, 2 * radius, 2 * radius);
             g.DrawLine(Pens.Red, arm1Offset.X, arm1Offset.Y, arm1End.X, arm1End.Y);
             g.DrawLine(Pens.Red, arm2Offset.X, arm2Offset.Y, arm2End.X, arm2End.Y);
-
-            float dx1 = arm1End.X - arm1Offset.X;
-            float dx2 = arm2End.X - arm2Offset.X;
-
-            if (MathF.Abs(dx1) < 1e-5f || MathF.Abs(dx2) < 1e-5f)
-            {
-                g.DrawLine(Pens.Red, arm1End.X, arm1End.Y, arm2End.X, arm2End.Y);
-                return;
-            }
-
-            float m1 = (arm1End.Y - arm1Offset.Y) / dx1;
-            float m2 = (arm2End.Y - arm2Offset.Y) / dx2;
-
-            if (MathF.Abs(m1 - m2) < 1e-5f)
-            {
-                g.DrawLine(Pens.Red, arm1End.X, arm1End.Y, arm2End.X, arm2End.Y);
-                return;
-            }
-
-            float c1 = arm1Offset.Y - m1 * arm1Offset.X;
-            float c2 = arm2Offset.Y - m2 * arm2Offset.X;
-
-            float xA = (c2 - c1) / (m1 - m2);
-            float yA = m1 * xA + c1;
-            Vector2 intersect = new(xA, yA);
-
-            if (float.IsNaN(xA) || float.IsNaN(yA) || float.IsInfinity(xA) || float.IsInfinity(yA))
-            {
-                g.DrawLine(Pens.Red, arm1End.X, arm1End.Y, arm2End.X, arm2End.Y);
-                return;
-            }
-
-            float R = Vector2.Distance(intersect, arm1End);
-            if (R < 1f || R > 10000f)
-            {
-                g.DrawLine(Pens.Red, arm1End.X, arm1End.Y, arm2End.X, arm2End.Y);
-                return;
-            }
-
-            float startAngle = MathF.Atan2(arm1End.Y - intersect.Y, arm1End.X - intersect.X) * 180f / MathF.PI;
-            float endAngle = MathF.Atan2(arm2End.Y - intersect.Y, arm2End.X - intersect.X) * 180f / MathF.PI;
-            float sweep = endAngle - startAngle;
-            if (sweep < 0) sweep += 360f;
-
-            g.DrawArc(Pens.Red,
-                new RectangleF(intersect.X - R, intersect.Y - R, R * 2, R * 2),
-                startAngle, sweep);
+            g.DrawArc(Pens.Red, intersect.X - armLength, intersect.Y - armLength, 2 * armLength + radius, 2 * armLength + radius, angle * 180 / float.Pi, SweepAngle * 180 / float.Pi);
         }
 
         public void Remove()

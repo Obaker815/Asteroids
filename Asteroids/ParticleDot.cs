@@ -4,14 +4,17 @@ namespace Asteroids
 {
     internal class ParticleDot : Particle
     {
-        public ParticleDot(Vector2 Position,
-                           Vector2 Velocity,
-                           float AngularVelocity,
-                           float Lifetime,
+        public ParticleDot(object[] args,
+                           Vector2 position,
+                           Vector2 velocity,
+                           float angularVelocity,
+                           float lifetime,
+                           float rotation,
                            (Color color, float t)[] gradient)
-            : base(Position, Velocity, AngularVelocity, Lifetime, gradient)
+            : base(position, velocity, angularVelocity, lifetime, rotation, gradient)
         {
             Particles.Add(this);
+            _ = args;
         }
 
         /// <summary>
