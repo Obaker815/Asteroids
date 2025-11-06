@@ -31,8 +31,8 @@ namespace Asteroids
                                    200,
                                    count: 100,
                                    lifetimeRange: (0.0f, 0.2f),
-                                   angle: float.Pi / 3 * 2,
-                                   sweepAngle: float.Pi / 3,
+                                   angle: 0,
+                                   sweepAngle: 0,
                                    radius: 10f,
                                    gradient: [
                                        (Color.Red, 0f),
@@ -41,8 +41,19 @@ namespace Asteroids
                                        ]);
             p.Start();
 
-            Wrapable.SetBounds(preferredSize);
+            ParticleLine pL = new ParticleLine(new(preferredSize.Width / 4, preferredSize.Height / 4),
+                                  new(0, 0),
+                                  (-2f, 2f),
+                                  -1,
+                                  20,
+                                  1,
+                                  gradient: [
+                                      (Color.Red, 0f),
+                                      (Color.Blue, 1f)
+                                      ]);
 
+            Wrapable.SetBounds(preferredSize);
+            
             _ = new Ship(new(preferredSize.Width / 2, preferredSize.Height / 2));
 
             Task.Run(GameMainLoop);

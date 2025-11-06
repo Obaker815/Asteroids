@@ -1,8 +1,5 @@
-﻿using System.CodeDom;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Numerics;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Asteroids
 {
@@ -180,7 +177,7 @@ namespace Asteroids
             if (float.IsNaN(position.X) || float.IsNaN(position.Y)) return;
             if (float.IsNaN(angle) || float.IsNaN(sweepAngle)) return;
 
-            float radius = MathF.Max(this.radius, 0.1f);
+            float radius = this.Radius + 2f;
             float armLength = radius + 50;
 
             Vector2 arm1Offset = Vector2.Transform(new(0, -radius), Matrix3x2.CreateRotation(angle)) + position;
