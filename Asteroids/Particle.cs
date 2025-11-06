@@ -68,7 +68,7 @@ namespace Asteroids
             position += velocity * dt;
             age += dt;
 
-            if (age >= lifetime)
+            if (age >= lifetime && lifetime > 0)
             {
                 Remove();
             }

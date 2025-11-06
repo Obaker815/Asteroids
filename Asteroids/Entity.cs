@@ -27,7 +27,7 @@ namespace Asteroids
         /// <param name="dt">Deltatime in seconds</param>
         public void Update(float dt)
         {
-            if (velocity.LengthSquared() < 1f * dt)
+            if (velocity.LengthSquared() < 2f * dt)
                 velocity = Vector2.Zero;
             position += velocity * dt;
         }

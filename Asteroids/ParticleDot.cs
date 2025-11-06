@@ -13,13 +13,16 @@ namespace Asteroids
         {
             Particles.Add(this);
         }
-        
+
+        /// <summary>
+        /// The draw procedure for the <see cref="ParticleDot"/> class
+        /// </summary>
+        /// <param name="g">The <see cref="Graphics"/> object to draw to</param>
         public override void Draw(Graphics g)
         {
             float progress = age / lifetime;
             Color c = GetColor(progress);
             g.FillRectangle(new SolidBrush(c), position.X, position.Y, 2, 2);
-
         }
     }
 }
