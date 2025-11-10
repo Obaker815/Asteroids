@@ -19,10 +19,12 @@ namespace Asteroids
         /// <summary>
         /// The constructor for the <see cref="Particle"/> class
         /// </summary>
-        /// <param name="Position">The <see cref="Vector2"/> position for the <see cref="Particle"/> to start</param>
-        /// <param name="Velocity">The <see cref="Vector2"/> velocity for the <see cref="Particle"/> to have</param>
-        /// <param name="AngularVelocity">The <see cref="float"/> angular velocity for the <see cref="Particle"/> to have</param>
-        /// <param name="Lifetime">The <see cref="float"/> lifetime of the <see cref="Particle"/></param>
+        /// <param name="position">The <see cref="Vector2"/> position for the <see cref="Particle"/> to start</param>
+        /// <param name="velocity">The <see cref="Vector2"/> velocity for the <see cref="Particle"/> to have</param>
+        /// <param name="angularVelocity">The <see cref="float"/> angular velocity for the <see cref="Particle"/> to have</param>
+        /// <param name="lifetime">The <see cref="float"/> lifetime of the <see cref="Particle"/></param>
+        /// <peram name="rotation">The initial <see cref="float"/> rotation of the <see cref="Particle"/></peram>
+        /// <peram name="gradient">The gradient for the <see cref="Particle"/>'s <see cref="Color"/> to follow as it progresses through its life</peram>
         protected Particle(Vector2 position, Vector2 velocity, float angularVelocity, float lifetime, float rotation, (Color color, float t)[] gradient)
         {
             this.angularVelocity = angularVelocity;
@@ -40,10 +42,12 @@ namespace Asteroids
         /// <summary>
         /// The constructor for the <see cref="Particle"/> class
         /// </summary>
-        /// <param name="Position">The <see cref="Vector2"/> position for the <see cref="Particle"/> to start</param>
-        /// <param name="Velocity">The <see cref="Vector2"/> velocity for the <see cref="Particle"/> to have</param>
-        /// <param name="AngularVelocity">The <see cref="(float Min, float Max)"/> angular velocity for the <see cref="Particle"/> to have</param>
-        /// <param name="Lifetime">The <see cref="float"/> lifetime of the <see cref="Particle"/></param>
+        /// <param name="position">The <see cref="Vector2"/> position for the <see cref="Particle"/> to start</param>
+        /// <param name="velocity">The <see cref="Vector2"/> velocity for the <see cref="Particle"/> to have</param>
+        /// <param name="angularVelocity">The <see cref="float"/> range of angular velocities for the <see cref="Particle"/> to have</param>
+        /// <param name="lifetime">The <see cref="float"/> lifetime of the <see cref="Particle"/></param>
+        /// <peram name="rotation">The initial <see cref="float"/> rotation of the <see cref="Particle"/></peram>
+        /// <peram name="gradient">The gradient for the <see cref="Particle"/>'s <see cref="Color"/> to follow as it progresses through its life</peram>
         protected Particle(Vector2 position, Vector2 velocity, (float Min, float Max) angularVelocity, float lifetime, float rotation, (Color color, float t)[] gradient)
         {
             this.angularVelocity = (float)new Random().NextDouble() * (angularVelocity.Max - angularVelocity.Min) + angularVelocity.Min;
@@ -83,6 +87,16 @@ namespace Asteroids
         {
             throw new NotImplementedException();
         }
+
+        public void DebugDraw(Graphics g)
+        {
+            Vector2 angleVelStart = Vector2.Transform(new(20, 0), Matrix3x2.CreateRotation(rotation));
+            Vector2 angleVelEnd = Vector2.Transform(new(20, (angularVelocity / 2) * Global.DEBUG_DIRECTION_LINE_LENGTH * 10f), Matrix3x2.CreateRotation(rotation));
+            g.DrawLine(Pens.Green, new PointF(position), new PointF((position + Global.Normalize(velocity) * Global.DEBUG_DIRECTION_LINE_LENGTH * 10f)));
+            g.DrawLine(Pens.Blue, new PointF(position + angleVelStart), new PointF(position + angleVelEnd));
+            g.DrawEllipse(Pens.Red, position.X - 10f, position.Y - 10f, 20, 20);
+        }
+
         /// <summary>
         /// Draws all the particles
         /// </summary>
@@ -93,8 +107,11 @@ namespace Asteroids
             foreach (Particle p in particles)
             {
                 p?.Draw(g);
+                if (Global.DEBUG)
+                    p?.DebugDraw(g);
             }
         }
+
         /// <summary>
         /// Get the <see cref="Color"/> of the <see cref="gradient"/> at the <paramref name="t"/> value
         /// </summary>

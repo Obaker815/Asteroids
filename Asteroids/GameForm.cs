@@ -8,12 +8,13 @@ namespace Asteroids
     public partial class GameForm : Form
     {
         private readonly Rectangle preferredRect = new(0, 0, 800, 480);
-        private readonly Size preferredSize = new(800, 480);
-        private readonly float ratio = 480 / 800f;
+        private readonly Size preferredSize = new(800, 450);
+        private readonly float ratio = 450f / 800f;
         private readonly Size borderSize;
 
         private static float freezeTime = 0f;
         private static float dtModifier = 1f;
+        private static GameForm? activeGameform;
 
         public GameForm()
         {
@@ -21,29 +22,15 @@ namespace Asteroids
             borderSize = new Size(this.Size.Width - this.ClientSize.Width, this.Size.Height - this.ClientSize.Height);
         }
 
+        private void GameForm_GotFocus(object sender, EventArgs e)
+        {
+            ActiveGameform = this;
+        }
+
         private void GameForm_Shown(object sender, EventArgs e)
         {
-            ParticleEffect p = new(typeof(ParticleLine),
-                                   new Vector2(500, 240),
-                                   args: [20f, 1],
-                                   interval: 0.01f,
-                                   lifetime: 1f,
-                                   impulse: 200,
-                                   count: 20,
-                                   lifetimeRange: (0.0f, 0.2f),
-                                   angularVelocity: (-2f, 2f),
-                                   angle: float.Pi / 2f,
-                                   sweepAngle: float.Pi,
-                                   radius: 10f,
-                                   gradient: [
-                                       (Color.White, 0f),
-                                       (Color.White, 0.5f)
-                                       ]);
-
-            p.Start();
-
             Wrapable.SetBounds(preferredSize);
-            
+
             _ = new Ship(new(preferredSize.Width / 2, preferredSize.Height / 2));
 
             for (int i = 0; i < 6; i++)
@@ -52,6 +39,7 @@ namespace Asteroids
             }
 
             Task.Run(GameMainLoop);
+            Focus();
         }
 
         public void InvokeAction(Action action)
@@ -201,6 +189,9 @@ namespace Asteroids
 
         private const string DEBUG_STRING = "UUDDLRLR";
         private string lastKeysPressed = "";
+
+        public static GameForm? ActiveGameform { get => activeGameform; set => activeGameform = value; }
+
         // key down and key up event
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {

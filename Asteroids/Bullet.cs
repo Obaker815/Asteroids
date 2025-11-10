@@ -6,12 +6,30 @@ namespace Asteroids
     internal class Bullet : Wrapable, IDisposable
     {
         public static List<Bullet> Bullets = [];
+        private static readonly ParticleEffect DestroyEffect = new(
+            particleType: typeof(ParticleDot),
+            position: new(0, 0),
+            args: [],
+            interval: 0.01f,
+            lifetime: 2,
+            lifetimeRange: (-0.2f, 0.5f),
+            impulse: 100,
+            count: 5,
+            maxTriggers: 1,
+            radius: 4,
+            angle: 0,
+            sweepAngle: float.Pi / 6,
+            gradient: [
+                (Color.White, 0f),
+                (Color.White, 0.5f),
+                ]);
 
         private readonly int removeTime = 1000;
         private readonly Stopwatch lifeTimer;
         private bool disposing = false;
-
-        public readonly object parent;
+        
+        public bool collided = false;
+        public readonly object parent; 
 
         /// <summary>
         /// The constructor for the <see cref="Bullet"> class
@@ -73,6 +91,13 @@ namespace Asteroids
             if (parent is Ship p)
             {
                 p.numBullets--;
+            }
+
+            if (collided)
+            {
+                DestroyEffect.Position = this.position;
+                DestroyEffect.Angle = MathF.Atan2(velocity.Y, velocity.X) - float.Pi / 12;
+                GameForm.ActiveGameform!.InvokeAction(DestroyEffect.Start);
             }
 
             Bullets.Remove(this);

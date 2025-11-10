@@ -70,6 +70,7 @@ namespace Asteroids
                 Bullet? b = collided as Bullet;
                 if (b?.parent is Ship)
                 {
+                    b.collided = true;
                     toRemove.Add(collided);
                     toRemove.Add(this);
                 }

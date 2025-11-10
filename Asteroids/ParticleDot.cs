@@ -10,9 +10,15 @@ namespace Asteroids
                            float angularVelocity,
                            float lifetime,
                            float rotation,
-                           (Color color, float t)[] gradient)
-            : base(position, velocity, angularVelocity, lifetime, rotation, gradient)
+                           (Color color, float t)[] gradient) : base(position, 
+                               velocity, 
+                               angularVelocity, 
+                               lifetime, 
+                               rotation, 
+                               gradient)
         {
+            if (args.Length != 0) throw new Exception("Incorrect arguments for ParticleDot"); 
+
             Particles.Add(this);
             _ = args;
         }

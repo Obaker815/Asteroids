@@ -44,6 +44,7 @@
             Paint += GameForm_Paint;
             KeyDown += GameForm_KeyDown;
             KeyUp += GameForm_KeyUp;
+            GotFocus += GameForm_GotFocus;
             ResumeLayout(false);
         }
 

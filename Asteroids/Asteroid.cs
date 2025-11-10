@@ -5,6 +5,21 @@ namespace Asteroids
     internal class Asteroid : Wrapable
     {
         public static List<Asteroid> AsteroidEntities = [];
+        private static readonly ParticleEffect DestroyedEffect = new(
+            particleType: typeof(ParticleLine),
+            position: new(0, 0),
+            args: [20f, 1],
+            interval: 0.01f,
+            lifetime: 2,
+            impulse: 50,
+            count: NUM_POINTS + 1,
+            maxTriggers: 1,
+            angularVelocity: (-2, 2),
+            lifetimeRange: (-0.3f, 0.5f),
+            gradient: [
+                (Color.White, 0f),
+                (Color.White, 0.5f),
+                ]);
 
         private const float MAX_POINT_OFFSET = 1.3f;
         private const float MIN_POINT_OFFSET = 0.7f;
@@ -102,7 +117,10 @@ namespace Asteroids
             {
                 Bullet? collidedBullet = collided as Bullet;
                 if (collidedBullet?.parent is Ship)
+                {
+                    collidedBullet.collided = true;
                     toRemove.Add(this);
+                }
                 toRemove.Add(collided);
             }
         }            
@@ -148,6 +166,11 @@ namespace Asteroids
         public override void Remove()
         {
             AsteroidEntities.Remove(this);
+
+            DestroyedEffect.Position = this.position;
+            DestroyedEffect.Args = [(float)(this.size * 8), (int)1];
+            DestroyedEffect.Radius = this.radius;
+            GameForm.ActiveGameform!.InvokeAction(DestroyedEffect.Start);
 
             if (size > 1)
                 SpawnChildren();

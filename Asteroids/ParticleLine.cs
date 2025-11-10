@@ -6,22 +6,31 @@ namespace Asteroids
     {
         private readonly float length;
         private readonly int thickness;
-        public ParticleLine(object[] args, Vector2 position, Vector2 velocity, float angularVelocity, float lifetime, float rotation, (Color color, float t)[] gradient = null!) : base(position, velocity, angularVelocity, lifetime, rotation, gradient)
+        public ParticleLine(object[] args, 
+                Vector2 position, 
+                Vector2 velocity, 
+                float angularVelocity, 
+                float lifetime, 
+                float rotation, 
+                (Color color, float t)[] gradient = null!) : base(position, 
+                    velocity, 
+                    angularVelocity, 
+                    lifetime, 
+                    rotation, 
+                    gradient)
         {
-            this.length = (float)args[0];
-            this.thickness = (int)args[1];
-        }
+            if (args.Length != 2)       throw new Exception("Incorrect arguments for particleline");
+            if (args[0] is not float)   throw new Exception("args[0] should be float for particleline");
+            if (args[1] is not int)     throw new Exception("args[1] should be int for particleline");
 
-        public ParticleLine(object[] args, Vector2 position, Vector2 velocity, (float Min, float Max) angularVelocity, float lifetime, float rotation, (Color color, float t)[] gradient = null!) : base(position, velocity, angularVelocity, lifetime, rotation, gradient)
-        {
             this.length = (float)args[0];
             this.thickness = (int)args[1];
         }
 
         /// <summary>
-        /// The draw procedure for the <see cref="ParticleDot"/> class
+        /// the draw procedure for the <see cref="particledot"/> class
         /// </summary>
-        /// <param name="g">The <see cref="Graphics"/> object to draw to</param>
+        /// <param name="g">the <see cref="graphics"/> object to draw to</param>
         public override void Draw(Graphics g)
         {
             float progress = age / lifetime;

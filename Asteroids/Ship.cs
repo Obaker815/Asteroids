@@ -7,8 +7,8 @@ namespace Asteroids
     {
         // Other shit idk
         private Vector2 respawnLocation;
-        private Vector2 lookDir = new(1, 0);
-        private Vector2 moveDir = new(-1, 0);
+        private Vector2 lookDir = new(0, -1);
+        private Vector2 moveDir = new(0, -1);
         private bool accelerating = false;
         private bool respawning = false;
         private float respawnTime = 0f;
@@ -44,6 +44,7 @@ namespace Asteroids
         /// <param name="position"><see cref="Vector2"/> position to be drawn</param>
         public override void Draw(Graphics g, Vector2 position)
         {
+            if (respawning) return;
             Vector2 lookDir = -this.lookDir;
 
             // Rotation angle and offset
@@ -116,6 +117,9 @@ namespace Asteroids
             base.velocity = Vector2.Zero;
             respawnTime = 1.5f;
             respawning = true;
+            
+            lookDir = new(0, -1);
+            moveDir = new(0, -1);
         }
 
         /// <summary>
@@ -128,11 +132,8 @@ namespace Asteroids
         {
             if (respawning)
             {
-                float respawnSpeed = 5f;
-                float lerpFactor = 1f - (float)Math.Exp(-respawnSpeed * dt);
-                position = Global.Lerp(position, respawnLocation, lerpFactor);
-
                 GameForm.AddFreezeTime(time: 0.5f, modifier: 0.5f);
+                position = respawnLocation;
                 accelerating = false;
 
                 respawnTime -= dt;
