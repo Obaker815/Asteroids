@@ -7,10 +7,25 @@ namespace Asteroids
 {
     public partial class GameForm : Form
     {
+        private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
+        private readonly Controller controller = new(UserIndex.One);
+        private const Keys FULLSCREEN_KEY = Keys.F11;
+        private const Keys CLOSE_KEY = Keys.Escape;
+
+        private const string DEBUG_CODE = "UUDDLRLR";
+        private string lastKeysPressed = "";
+        private string frameRate = "";
+        private string frameTime = "";
+
         private readonly Rectangle preferredRect = new(0, 0, 800, 480);
         private readonly Size preferredSize = new(800, 450);
         private readonly float ratio = 450f / 800f;
         private readonly Size borderSize;
+
+        private readonly LevelManager levelManager = new();
+        private const float ROUND_START_TIME = 4;
+        private float currentRoundEndTime;
+        private bool roundStarting = false;
 
         private static float freezeTime = 0f;
         private static float dtModifier = 1f;
@@ -32,11 +47,6 @@ namespace Asteroids
             Wrapable.SetBounds(preferredSize);
 
             _ = new Ship(new(preferredSize.Width / 2, preferredSize.Height / 2));
-
-            for (int i = 0; i < 6; i++)
-            {
-                _ = Asteroid.NewAsteroid(preferredRect, 3);
-            }
 
             Task.Run(GameMainLoop);
             Focus();
@@ -99,6 +109,21 @@ namespace Asteroids
                         kb.FirstPress = false;
                     }
                     KeyBindings[Key] = kb;
+                }
+
+                if (Asteroid.AsteroidEntities.Count == 0 && !roundStarting)
+                {
+                    currentRoundEndTime = 0;
+                    roundStarting = true;
+                }
+                if (roundStarting)
+                {
+                    currentRoundEndTime += dt;
+                    if (currentRoundEndTime >= ROUND_START_TIME)
+                    {
+                        levelManager.NewRound(preferredRect);
+                        roundStarting = false;
+                    }
                 }
 
                 // Update Ships
@@ -178,17 +203,6 @@ namespace Asteroids
             deltatimeSW.Stop();
             elapsedtimeSW.Stop();
         }
-        private string frameRate = "";
-        private string frameTime = "";
-
-        private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
-        private readonly Controller controller = new(UserIndex.One);
-
-        private const Keys FULLSCREEN_KEY = Keys.F11;
-        private const Keys CLOSE_KEY = Keys.Escape;
-
-        private const string DEBUG_STRING = "UUDDLRLR";
-        private string lastKeysPressed = "";
 
         public static GameForm? ActiveGameform { get => activeGameform; set => activeGameform = value; }
 
@@ -232,7 +246,7 @@ namespace Asteroids
             }
 
             if (lastKeysPressed.Length > 8) lastKeysPressed = lastKeysPressed.Substring(1, 8);
-            if (DEBUG_STRING == lastKeysPressed)
+            if (DEBUG_CODE == lastKeysPressed)
             {
                 Global.DEBUG = !Global.DEBUG;
                 Wrapable.SetBounds(preferredSize);
