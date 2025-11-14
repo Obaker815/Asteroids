@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Asteroids
 {
@@ -62,11 +63,19 @@ namespace Asteroids
         /// </summary>
         public static void RemoveAll()
         {
-            foreach (Entity e in toRemove)
+            Entity[] toRemoveArr = [.. toRemove];
+            foreach (Entity e in toRemoveArr)
             {
-                e.Remove();
+                try
+                {
+                    e.Remove();
+                    toRemove.Remove(e);
+                }
+                catch (NullReferenceException)
+                {
+                    continue;
+                }
             }
-            toRemove.Clear();
         }
 
         public virtual void Remove()

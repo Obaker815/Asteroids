@@ -5,7 +5,7 @@ namespace Asteroids
     internal class Particle
     {
         public static List<Particle> Particles = [];
-        public static List<Particle> ToRemove = [];
+        public static List<Particle> toRemove = [];
 
         private readonly float angularVelocity;
         private readonly Vector2 velocity;
@@ -158,26 +158,27 @@ namespace Asteroids
 
 
         /// <summary>
-        /// Removes all <see cref="Particle"/>s in the <see cref="ToRemove"/> list from the <see cref="Particles"/> list
+        /// Removes all <see cref="Particle"/>s in the <see cref="toRemove"/> list from the <see cref="Particles"/> list
         /// </summary>
         public static void RemoveAll()
         {
-            foreach (Particle p in ToRemove)
+            Particle[] toRemoveArr = [.. toRemove];
+            foreach (Particle p in toRemoveArr)
             {
                 try
                 {
                     Particles.Remove(p);
+                    toRemove.Remove(p);
                 }
                 catch
                 {
                     continue;
                 }
             }
-            ToRemove.Clear();
         }
         public virtual void Remove()
         {
-            ToRemove.Add(this);
+            toRemove.Add(this);
         }
     }
 }

@@ -1,33 +1,11 @@
-﻿using System.Diagnostics;
-using System.DirectoryServices.ActiveDirectory;
+﻿using System.Numerics;
 
 namespace Asteroids
 {
     internal class LevelManager
     {
-        private readonly Dictionary<int, (int big, int med, int sma)> rounds = new()
-        {
-            {0, (0, 0, 5) },
-            {1, (0, 1, 5) },
-            {2, (0, 2, 6) },
-            {3, (0, 2, 6) },
-            {4, (0, 2, 6) },
-            {5, (0, 2, 6) },
-            {6, (0, 2, 6) },
-            {7, (0, 2, 6) },
-            {8, (0, 2, 6) },
-            {9, (0, 2, 6) },
-            {10, (0, 0, 5) },
-            {11, (0, 0, 5) },
-            {12, (0, 0, 5) },
-            {13, (0, 0, 5) },
-            {14, (0, 0, 5) },
-            {15, (0, 0, 5) },
-            {16, (0, 0, 5) },
-            {17, (0, 0, 5) },
-            {18, (0, 0, 5) },
-            {19, (0, 0, 5) },
-        };
+        private float currentSaucerTime = 0f;
+
         private Rectangle screen;
         private long score;
         private int round;
@@ -35,54 +13,74 @@ namespace Asteroids
 
         public LevelManager()
         {
-            score = 0;
-            round = 1;
+            score = 67;
+            round = 0;
         }
 
-        public void NewRound(Rectangle screen)
+        public Task NewRound(Rectangle screen)
         {
+            round++;
             this.screen = screen;
+            currentSaucerTime = 0;
 
-            int numAsteroids = 4 + round;
-            (int big, int medium, int small) = rounds[numAsteroids];
+            int num = GetAsteroidNums(round);
 
-            for (int i = 0; i < big; i++)
+            for (int i = 0; i < num; i++)
                 _ = Asteroid.NewAsteroid(screen, 3);
 
-            for (int i = 0; i < medium; i++)
-                _ = Asteroid.NewAsteroid(screen, 2);
-
-            for (int i = 0; i < small; i++)
-                _ = Asteroid.NewAsteroid(screen, 1);
-
-            if (round >= 5)
-            {
-                Task.Run(SaucerClock);
-            }
+            return Task.CompletedTask;
         }
 
-        bool running = false;
-        public void SaucerClock()
+        private static int GetAsteroidNums(int round)
         {
-            if (running) return;
-            running = true;
+            int[] bigAsteroidsByRound =
+            [
+                4, 6, 8, 10, 11
+            ];
 
-            float lastSaucer = 0;
-            Stopwatch saucerClock = Stopwatch.StartNew();
-            while (running)
+            int num = round <= 5 ? bigAsteroidsByRound[round - 1] : 11;
+
+            return num;
+        }
+
+
+        private static float GetSaucerInterval(int asteroidCount)
+        {
+            if (asteroidCount >= 9) return 18f;
+            if (asteroidCount >= 5) return 12f;
+            return 7f;
+        }
+
+        public void SaucerUpdate(float dt)
+        {
+            int asteroidCount = Asteroid.AsteroidEntities.Count;
+
+            if (asteroidCount == 0)
             {
-                while (saucerClock.Elapsed.TotalSeconds < lastSaucer + 25)
-                {
-                    Thread.Sleep(5000);
-                }
-
-                lastSaucer = (float)saucerClock.Elapsed.TotalSeconds;
-
-                if (Saucer.Saucers.Count !> 0)
-                {
-                    _ = new Saucer((round >= 10) ? true : false, new(0, screen.Height / 2));
-                }
+                currentSaucerTime = 0f;
+                return;
             }
+
+            if (round < 2)
+                return;
+
+            currentSaucerTime += dt;
+
+            float interval = GetSaucerInterval(asteroidCount);
+
+            if (currentSaucerTime < interval)
+                return;
+
+            if (Saucer.Saucers.Count == 0)
+            {
+                bool smallSaucer = score >= 40000 || round >= 5;
+
+                Vector2 spawnPos = new(0, screen.Height / 2);
+
+                _ = new Saucer(smallSaucer, spawnPos);
+            }
+
+            currentSaucerTime = 0f;
         }
     }
 }

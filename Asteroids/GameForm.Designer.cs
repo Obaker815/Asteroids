@@ -40,7 +40,6 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Asteroids";
             Shown += GameForm_Shown;
-            ResizeEnd += GameForm_ResizeEnd;
             Paint += GameForm_Paint;
             KeyDown += GameForm_KeyDown;
             KeyUp += GameForm_KeyUp;

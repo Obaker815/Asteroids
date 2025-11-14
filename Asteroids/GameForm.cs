@@ -1,12 +1,14 @@
 ﻿using SharpDX.XInput;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Numerics;
 
 namespace Asteroids
 {
     public partial class GameForm : Form
     {
+        private readonly PrivateFontCollection? privateFonts;
         private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
         private readonly Controller controller = new(UserIndex.One);
         private const Keys FULLSCREEN_KEY = Keys.F11;
@@ -34,8 +36,18 @@ namespace Asteroids
         public GameForm()
         {
             InitializeComponent();
-            borderSize = new Size(this.Size.Width - this.ClientSize.Width, this.Size.Height - this.ClientSize.Height);
+
+            borderSize = new Size(
+                this.Size.Width - this.ClientSize.Width,
+                this.Size.Height - this.ClientSize.Height);
+
+            privateFonts = new PrivateFontCollection();
+            privateFonts.AddFontFile(@"./font/OrchestraOfStrings-yoLd.ttf");
+
+            FontFamily fontFamily = privateFonts.Families[0];
+            Font = new Font(fontFamily, 20f);
         }
+
 
         private void GameForm_GotFocus(object sender, EventArgs e)
         {
@@ -78,7 +90,7 @@ namespace Asteroids
         }
 
         bool running = false;
-        private void GameMainLoop()
+        private async void GameMainLoop()
         {
             if (running) return;
             running = true;
@@ -121,10 +133,11 @@ namespace Asteroids
                     currentRoundEndTime += dt;
                     if (currentRoundEndTime >= ROUND_START_TIME)
                     {
-                        levelManager.NewRound(preferredRect);
+                        await levelManager.NewRound(preferredRect);
                         roundStarting = false;
                     }
                 }
+                levelManager.SaucerUpdate(dt);
 
                 // Update Ships
                 Ship[] ships = [.. Ship.Ships];
@@ -219,9 +232,7 @@ namespace Asteroids
                     this.FormBorderStyle = FormBorderStyle.Sizable;
                     this.WindowState = FormWindowState.Normal;
 
-                    this.Width = preferredSize.Width + borderSize.Width;
-
-                    GameForm_ResizeEnd(sender, e);
+                    this.Size = new Size(preferredSize.Width + borderSize.Width, preferredSize.Height + borderSize.Height);
                 }
                 else
                 {
@@ -314,41 +325,57 @@ namespace Asteroids
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            float scaleX = (float)this.ClientSize.Width / preferredSize.Width;
-            float scaleY = (float)this.ClientSize.Height / preferredSize.Height;
-
-            // Fill the background black
             g.Clear(Color.Black);
 
-            // Scale the graphics object to fit the window
-            g.ScaleTransform(scaleX, scaleY);
+            float scaleX = (float)ClientSize.Width / preferredSize.Width;
+            float scaleY = (float)ClientSize.Height / preferredSize.Height;
+            float scale = MathF.Min(scaleX, scaleY);
+
+            float renderWidth = preferredSize.Width * scale;
+            float renderHeight = preferredSize.Height * scale;
+
+            float xdiff = ClientSize.Width - renderWidth;
+            float ydiff = ClientSize.Height - renderHeight;
+
+            Matrix originalTransform = g.Transform.Clone();
+
+            g.TranslateTransform(xdiff / 2, ydiff / 2);
+            g.ScaleTransform(scale, scale);
+
             if (Global.DEBUG)
             {
-                g.ScaleTransform(1 / 2f, 1 / 2f);
+                g.ScaleTransform(0.5f, 0.5f);
                 g.TranslateTransform(preferredSize.Width / 2, preferredSize.Height / 2);
-
                 ParticleEffect.DebugDrawAll(g);
             }
-            g.DrawString($"Framerate: {frameRate}fps", this.Font, Brushes.White, 10, preferredSize.Height - 40);
-            g.DrawString($"Frametime: {frameTime}ms", this.Font, Brushes.White, 10, preferredSize.Height - 20);
 
-            // Draw all wrapables
+            string score = levelManager.Score.ToString("D10");
+            g.DrawString($"Framerate: {frameRate}fps", Font, Brushes.White, 10, preferredSize.Height - 60);
+            g.DrawString($"Frametime: {frameTime}ms", Font, Brushes.White, 10, preferredSize.Height - 30);
+            g.DrawString(score, Font, Brushes.White, 10, 10);
+
             Wrapable[] wrapables = [.. Wrapable.Wrapables];
             foreach (Wrapable wrapable in wrapables)
-            {
                 wrapable?.Draw(g);
-            }
 
-            // Draw all particles
             Particle.DrawAll(g);
 
-            // scale back the graphics object
-            g.ScaleTransform(1 / scaleX, 1 / scaleY);
-        }
+            g.Transform = originalTransform;
 
-        private void GameForm_ResizeEnd(object sender, EventArgs e)
-        {
-            this.Size = new Size(this.ClientSize.Width + borderSize.Width, (int)((this.ClientSize.Width + borderSize.Height) * ratio));
+            Brush barBrush = new SolidBrush(Color.FromArgb(255, 30, 30, 30));
+
+            if (xdiff > 0)
+            {
+                float barW = xdiff / 2;
+                g.FillRectangle(barBrush, -10, -10, barW + 10, ClientSize.Height + 20);
+                g.FillRectangle(barBrush, ClientSize.Width - barW, -10, barW + 10, ClientSize.Height + 10);
+            }
+            else if (ydiff > 0)
+            {
+                float barH = ydiff / 2;
+                g.FillRectangle(barBrush, -10, -10, ClientSize.Width + 20, barH + 10);
+                g.FillRectangle(barBrush, -10, ClientSize.Height - barH, ClientSize.Width + 20, barH + 10);
+            }
         }
     }
 }

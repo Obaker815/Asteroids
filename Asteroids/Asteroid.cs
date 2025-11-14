@@ -1,16 +1,18 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Asteroids
 {
     internal class Asteroid : Wrapable
     {
+        private static readonly Random random = new();
         public static List<Asteroid> AsteroidEntities = [];
         private static readonly ParticleEffect DestroyedEffect = new(
             particleType: typeof(ParticleLine),
             position: new(0, 0),
             args: [20f, 1],
             interval: 0.01f,
-            lifetime: 2,
+            lifetime: 1,
             impulse: 50,
             count: NUM_POINTS + 1,
             maxTriggers: 1,
@@ -27,8 +29,8 @@ namespace Asteroids
         private const int NUM_POINTS = 10;
 
         private readonly float angularVelocity;
-        private readonly Vector2[] points;
         private readonly int size;
+        private Vector2[] points;
 
         private readonly static Dictionary<int, (float radius, float speed, float rotateSpeed)> SizePropertyDict = new()
         {
@@ -47,23 +49,21 @@ namespace Asteroids
             if (!SizePropertyDict.ContainsKey(size) || AsteroidEntities.Count >= MAX_ASTEROIDS)
                 return null;
 
-            Random rnd = new();
-
             float yPos;
             float xPos;
 
-            if (rnd.Next(0, 2) == 1)
+            if (random.Next(0, 2) == 1)
             {
-                yPos = (float)rnd.NextDouble() * screen.Height + screen.Y;
+                yPos = (float)random.NextDouble() * screen.Height + screen.Y;
                 xPos = 0;
             }
             else
             {
                 yPos = 0; 
-                xPos = (float)rnd.NextDouble() * screen.Width + screen.X;
+                xPos = (float)random.NextDouble() * screen.Width + screen.X;
             }
 
-            return new Asteroid(new(xPos, yPos), size, rnd);
+            return new Asteroid(new(xPos, yPos), size, random);
         }
 
         /// <summary>
@@ -71,14 +71,12 @@ namespace Asteroids
         /// </summary>
         private void SpawnChildren()
         {
-            Random rnd = new();
-
             for (int i = 0; i < 3; i++)
             {
                 if (!SizePropertyDict.ContainsKey(size) || AsteroidEntities.Count >= MAX_ASTEROIDS)
                     break;
 
-                _ = new Asteroid(position, size - 1, rnd);
+                _ = new Asteroid(position, size - 1, random);
             }
         }
 
@@ -95,8 +93,8 @@ namespace Asteroids
 
             this.angularVelocity = (((float)rnd.NextDouble() * 2) - 1f) * SizePropertyDict[size].rotateSpeed;
             this.size = size;
-            this.points = GenShape();
 
+            this.points = GenShape().Result;
             AsteroidEntities.Add(this);
         }
 
@@ -124,44 +122,49 @@ namespace Asteroids
                 toRemove.Add(collided);
             }
         }            
-        
 
         /// <summary>
         /// Generates a random <see cref="Asteroid"/> shape using the constants <see cref="MAX_POINT_OFFSET"/>, <see cref="MIN_POINT_OFFSET"/>, and <see cref="NUM_POINTS"/>
         /// </summary>
         /// <returns><see cref="Vector2[]"/> of vectors relative to position</returns>
-        public static Vector2[] GenShape()
+        public static Task<Vector2[]> GenShape()
         {
             List<Vector2> shape = [];
 
-            Random rnd = new();
             float angleIncrement = 2 * float.Pi / NUM_POINTS;
 
             Vector2 vector = new(1, 0);
-            vector = Vector2.Transform(vector, Matrix3x2.CreateRotation(angleIncrement * (float)rnd.NextDouble()));
+            vector = Vector2.Transform(vector, Matrix3x2.CreateRotation(angleIncrement * (float)random.NextDouble()));
 
             for (int i = 0; i < NUM_POINTS; i++)
             {
                 Vector2 current = vector;
                 vector = Vector2.Transform(vector, Matrix3x2.CreateRotation(angleIncrement));
 
-                current *= (MAX_POINT_OFFSET - MIN_POINT_OFFSET) * (float)rnd.NextDouble() + MIN_POINT_OFFSET;
+                current *= (MAX_POINT_OFFSET - MIN_POINT_OFFSET) * (float)random.NextDouble() + MIN_POINT_OFFSET;
                 shape.Add(current);
             }
 
-            return [.. shape];
+            return Task.FromResult(shape.ToArray());
         }
 
         public override void Draw(Graphics g, Vector2 Position)
         {
-            for (int i = 0; i < points.Length; i++)
+            async void draw()
             {
-                Vector2 start = Position + points[i] * radius;
-                Vector2 end = Position + points[(i + 1) % points.Length] * radius;
+                points ??= await GenShape();
 
-                g.DrawLine(Pens.White, start.X, start.Y, end.X, end.Y);
+                for (int i = 0; i < points.Length; i++)
+                {
+                    Vector2 start = Position + points[i] * radius;
+                    Vector2 end = Position + points[(i + 1) % points.Length] * radius;
+
+                    g.DrawLine(Pens.White, start.X, start.Y, end.X, end.Y);
+                }
             }
+            draw();
         }
+
 
         public override void Remove()
         {

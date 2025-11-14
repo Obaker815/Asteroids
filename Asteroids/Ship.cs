@@ -1,10 +1,46 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using SharpDX.XInput;
 
 namespace Asteroids
 {
     internal class Ship : Wrapable
     {
+        private readonly ParticleEffect[] destroyEffects =
+            [
+                new(
+                    particleType: typeof(ParticleLine),
+                    position: new(0, 0),
+                    args: [20f, 1],
+                    interval: 0.01f,
+                    lifetime: 2,
+                    impulse: 50,
+                    count: 3,
+                    maxTriggers: 1,
+                    angularVelocity: (-6, 6),
+                    lifetimeRange: (-0.3f, 0.5f),
+                    gradient: [
+                        (Color.White, 0f),
+                        (Color.White, 0.5f),
+                        ]),
+                new(
+                    particleType: typeof(ParticleDot),
+                    position: new(0, 0),
+                    args: [],
+                    interval: 0.05f,
+                    lifetime: 1,
+                    impulse: 100,
+                    count: 50,
+                    maxTriggers: 1,
+                    angularVelocity: (0, 0),
+                    impulseRange: (-50, 50),
+                    lifetimeRange: (-0.3f, 0.5f),
+                    gradient: [
+                        (Color.White, 0f),
+                        (Color.White, 0.5f),
+                        ])
+                ];
+
         // Other shit idk
         private Vector2 respawnLocation;
         private Vector2 lookDir = new(0, -1);
@@ -38,14 +74,30 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Override Draw method from <see cref="Wrapable"/>
+        /// Override Draw method from <see cref="Wrapable.Draw(Graphics, Vector2)"/>
         /// </summary>
-        /// <param name="g"><see cref="Graphics"/> to be drawn to</param>
-        /// <param name="position"><see cref="Vector2"/> position to be drawn</param>
-        public override void Draw(Graphics g, Vector2 position)
+        /// <param name="g">The <see cref="Graphics"/> to draw to</param>
+        /// <param name="position">The <see cref="Vector2"/> position to be drawn</param>
+        public override void Draw(Graphics g, Vector2 Position)
+        {
+            Draw(g, Position, lookDir,
+                base.radius, accelerating, respawning);
+        }
+
+        /// <summary>
+        /// The Draw method for <see cref="Ship"/>
+        /// </summary>
+        /// <param name="g">The <see cref="Graphics"/> to draw to</param>
+        /// <param name="position">The <see cref="Vector2"/> position to be drawn</param>
+        /// <param name="lookDir">The forward direction of the ship as <see cref="Vector2"/></param>
+        /// <param name="radius">The radius of the <see cref="Ship"/></param>
+        /// <param name="accellerating">If the ship should have a flame</param>
+        /// <param name="respawning">If the ship is respawning</param>
+        public static void Draw(Graphics g, Vector2 position, Vector2 lookDir, float radius, bool accelerating, bool respawning = false)
         {
             if (respawning) return;
-            Vector2 lookDir = -this.lookDir;
+            Vector2 initialPos = position;
+            lookDir *= -1;
 
             // Rotation angle and offset
             float rotation = MathF.Atan2(lookDir.Y, lookDir.X);
@@ -53,8 +105,8 @@ namespace Asteroids
             float ratio = 0.8f;
 
             // Ship Length
-            float length = base.radius * 3f;
-            position -= Vector2.Transform(new(base.radius * 1.6f, 0), Matrix3x2.CreateRotation(rotation));
+            float length = radius * 3f;
+            position -= Vector2.Transform(new(radius * 1.6f, 0), Matrix3x2.CreateRotation(rotation));
 
             // Calculate arm vector
             Vector2 leftArm = Vector2.Transform(new(length, 0), Matrix3x2.CreateRotation(rotation + angleOffset));
@@ -93,19 +145,11 @@ namespace Asteroids
 
             if (Global.DEBUG)
             {
-                Vector2 tmpPosition = base.position + new Vector2(Bounds.X, Bounds.Y);
-
                 g.DrawLine(Pens.Red, 
-                    tmpPosition.X, 
-                    tmpPosition.Y, 
-                    tmpPosition.X + this.lookDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH, 
-                    tmpPosition.Y + this.lookDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
-
-                g.DrawLine(Pens.Blue,
-                    tmpPosition.X,
-                    tmpPosition.Y,
-                    tmpPosition.X + this.moveDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH,
-                    tmpPosition.Y + this.moveDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
+                    initialPos.X, 
+                    initialPos.Y, 
+                    initialPos.X + lookDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH, 
+                    initialPos.Y + lookDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
             }
         }
 
@@ -114,6 +158,12 @@ namespace Asteroids
         /// </summary>
         private void Respawn()
         {
+            foreach (ParticleEffect p in destroyEffects)
+            {
+                p.Position = this.position;
+                GameForm.ActiveGameform?.InvokeAction(p.Start);
+            }
+
             base.velocity = Vector2.Zero;
             respawnTime = 1.5f;
             respawning = true;
@@ -182,8 +232,8 @@ namespace Asteroids
                     base.velocity = Global.Normalize(base.velocity) * MAX_VELOCITY;
 
                 this.lookDir = lookDir;
-                this.moveDir = Global.Normalize(velocity);
-                if (lookDir == Vector2.Zero) this.lookDir = moveDir;
+                this.moveDir = (moveDir == Vector2.Zero)? Global.Normalize(velocity) : moveDir;
+                if (this.lookDir == Vector2.Zero) this.lookDir = this.moveDir;
             }
 
             if (controller.IsConnected)
