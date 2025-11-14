@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Numerics;
+﻿using System.Numerics;
 using SharpDX.XInput;
 
 namespace Asteroids
@@ -30,7 +29,7 @@ namespace Asteroids
                     interval: 0.05f,
                     lifetime: 1,
                     impulse: 100,
-                    count: 50,
+                    count: 100,
                     maxTriggers: 1,
                     angularVelocity: (0, 0),
                     impulseRange: (-50, 50),
@@ -81,7 +80,7 @@ namespace Asteroids
         public override void Draw(Graphics g, Vector2 Position)
         {
             Draw(g, Position, lookDir,
-                base.radius, accelerating, respawning);
+                base.radius, accelerating, respawning, iFrames);
         }
 
         /// <summary>
@@ -93,9 +92,11 @@ namespace Asteroids
         /// <param name="radius">The radius of the <see cref="Ship"/></param>
         /// <param name="accellerating">If the ship should have a flame</param>
         /// <param name="respawning">If the ship is respawning</param>
-        public static void Draw(Graphics g, Vector2 position, Vector2 lookDir, float radius, bool accelerating, bool respawning = false)
+        public static void Draw(Graphics g, Vector2 position, Vector2 lookDir, float radius, bool accelerating, bool respawning = false, float iframes = 0f)
         {
             if (respawning) return;
+            if (float.Floor(iframes * 10) % 2 == 1) return;
+
             Vector2 initialPos = position;
             lookDir *= -1;
 

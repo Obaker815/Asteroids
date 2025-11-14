@@ -21,7 +21,6 @@ namespace Asteroids
 
         private readonly Rectangle preferredRect = new(0, 0, 800, 480);
         private readonly Size preferredSize = new(800, 450);
-        private readonly float ratio = 450f / 800f;
         private readonly Size borderSize;
 
         private readonly LevelManager levelManager = new();

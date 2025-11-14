@@ -13,7 +13,7 @@ namespace Asteroids
 
         public LevelManager()
         {
-            score = 67;
+            score = 0;
             round = 0;
         }
 

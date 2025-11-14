@@ -6,21 +6,40 @@ namespace Asteroids
     {
         private static readonly Random random = new();
         public static List<Asteroid> AsteroidEntities = [];
-        private static readonly ParticleEffect DestroyedEffect = new(
-            particleType: typeof(ParticleLine),
-            position: new(0, 0),
-            args: [20f, 1],
-            interval: 0.01f,
-            lifetime: 1,
-            impulse: 50,
-            count: NUM_POINTS + 1,
-            maxTriggers: 1,
-            angularVelocity: (-2, 2),
-            lifetimeRange: (-0.3f, 0.5f),
-            gradient: [
-                (Color.White, 0f),
-                (Color.White, 0.5f),
-                ]);
+        private readonly ParticleEffect[] destroyEffects =
+            [
+                new(
+                    particleType: typeof(ParticleLine),
+                    position: new(0, 0),
+                    args: [20f, 1],
+                    interval: 0.01f,
+                    lifetime: 2,
+                    impulse: 50,
+                    count: NUM_POINTS + 1,
+                    maxTriggers: 1,
+                    angularVelocity: (-6, 6),
+                    lifetimeRange: (-0.3f, 0.5f),
+                    gradient: [
+                        (Color.White, 0f),
+                        (Color.White, 0.5f),
+                        ]),
+                new(
+                    particleType: typeof(ParticleDot),
+                    position: new(0, 0),
+                    args: [],
+                    interval: 0.05f,
+                    lifetime: 1,
+                    impulse: 100,
+                    count: 100,
+                    maxTriggers: 5,
+                    angularVelocity: (0, 0),
+                    impulseRange: (-50, 50),
+                    lifetimeRange: (-0.3f, 0.5f),
+                    gradient: [
+                        (Color.White, 0f),
+                        (Color.White, 0.5f),
+                        ])
+                ];
 
         private const float MAX_POINT_OFFSET = 1.3f;
         private const float MIN_POINT_OFFSET = 0.7f;
@@ -169,10 +188,15 @@ namespace Asteroids
         {
             AsteroidEntities.Remove(this);
 
-            DestroyedEffect.Position = this.position;
-            DestroyedEffect.Args = [(float)(this.size * 8), (int)1];
-            DestroyedEffect.Radius = this.radius;
-            GameForm.ActiveGameform!.InvokeAction(DestroyedEffect.Start);
+            ParticleEffect[] pe = [.. destroyEffects];
+            foreach (ParticleEffect e in destroyEffects)
+            {
+                e.Position = this.position;
+                if (e.Args.Length == 2)
+                    e.Args = [(float)(this.size * 8), (int)1];
+                e.Radius = this.radius;
+                GameForm.ActiveGameform?.InvokeAction(e.Start);
+            }
 
             if (size > 1)
                 SpawnChildren();
