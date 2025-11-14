@@ -104,6 +104,13 @@ namespace Asteroids
                 float dt = (float)deltatimeSW.Elapsed.TotalSeconds;
                 deltatimeSW.Restart();
 
+                if ((int)elapsedtimeSW.Elapsed.TotalSeconds > lastFrameTimesUpdate)
+                {
+                    this.frameRate = $"{1f / dt:0.00}";
+                    this.frameTime = $"{dt * 1000:0.00}";
+                    lastFrameTimesUpdate = (int)elapsedtimeSW.Elapsed.TotalSeconds;
+                }
+
                 if (freezeTime > 0f)
                 {
                     freezeTime -= dt;
@@ -202,13 +209,6 @@ namespace Asteroids
                     frameTime = 1000f / Global.FPS;
                 else
                     frameTime = 0;
-
-                if ((int)elapsedtimeSW.Elapsed.TotalSeconds > lastFrameTimesUpdate)
-                {
-                    this.frameRate = $"{1f / dt:0.00}";
-                    this.frameTime = $"{dt * 1000:0.00}";
-                    lastFrameTimesUpdate = (int)elapsedtimeSW.Elapsed.TotalSeconds;
-                }
 
                 while (deltatimeSW.Elapsed.TotalMilliseconds < frameTime) { }
             }

@@ -8,8 +8,8 @@ namespace Asteroids
         public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;
         public const bool PLAYER_COLLISION = true;
 
-        public static int FPS = 165;
-        public static int CONTROL_STYLE = 0; // 0 = Classic, 1 = TwoStick
+        public static int FPS = 60;
+        public static int CONTROL_STYLE = 0;
 
         /// <summary>
         /// A safe normalization function for <see cref="Vector2"/> values
