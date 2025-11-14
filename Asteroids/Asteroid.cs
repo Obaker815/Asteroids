@@ -6,7 +6,7 @@ namespace Asteroids
     {
         private static readonly Random random = new();
         public static List<Asteroid> AsteroidEntities = [];
-        private readonly ParticleEffect[] destroyEffects =
+        private static readonly ParticleEffect[] destroyEffects =
             [
                 new(
                     particleType: typeof(ParticleLine),
@@ -30,8 +30,8 @@ namespace Asteroids
                     interval: 0.05f,
                     lifetime: 1,
                     impulse: 100,
-                    count: 100,
-                    maxTriggers: 5,
+                    count: 20,
+                    maxTriggers: 1,
                     angularVelocity: (0, 0),
                     impulseRange: (-50, 50),
                     lifetimeRange: (-0.3f, 0.5f),

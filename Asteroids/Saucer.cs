@@ -5,6 +5,25 @@ namespace Asteroids
     internal class Saucer : Wrapable
     {
         public static List<Saucer> Saucers = [];
+        private static readonly ParticleEffect[] destroyEffects =
+            [
+                new(
+                    particleType: typeof(ParticleDot),
+                    position: new(0, 0),
+                    args: [],
+                    interval: 0.05f,
+                    lifetime: 1,
+                    impulse: 100,
+                    count: 20,
+                    maxTriggers: 1,
+                    angularVelocity: (0, 0),
+                    impulseRange: (-50, 50),
+                    lifetimeRange: (-0.3f, 0.5f),
+                    gradient: [
+                        (Color.White, 0f),
+                        (Color.White, 0.5f),
+                        ])
+                ];
 
         private readonly float ShootInterval;
         private readonly float speed;
@@ -138,8 +157,17 @@ namespace Asteroids
         }
         public override void Remove()
         {
-            base.Remove();
             Saucers.Remove(this);
+
+            ParticleEffect[] pe = [.. destroyEffects];
+            foreach (ParticleEffect e in pe)
+            {
+                e.Position = base.position;
+                e.Radius = base.radius;
+                GameForm.ActiveGameform?.InvokeAction(e.Start);
+            }
+
+            base.Remove();
         }
     }
 }

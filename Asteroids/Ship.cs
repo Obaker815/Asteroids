@@ -29,7 +29,7 @@ namespace Asteroids
                     interval: 0.05f,
                     lifetime: 1,
                     impulse: 100,
-                    count: 100,
+                    count: 40,
                     maxTriggers: 1,
                     angularVelocity: (0, 0),
                     impulseRange: (-50, 50),

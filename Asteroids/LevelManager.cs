@@ -79,8 +79,10 @@ namespace Asteroids
 
                 _ = new Saucer(smallSaucer, spawnPos);
             }
-
-            currentSaucerTime = 0f;
+            else
+            {
+                currentSaucerTime = 0f;
+            }
         }
     }
 }
