@@ -107,7 +107,7 @@ namespace Asteroids
             foreach (Particle p in particles)
             {
                 p?.Draw(g);
-                if (Global.DEBUG)
+                if (Global.DEBUG && Global.DEBUG_PARTICLE_DRAW)
                     p?.DebugDraw(g);
             }
         }

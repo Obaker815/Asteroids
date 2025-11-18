@@ -23,7 +23,6 @@ namespace Asteroids
         private readonly Size preferredSize = new(800, 450);
         private readonly Size borderSize;
 
-        private readonly LevelManager levelManager = new();
         private const float ROUND_START_TIME = 4;
         private float currentRoundEndTime;
         private bool roundStarting = false;
@@ -35,16 +34,35 @@ namespace Asteroids
         public GameForm()
         {
             InitializeComponent();
+            elapsedtimeSW = null!;
 
+            // Get the size of the border
             borderSize = new Size(
                 this.Size.Width - this.ClientSize.Width,
                 this.Size.Height - this.ClientSize.Height);
 
+            // Load font
             privateFonts = new PrivateFontCollection();
             privateFonts.AddFontFile(@"./font/OrchestraOfStrings-yoLd.ttf");
-
             FontFamily fontFamily = privateFonts.Families[0];
             Font = new Font(fontFamily, 20f);
+
+            // Stars background
+            new ParticleEffect(
+                typeof(ParticleDot),
+                position: new(preferredSize.Width / 2, preferredSize.Height / 2),
+                args: [],
+                interval: 0.2f,
+                lifetime: 10f,
+                impulse: 0f,
+                count: 5,
+                radius: float.Sqrt(preferredSize.Width * preferredSize.Width / 4 + preferredSize.Height * preferredSize.Height / 4),
+                lifetimeRange: (-5, 5),
+                impulseRange: (0, 2),
+                gradient: [
+                    (Color.White, 0.5f)
+                    ]
+                    ).Start();
         }
 
 
@@ -88,6 +106,7 @@ namespace Asteroids
             dtModifier = modifier;
         }
 
+        Stopwatch elapsedtimeSW;
         bool running = false;
         private async void GameMainLoop()
         {
@@ -95,7 +114,7 @@ namespace Asteroids
             running = true;
 
             Stopwatch deltatimeSW = Stopwatch.StartNew();
-            Stopwatch elapsedtimeSW = Stopwatch.StartNew();
+            elapsedtimeSW = Stopwatch.StartNew();
 
             int lastFrameTimesUpdate = 0;
             while (running)
@@ -115,6 +134,12 @@ namespace Asteroids
                     freezeTime -= dt;
                     freezeTime = float.Max(freezeTime, 0);
                     dt *= dtModifier;
+                }
+
+                if (Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
+                {
+                    InvokeAction(this.Close);
+                    MessageBox.Show("you fucking suck");
                 }
 
                 // Update keybinds
@@ -139,11 +164,11 @@ namespace Asteroids
                     currentRoundEndTime += dt;
                     if (currentRoundEndTime >= ROUND_START_TIME)
                     {
-                        await levelManager.NewRound(preferredRect);
+                        await LevelManager.Instance.NewRound(preferredRect);
                         roundStarting = false;
                     }
                 }
-                levelManager.SaucerUpdate(dt);
+                LevelManager.Instance.SaucerUpdate(dt);
 
                 // Update Ships
                 Ship[] ships = [.. Ship.Ships];
@@ -345,13 +370,29 @@ namespace Asteroids
             {
                 g.ScaleTransform(0.5f, 0.5f);
                 g.TranslateTransform(preferredSize.Width / 2, preferredSize.Height / 2);
-                ParticleEffect.DebugDrawAll(g);
+                if (Global.DEBUG_PARTICLE_DRAW)
+                    ParticleEffect.DebugDrawAll(g);
             }
 
-            string score = levelManager.Score.ToString("D10");
+            string score = LevelManager.Instance.Score.ToString("D10");
             g.DrawString($"Framerate: {frameRate}fps", Font, Brushes.White, 10, preferredSize.Height - 60);
             g.DrawString($"Frametime: {frameTime}ms", Font, Brushes.White, 10, preferredSize.Height - 30);
             g.DrawString(score, Font, Brushes.White, 10, 10);
+
+            float livesYPos = 60;
+            float livesXPos = 25;
+            float livesSpacing = 24;
+            for (int i = 0; i < Ship.Ships[0].lives; i++)
+            {
+                float posX = livesXPos + i * livesSpacing;
+                float posY = livesYPos;
+
+                Ship.Draw(g,
+                    new(posX, posY),
+                    new(0, -1),
+                    10,
+                    (i == Ship.Ships[0].lives - 1) && !Ship.Ships[0].Respawning);
+            }
 
             Wrapable[] wrapables = [.. Wrapable.Wrapables];
             foreach (Wrapable wrapable in wrapables)

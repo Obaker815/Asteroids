@@ -159,10 +159,13 @@ namespace Asteroids
                 );
 
             // emitPosition should be within the radius from position
-            Vector2 emitPosition = position + Vector2.Transform(
-                new((float)rnd.NextDouble() * radius, 0),
-                Matrix3x2.CreateRotation((float)rnd.NextDouble() * 2 * float.Pi)
-                );
+            float emissionPositionAngle = (float)(rnd.NextDouble() * 2 * MathF.PI);
+            float distance = (float)Math.Sqrt(rnd.NextDouble()) * radius;
+
+            Vector2 emitPosition = position + new Vector2(
+                distance * MathF.Cos(emissionPositionAngle),
+                distance * MathF.Sin(emissionPositionAngle)
+            );
 
             // Calculate angular velocity, lifetime and rotation of the Particle to be spawned
             float angularVel = (float)rnd.NextDouble() * (angularVelocity.Max - angularVelocity.Min) + angularVelocity.Min;

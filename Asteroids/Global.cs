@@ -6,6 +6,7 @@ namespace Asteroids
     {
         public static bool DEBUG = false;
         public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;
+        public const bool DEBUG_PARTICLE_DRAW = true;
         public const bool PLAYER_COLLISION = true;
 
         public static int FPS = 67;

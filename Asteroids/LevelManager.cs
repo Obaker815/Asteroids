@@ -4,6 +4,8 @@ namespace Asteroids
 {
     internal class LevelManager
     {
+        public static readonly LevelManager Instance = new();
+        private const int lifeInterval = 10000;
         private float currentSaucerTime = 0f;
 
         private Rectangle screen;
@@ -15,6 +17,16 @@ namespace Asteroids
         {
             score = 0;
             round = 0;
+        }
+
+        public void AddScore(int score) 
+        {
+            long nextLife = lifeInterval % score * lifeInterval;
+            this.score += score;
+            if (this.score > nextLife && this.score - score > lifeInterval)
+            {
+                Ship.Ships[0].lives++;
+            }
         }
 
         public Task NewRound(Rectangle screen)

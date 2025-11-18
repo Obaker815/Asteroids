@@ -44,7 +44,7 @@ namespace Asteroids
             if (isSmall)
             {
                 speed = 125;
-                radius = 8f;
+                radius = 8;
                 ShootInterval = 1;
             }
             else
@@ -89,6 +89,7 @@ namespace Asteroids
                 Bullet? b = collided as Bullet;
                 if (b?.parent is Ship)
                 {
+                    LevelManager.Instance.AddScore((radius == 8)? 1000: 200);
                     b.collided = true;
                     toRemove.Add(collided);
                     toRemove.Add(this);

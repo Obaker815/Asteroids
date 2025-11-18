@@ -51,6 +51,9 @@ namespace Asteroids
 
         public static List<Ship> Ships = [];
         public int numBullets = 0;
+        public int lives = 5;
+
+        public bool Respawning => respawning;
 
         // Constants
         private const float ANGULAR_ACCELERATION = float.Pi * 2f;
@@ -159,6 +162,7 @@ namespace Asteroids
         /// </summary>
         private void Respawn()
         {
+            lives--;
             foreach (ParticleEffect p in destroyEffects)
             {
                 p.Position = this.position;

@@ -50,11 +50,11 @@ namespace Asteroids
         private readonly int size;
         private Vector2[] points;
 
-        private readonly static Dictionary<int, (float radius, float speed, float rotateSpeed)> SizePropertyDict = new()
+        private readonly static Dictionary<int, (float radius, float speed, float rotateSpeed, int score)> SizePropertyDict = new()
         {
-            { 1, (13, 80, 4) },
-            { 2, (20, 60, 2) },
-            { 3, (30, 50, 1) },
+            { 1, (13, 80, 4, 100) },
+            { 2, (20, 60, 2, 50) },
+            { 3, (30, 50, 1, 20) },
         };
 
         /// <summary>
@@ -134,6 +134,7 @@ namespace Asteroids
                 Bullet? collidedBullet = collided as Bullet;
                 if (collidedBullet?.parent is Ship)
                 {
+                    LevelManager.Instance.AddScore(SizePropertyDict[size].score);
                     collidedBullet.collided = true;
                     toRemove.Add(this);
                 }
