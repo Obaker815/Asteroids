@@ -9,7 +9,7 @@ namespace Asteroids
         public const bool DEBUG_PARTICLE_DRAW = true;
         public const bool PLAYER_COLLISION = true;
 
-        public static int FPS = 67;
+        public static int FPS = 0;
         public static int CONTROL_STYLE = 0;
 
         /// <summary>

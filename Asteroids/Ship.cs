@@ -185,6 +185,8 @@ namespace Asteroids
         /// <param name="dt">Deltatime in seconds</param>
         public void Update(Dictionary<string, Keybind> Keys, Controller controller, float dt)
         {
+            numBullets = int.Clamp(numBullets, 0, 4);
+
             if (respawning)
             {
                 GameForm.AddFreezeTime(time: 0.5f, modifier: 0.5f);
