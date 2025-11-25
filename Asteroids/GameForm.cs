@@ -4,8 +4,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Numerics;
 
-using ts = this;
-
 namespace Asteroids
 {
     public partial class GameForm : Form
