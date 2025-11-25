@@ -4,6 +4,8 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Numerics;
 
+using ts = this;
+
 namespace Asteroids
 {
     public partial class GameForm : Form
@@ -19,6 +21,7 @@ namespace Asteroids
             { "Fullscreen", new Keybind(Keys.F11) },
             { "ShowFramerate", new Keybind(Keys.F12) },
         };
+
         private string frameRate = "";
         private string frameTime = "";
 
@@ -63,9 +66,8 @@ namespace Asteroids
                 lifetimeRange: (-5, 5),
                 impulseRange: (0, 2),
                 gradient: [
-                    (Color.White, 0.5f)
-                    ]
-                    ).Start();
+                    (Color.White, 0.5f),
+                    ]).Start();
         }
 
 
@@ -89,18 +91,14 @@ namespace Asteroids
             if (this.InvokeRequired)
             {
                 try
-                {
-                    this.Invoke(action);
-                }
+                { this.Invoke(action); }
+
                 catch (ObjectDisposedException)
-                {
-                    return;
-                }
+                { return; }
+
+                return;
             }
-            else
-            {
-                action();
-            }
+            action();
         }
 
         public static void AddFreezeTime(float time, float modifier)
@@ -141,7 +139,6 @@ namespace Asteroids
 
                 if (Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
                 {
-                    MessageBox.Show("you fucking suck");
                     InvokeAction(this.Close);
                 }
 

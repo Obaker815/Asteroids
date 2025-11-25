@@ -92,7 +92,7 @@ namespace Asteroids
         {
             Vector2 angleVelStart = Vector2.Transform(new(20, 0), Matrix3x2.CreateRotation(rotation));
             Vector2 angleVelEnd = Vector2.Transform(new(20, (angularVelocity / 2) * Global.DEBUG_DIRECTION_LINE_LENGTH * 10f), Matrix3x2.CreateRotation(rotation));
-            g.DrawLine(Pens.Green, new PointF(position), new PointF((position + Global.Normalize(velocity) * Global.DEBUG_DIRECTION_LINE_LENGTH * 10f)));
+            g.DrawLine(Pens.Green, new PointF(position), new PointF(position + Global.Normalize(velocity) * Global.DEBUG_DIRECTION_LINE_LENGTH * 10f));
             g.DrawLine(Pens.Blue, new PointF(position + angleVelStart), new PointF(position + angleVelEnd));
             g.DrawEllipse(Pens.Red, position.X - 10f, position.Y - 10f, 20, 20);
         }
@@ -122,7 +122,7 @@ namespace Asteroids
             if (gradient == null || gradient.Length == 0)
                 return Color.White;
 
-            // Ensure gradient covers full [0,1] range with transparency
+            // Make sure gradient covers full [0,1] range with transparency
             List<(Color color, float t)> list = [.. gradient];
             if (list[0].t > 0f)
                 list.Insert(0, (Color.FromArgb(0, list[0].color), 0f));
