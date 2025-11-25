@@ -9,13 +9,16 @@ namespace Asteroids
     public partial class GameForm : Form
     {
         private readonly PrivateFontCollection? privateFonts;
-        private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
         private readonly Controller controller = new(UserIndex.One);
-        private const Keys FULLSCREEN_KEY = Keys.F11;
-        private const Keys CLOSE_KEY = Keys.Escape;
-
-        private const string DEBUG_CODE = "UUDDLRLR";
-        private string lastKeysPressed = "";
+        private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
+        private readonly Dictionary<string, Keybind> OptionBindings = new()
+        {
+            { "Exit", new Keybind(Keys.Escape) },
+            { "DebugMode", new Keybind(Keys.F1) },
+            { "DebugShowParticles", new Keybind(Keys.F2) },
+            { "Fullscreen", new Keybind(Keys.F11) },
+            { "ShowFramerate", new Keybind(Keys.F12) },
+        };
         private string frameRate = "";
         private string frameTime = "";
 
@@ -138,8 +141,8 @@ namespace Asteroids
 
                 if (Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
                 {
-                    InvokeAction(this.Close);
                     MessageBox.Show("you fucking suck");
+                    InvokeAction(this.Close);
                 }
 
                 // Update keybinds
@@ -152,6 +155,51 @@ namespace Asteroids
                         kb.FirstPress = false;
                     }
                     KeyBindings[Key] = kb;
+                }
+
+                // Update option keybinds
+                if (OptionBindings["Exit"].FirstPress)
+                    InvokeAction(this.Close);
+
+                if (OptionBindings["DebugMode"].FirstPress)
+                    Global.DEBUG = !Global.DEBUG;
+
+                if (OptionBindings["ShowFramerate"].FirstPress)
+                    Global.FPSDISPLAY = !Global.FPSDISPLAY;
+
+                if (OptionBindings["DebugShowParticles"].FirstPress)
+                    Global.DEBUG_PARTICLE_DRAW = !Global.DEBUG_PARTICLE_DRAW;
+
+                if (OptionBindings["Fullscreen"].FirstPress)
+                {
+                    if (this.FormBorderStyle == FormBorderStyle.None)
+                    {
+                        this.InvokeAction(() =>
+                        {
+                            this.FormBorderStyle = FormBorderStyle.Sizable;
+                            this.WindowState = FormWindowState.Normal;
+
+                            this.Size = new Size(preferredSize.Width + borderSize.Width, preferredSize.Height + borderSize.Height);
+                        });
+                    }
+                    else
+                    {
+                        this.InvokeAction(() =>
+                        {
+                            this.FormBorderStyle = FormBorderStyle.None;
+                            this.WindowState = FormWindowState.Maximized;
+                        });
+                    }
+                }
+                
+                foreach (string Key in OptionBindings.Keys)
+                {
+                    Keybind kb = OptionBindings[Key];
+                    if (kb.FirstPress)
+                    {
+                        kb.FirstPress = false;
+                    }
+                    OptionBindings[Key] = kb;
                 }
 
                 if (Asteroid.AsteroidEntities.Count == 0 && !roundStarting)
@@ -246,24 +294,6 @@ namespace Asteroids
         // key down and key up event
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == CLOSE_KEY)
-                this.Close();
-
-            if (e.KeyCode == FULLSCREEN_KEY)
-            {
-                if (this.FormBorderStyle == FormBorderStyle.None)
-                {
-                    this.FormBorderStyle = FormBorderStyle.Sizable;
-                    this.WindowState = FormWindowState.Normal;
-
-                    this.Size = new Size(preferredSize.Width + borderSize.Width, preferredSize.Height + borderSize.Height);
-                }
-                else
-                {
-                    this.FormBorderStyle = FormBorderStyle.None;
-                    this.WindowState = FormWindowState.Maximized;
-                }
-            }
             foreach (string Key in KeyBindings.Keys)
             {
                 // check if the key pressed matches any keybinds
@@ -274,18 +304,20 @@ namespace Asteroids
                     kb.FirstPress = true;
                     kb.IsPressed = true;
                     KeyBindings[Key] = kb;
-
-                    // Debug code for cheat code detection
-                    lastKeysPressed += Key.First();
                 }
             }
 
-            if (lastKeysPressed.Length > 8) lastKeysPressed = lastKeysPressed.Substring(1, 8);
-            if (DEBUG_CODE == lastKeysPressed)
+            foreach (string Key in OptionBindings.Keys)
             {
-                Global.DEBUG = !Global.DEBUG;
-                Wrapable.SetBounds(preferredSize);
-                lastKeysPressed = "";
+                // check if the key pressed matches any keybinds
+                if (e.KeyCode == OptionBindings[Key].Key)
+                {
+                    // edit the Keybind in the dictionary
+                    Keybind kb = OptionBindings[Key];
+                    kb.FirstPress = true;
+                    kb.IsPressed = true;
+                    OptionBindings[Key] = kb;
+                }
             }
         }
 
@@ -374,9 +406,13 @@ namespace Asteroids
                     ParticleEffect.DebugDrawAll(g);
             }
 
+            if (Global.FPSDISPLAY)
+            {
+                g.DrawString($"Framerate: {frameRate}fps", Font, Brushes.White, 10, preferredSize.Height - 60);
+                g.DrawString($"Frametime: {frameTime}ms", Font, Brushes.White, 10, preferredSize.Height - 30);
+            }
+
             string score = LevelManager.Instance.Score.ToString("D10");
-            g.DrawString($"Framerate: {frameRate}fps", Font, Brushes.White, 10, preferredSize.Height - 60);
-            g.DrawString($"Frametime: {frameTime}ms", Font, Brushes.White, 10, preferredSize.Height - 30);
             g.DrawString(score, Font, Brushes.White, 10, 10);
 
             float livesYPos = 60;

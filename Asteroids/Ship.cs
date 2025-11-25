@@ -28,15 +28,17 @@ namespace Asteroids
                     args: [],
                     interval: 0.05f,
                     lifetime: 1,
-                    impulse: 100,
-                    count: 40,
+                    impulse: 50,
+                    count: 100,
                     maxTriggers: 1,
                     angularVelocity: (0, 0),
-                    impulseRange: (-50, 50),
+                    impulseRange: (-25, 25),
                     lifetimeRange: (-0.3f, 0.5f),
                     gradient: [
-                        (Color.White, 0f),
-                        (Color.White, 0.5f),
+                        (Color.White, 0.0f),
+                        (Color.Yellow, 0.3f),
+                        (Color.Orange, 0.4f),
+                        (Color.Red, 0.6f),
                         ])
                 ];
 

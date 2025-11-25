@@ -184,7 +184,6 @@ namespace Asteroids
             draw();
         }
 
-
         public override void Remove()
         {
             AsteroidEntities.Remove(this);

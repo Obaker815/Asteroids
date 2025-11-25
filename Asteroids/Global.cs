@@ -5,12 +5,13 @@ namespace Asteroids
     internal static class Global
     {
         public static bool DEBUG = false;
-        public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;
-        public const bool DEBUG_PARTICLE_DRAW = true;
-        public const bool PLAYER_COLLISION = true;
-
-        public static int FPS = 0;
+        public static bool FPSDISPLAY = false;
+        public static bool DEBUG_PARTICLE_DRAW = false;
+        public static int FPS = 67;
         public static int CONTROL_STYLE = 0;
+
+        public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;
+        public const bool PLAYER_COLLISION = true;
 
         /// <summary>
         /// A safe normalization function for <see cref="Vector2"/> values

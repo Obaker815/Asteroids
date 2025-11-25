@@ -55,7 +55,6 @@ namespace Asteroids
             return num;
         }
 
-
         private static float GetSaucerInterval(int asteroidCount)
         {
             if (asteroidCount >= 9) return 18f;
