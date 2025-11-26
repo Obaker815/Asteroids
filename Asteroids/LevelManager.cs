@@ -19,13 +19,19 @@ namespace Asteroids
             round = 0;
         }
 
-        public void AddScore(int score) 
+        public void AddScore(int amount)
         {
-            long nextLife = lifeInterval % score * lifeInterval;
-            this.score += score;
-            if (this.score > nextLife && this.score - score > lifeInterval)
+            long oldScore = score;
+            score += amount;
+
+            long oldLifeCount = oldScore / lifeInterval;
+            long newLifeCount = score / lifeInterval;
+
+            long livesGained = newLifeCount - oldLifeCount;
+
+            if (livesGained > 0)
             {
-                Ship.Ships[0].lives++;
+                Ship.Ships[0].lives += (int)livesGained;
             }
         }
 
