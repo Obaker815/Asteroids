@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
-using System.Numerics;
 
 namespace Asteroids
 {
@@ -18,6 +17,7 @@ namespace Asteroids
             { "DebugShowParticles", new Keybind(Keys.F2) },
             { "Fullscreen", new Keybind(Keys.F11) },
             { "ShowFramerate", new Keybind(Keys.F12) },
+            { "ChangeControlStyle", new Keybind(Keys.F10) },
         };
 
         private string frameRate = "";
@@ -107,6 +107,48 @@ namespace Asteroids
             dtModifier = modifier;
         }
 
+        private Task ProcessOptionChanges()
+        {
+            if (OptionBindings["Exit"].FirstPress)
+                InvokeAction(this.Close);
+
+            if (OptionBindings["DebugMode"].FirstPress)
+                Global.DEBUG = !Global.DEBUG;
+
+            if (OptionBindings["ShowFramerate"].FirstPress)
+                Global.FPSDISPLAY = !Global.FPSDISPLAY;
+
+            if (OptionBindings["ChangeControlStyle"].FirstPress)
+                Global.CONTROL_STYLE = (Global.CONTROL_STYLE + 1) % 2;
+
+            if (OptionBindings["DebugShowParticles"].FirstPress)
+                Global.DEBUG_PARTICLE_DRAW = !Global.DEBUG_PARTICLE_DRAW;
+
+            if (OptionBindings["Fullscreen"].FirstPress)
+            {
+                if (this.FormBorderStyle == FormBorderStyle.None)
+                {
+                    this.InvokeAction(() =>
+                    {
+                        this.FormBorderStyle = FormBorderStyle.Sizable;
+                        this.WindowState = FormWindowState.Normal;
+
+                        this.Size = new Size(preferredSize.Width + borderSize.Width, preferredSize.Height + borderSize.Height);
+                    });
+                }
+                else
+                {
+                    this.InvokeAction(() =>
+                    {
+                        this.FormBorderStyle = FormBorderStyle.None;
+                        this.WindowState = FormWindowState.Maximized;
+                    });
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
         Stopwatch elapsedtimeSW;
         bool running = false;
         private async void GameMainLoop()
@@ -139,7 +181,7 @@ namespace Asteroids
 
                 if (Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
                 {
-                    InvokeAction(this.Close);
+                    InvokeAction(Application.Restart);
                 }
 
                 // Update keybinds
@@ -154,41 +196,7 @@ namespace Asteroids
                     KeyBindings[Key] = kb;
                 }
 
-                // Update option keybinds
-                if (OptionBindings["Exit"].FirstPress)
-                    InvokeAction(this.Close);
-
-                if (OptionBindings["DebugMode"].FirstPress)
-                    Global.DEBUG = !Global.DEBUG;
-
-                if (OptionBindings["ShowFramerate"].FirstPress)
-                    Global.FPSDISPLAY = !Global.FPSDISPLAY;
-
-                if (OptionBindings["DebugShowParticles"].FirstPress)
-                    Global.DEBUG_PARTICLE_DRAW = !Global.DEBUG_PARTICLE_DRAW;
-
-                if (OptionBindings["Fullscreen"].FirstPress)
-                {
-                    if (this.FormBorderStyle == FormBorderStyle.None)
-                    {
-                        this.InvokeAction(() =>
-                        {
-                            this.FormBorderStyle = FormBorderStyle.Sizable;
-                            this.WindowState = FormWindowState.Normal;
-
-                            this.Size = new Size(preferredSize.Width + borderSize.Width, preferredSize.Height + borderSize.Height);
-                        });
-                    }
-                    else
-                    {
-                        this.InvokeAction(() =>
-                        {
-                            this.FormBorderStyle = FormBorderStyle.None;
-                            this.WindowState = FormWindowState.Maximized;
-                        });
-                    }
-                }
-                
+                await ProcessOptionChanges();
                 foreach (string Key in OptionBindings.Keys)
                 {
                     Keybind kb = OptionBindings[Key];
@@ -345,10 +353,10 @@ namespace Asteroids
                 { "Down", new Keybind(Keys.S) },
                 { "Left", new Keybind(Keys.A) },
                 { "Right", new Keybind(Keys.D) },
-                { "UpAlt", new Keybind(Keys.Up) },
-                { "DownAlt", new Keybind(Keys.Down) },
-                { "LeftAlt", new Keybind(Keys.Left) },
-                { "RightAlt", new Keybind(Keys.Right) },
+                { "UpAlt", new Keybind(Keys.I) },
+                { "DownAlt", new Keybind(Keys.K) },
+                { "LeftAlt", new Keybind(Keys.J) },
+                { "RightAlt", new Keybind(Keys.L) },
                 { "Shoot", new Keybind(Keys.Space) },
             };
         }

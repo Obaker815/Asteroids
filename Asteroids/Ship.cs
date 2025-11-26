@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using SharpDX.XInput;
 
 namespace Asteroids
@@ -302,10 +303,14 @@ namespace Asteroids
                     TwoStick(moveDir, lookDir);
                 }
 
+                string debugString = "Ship Keybinds:\n";
+                foreach (string key in Keys.Keys)
+                    debugString += (key + ": " + Keys[key].IsPressed + "\n");
+                Debug.WriteLine(debugString);
+
                 if (Keys["Shoot"].FirstPress && numBullets < MAX_BULLETS)
                 {
                     numBullets++;
-
                     Vector2 lookDir = (this.lookDir != Vector2.Zero) ? this.lookDir : new(1, 0);
 
                     Vector2 StartVelocity = base.velocity * Vector2.Dot(base.velocity, lookDir) / base.velocity.LengthSquared();
