@@ -13,7 +13,6 @@ namespace Asteroids
         private readonly (float Min, float Max) angularVelocity;    // The range of angular velocities that the particles can start with
         private readonly (float Min, float Max) lifetimeRange;      // The range (relative to lifetime) that the particles will live for
         private readonly (float Min, float Max) impulseRange;       // The range (relative to impulse) that the particles will be spawned with
-        private readonly Type particleType;                         // The type of particle spawned
         private readonly float lifetime;                            // The default lifetime of a particle
         private readonly float impulse;                             // The starting impulse given to a particle
         private object[] args;                                      // The arguments passed to the particle constructor e.g. [float length, int width]
@@ -28,6 +27,7 @@ namespace Asteroids
         private int numTriggers;
 
         // Particle effect properties
+        private Type particleType;
         private Vector2 position;
         private float radius;
         private float angle;
@@ -35,6 +35,7 @@ namespace Asteroids
         private bool isPlaying;
 
         // Public properties
+        public Type ParticleType { get { return particleType; } set { particleType = value; } }
         public object[] Args    { get { return args; } set { args = value; } }
         public Vector2 Position { get { return position; } set { position = value; } }
         public float Radius     { get { return radius; } set { radius = value; } }

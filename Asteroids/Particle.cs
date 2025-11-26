@@ -125,9 +125,9 @@ namespace Asteroids
             // Make sure gradient covers full [0,1] range with transparency
             List<(Color color, float t)> list = [.. gradient];
             if (list[0].t > 0f)
-                list.Insert(0, (Color.FromArgb(0, list[0].color), 0f));
+                list.Insert(0, (Color.FromArgb(0, Color.Black), 0f));
             if (list[^1].t < 1f)
-                list.Add((Color.FromArgb(0, list[^1].color), 1f));
+                list.Add((Color.FromArgb(0, Color.Black), 1f));
 
             t = Math.Clamp(t, 0f, 1f);
 

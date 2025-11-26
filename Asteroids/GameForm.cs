@@ -26,6 +26,7 @@ namespace Asteroids
         private readonly Rectangle preferredRect = new(0, 0, 800, 480);
         private readonly Size preferredSize = new(800, 450);
         private readonly Size borderSize;
+        private readonly ParticleEffect starsEffect;
 
         private const float ROUND_START_TIME = 4;
         private float currentRoundEndTime;
@@ -52,7 +53,7 @@ namespace Asteroids
             Font = new Font(fontFamily, 20f);
 
             // Stars background
-            new ParticleEffect(
+            starsEffect = new(
                 typeof(ParticleDot),
                 position: new(preferredSize.Width / 2, preferredSize.Height / 2),
                 args: [],
@@ -65,7 +66,8 @@ namespace Asteroids
                 impulseRange: (0, 2),
                 gradient: [
                     (Color.White, 0.5f),
-                    ]).Start();
+                    ]);
+            starsEffect.Start();
         }
 
 

@@ -5,6 +5,7 @@ namespace Asteroids
 {
     internal class Ship : Wrapable
     {
+        // Particle effects for when the ship is destroyed
         private readonly ParticleEffect[] destroyEffects =
             [
                 new(
@@ -26,14 +27,13 @@ namespace Asteroids
                     particleType: typeof(ParticleDot),
                     position: new(0, 0),
                     args: [],
-                    interval: 0.05f,
-                    lifetime: 1,
-                    impulse: 50,
-                    count: 100,
-                    maxTriggers: 1,
-                    angularVelocity: (0, 0),
-                    impulseRange: (-25, 25),
-                    lifetimeRange: (-0.3f, 0.5f),
+                    interval: 0.02f,
+                    lifetime: 1f,
+                    impulse: 250,
+                    count: 500,
+                    maxTriggers: 5,
+                    impulseRange: (-250, 250),
+                    lifetimeRange: (-0.5f, 0.5f),
                     gradient: [
                         (Color.White, 0.0f),
                         (Color.Yellow, 0.3f),
@@ -42,7 +42,15 @@ namespace Asteroids
                         ])
                 ];
 
-        // Other shit idk
+        // Constants
+        private const float ANGULAR_ACCELERATION = float.Pi * 2f;
+        private const float ACCELERATION = 400f;
+        private const float MAX_VELOCITY = 400f;
+        private const float DEADZONE = 0.25f;
+        private const int BULLET_TIME = 2000;
+        private const int MAX_BULLETS = 4;
+
+        // Private ship properties
         private Vector2 respawnLocation;
         private Vector2 lookDir = new(0, -1);
         private Vector2 moveDir = new(0, -1);
@@ -51,19 +59,12 @@ namespace Asteroids
         private float respawnTime = 0f;
         private float iFrames = 0f;
 
-        public static List<Ship> Ships = [];
+        // Public ship properties
+        public bool Respawning => respawning;
         public int numBullets = 0;
         public int lives = 5;
 
-        public bool Respawning => respawning;
-
-        // Constants
-        private const float ANGULAR_ACCELERATION = float.Pi * 2f;
-        private const float ACCELERATION = 400f;
-        private const float MAX_VELOCITY = 400f;
-        private const float DEADZONE = 0.25f;
-        private const int BULLET_TIME = 2000;
-        private const int MAX_BULLETS = 4;
+        public static List<Ship> Ships = [];
 
         /// <summary>
         /// Constructor for the <see cref="Ship"/> class
@@ -95,8 +96,9 @@ namespace Asteroids
         /// <param name="position">The <see cref="Vector2"/> position to be drawn</param>
         /// <param name="lookDir">The forward direction of the ship as <see cref="Vector2"/></param>
         /// <param name="radius">The radius of the <see cref="Ship"/></param>
-        /// <param name="accellerating">If the ship should have a flame</param>
+        /// <param name="accelerating">If the ship should have a flame</param>
         /// <param name="respawning">If the ship is respawning</param>
+        /// <peram name="iframes">The current invincibility frames of the ship</peram>
         public static void Draw(Graphics g, Vector2 position, Vector2 lookDir, float radius, bool accelerating, bool respawning = false, float iframes = 0f)
         {
             if (respawning) return;
@@ -167,6 +169,7 @@ namespace Asteroids
             lives--;
             foreach (ParticleEffect p in destroyEffects)
             {
+                p.Radius = base.radius;
                 p.Position = this.position;
                 GameForm.ActiveGameform?.InvokeAction(p.Start);
             }

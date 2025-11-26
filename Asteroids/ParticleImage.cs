@@ -2,9 +2,11 @@
 
 namespace Asteroids
 {
-    internal class ParticleDot : Particle
+    internal class ParticleImage : Particle
     {
-        public ParticleDot(object[] args,
+        private readonly Image image;
+        private readonly float? scale;
+        public ParticleImage(object[] args,
                            Vector2 position,
                            Vector2 velocity,
                            float angularVelocity,
@@ -17,19 +19,21 @@ namespace Asteroids
                                rotation, 
                                gradient)
         {
+            if (args.Length != 2) throw new Exception("Incorrect arguments for ParticleImage"); 
+
             Particles.Add(this);
-            _ = args;
+            image = (args[0] as Image)!;
+            scale = (args[1] as float?)!;
         }
 
         /// <summary>
-        /// The draw procedure for the <see cref="ParticleDot"/> class
+        /// The draw procedure for the <see cref="ParticleImage"/> class
         /// </summary>
         /// <param name="g">The <see cref="Graphics"/> object to draw to</param>
         public override void Draw(Graphics g)
         {
-            float progress = age / lifetime;
-            Color c = GetColor(progress);
-            g.FillRectangle(new SolidBrush(c), position.X, position.Y, 2, 2);
+            if (image is null) return;
+            g.DrawImage(image, position.X, position.Y, (float)(image.Width * scale)!, (float)(image.Height * scale)!);
         }
     }
 }
