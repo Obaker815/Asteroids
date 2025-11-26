@@ -1,5 +1,6 @@
 ﻿using SharpDX.XInput;
 using System.Diagnostics;
+using System.DirectoryServices.ActiveDirectory;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 
@@ -82,6 +83,9 @@ namespace Asteroids
 
             _ = new Ship(new(preferredSize.Width / 2, preferredSize.Height / 2));
 
+            if (Global.FULLSCREEN)
+                Fullscreen(true);
+
             Task.Run(GameMainLoop);
             Focus();
         }
@@ -107,6 +111,31 @@ namespace Asteroids
             dtModifier = modifier;
         }
 
+        private void Fullscreen(bool fullscreen)
+        {
+            if (!fullscreen)
+            {
+                this.InvokeAction(() =>
+                {
+                    this.FormBorderStyle = FormBorderStyle.Sizable;
+                    this.WindowState = FormWindowState.Normal;
+
+                    this.Size = new Size(preferredSize.Width + borderSize.Width, preferredSize.Height + borderSize.Height);
+
+                    Global.FULLSCREEN = false;
+                });
+            }
+            else
+            {
+                this.InvokeAction(() =>
+                {
+                    this.FormBorderStyle = FormBorderStyle.None;
+                    this.WindowState = FormWindowState.Maximized;
+                });
+                Global.FULLSCREEN = true;
+            }
+        }
+
         private Task ProcessOptionChanges()
         {
             if (OptionBindings["Exit"].FirstPress)
@@ -125,27 +154,8 @@ namespace Asteroids
                 Global.DEBUG_PARTICLE_DRAW = !Global.DEBUG_PARTICLE_DRAW;
 
             if (OptionBindings["Fullscreen"].FirstPress)
-            {
-                if (this.FormBorderStyle == FormBorderStyle.None)
-                {
-                    this.InvokeAction(() =>
-                    {
-                        this.FormBorderStyle = FormBorderStyle.Sizable;
-                        this.WindowState = FormWindowState.Normal;
-
-                        this.Size = new Size(preferredSize.Width + borderSize.Width, preferredSize.Height + borderSize.Height);
-                    });
-                }
-                else
-                {
-                    this.InvokeAction(() =>
-                    {
-                        this.FormBorderStyle = FormBorderStyle.None;
-                        this.WindowState = FormWindowState.Maximized;
-                    });
-                }
-            }
-
+                Fullscreen(!Global.FULLSCREEN);
+            
             return Task.CompletedTask;
         }
 
@@ -456,6 +466,40 @@ namespace Asteroids
                 float barH = ydiff / 2;
                 g.FillRectangle(barBrush, -10, -10, ClientSize.Width + 20, barH + 10);
                 g.FillRectangle(barBrush, -10, ClientSize.Height - barH, ClientSize.Width + 20, barH + 10);
+            }
+        }
+
+        private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            ConfigsJSON cfg = new()
+            {
+                Fullscreen = Global.FULLSCREEN,
+                ControlStyle = Global.CONTROL_STYLE
+            };
+
+            JSONReader.WriteJson("./config.json", cfg);
+        }
+
+        private void GameForm_Load(object sender, EventArgs e)
+        {
+            if (!File.Exists("./config.json"))
+            {
+                File.Create("./config.json").Close();
+
+                ConfigsJSON cfg = new()
+                {
+                    Fullscreen = Global.FULLSCREEN,
+                    ControlStyle = Global.CONTROL_STYLE
+                };
+
+                JSONReader.WriteJson("./config.json", cfg);
+            }
+            else
+            {
+                ConfigsJSON cfg = JSONReader.ReadJson<ConfigsJSON>("./config.json");
+
+                Global.FULLSCREEN = cfg.Fullscreen;
+                Global.CONTROL_STYLE = cfg.ControlStyle;
             }
         }
     }

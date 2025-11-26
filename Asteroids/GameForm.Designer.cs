@@ -39,11 +39,13 @@
             Name = "GameForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Asteroids";
+            FormClosing += GameForm_FormClosing;
+            Load += GameForm_Load;
             Shown += GameForm_Shown;
             Paint += GameForm_Paint;
+            GotFocus += GameForm_GotFocus;
             KeyDown += GameForm_KeyDown;
             KeyUp += GameForm_KeyUp;
-            GotFocus += GameForm_GotFocus;
             ResumeLayout(false);
         }
 
