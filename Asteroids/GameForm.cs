@@ -1,6 +1,5 @@
 ﻿using SharpDX.XInput;
 using System.Diagnostics;
-using System.DirectoryServices.ActiveDirectory;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 
@@ -64,7 +63,7 @@ namespace Asteroids
                 count: 5,
                 radius: float.Sqrt(preferredSize.Width * preferredSize.Width / 4 + preferredSize.Height * preferredSize.Height / 4),
                 lifetimeRange: (-5, 5),
-                impulseRange: (0, 2),
+                impulseRange: (0, 1),
                 gradient: [
                     (Color.White, 0.5f),
                     ]);
@@ -445,11 +444,11 @@ namespace Asteroids
                     (i == Ship.Ships[0].lives - 1) && !Ship.Ships[0].Respawning);
             }
 
+            Particle.DrawAll(g);
+
             Wrapable[] wrapables = [.. Wrapable.Wrapables];
             foreach (Wrapable wrapable in wrapables)
                 wrapable?.Draw(g);
-
-            Particle.DrawAll(g);
 
             g.Transform = originalTransform;
 

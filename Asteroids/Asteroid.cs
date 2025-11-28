@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Drawing.Drawing2D;
+using System.Numerics;
 
 namespace Asteroids
 {
@@ -173,13 +174,17 @@ namespace Asteroids
             {
                 points ??= await GenShape();
 
-                for (int i = 0; i < points.Length; i++)
-                {
-                    Vector2 start = Position + points[i] * radius;
-                    Vector2 end = Position + points[(i + 1) % points.Length] * radius;
+                List<PointF> path = [];
 
-                    g.DrawLine(Pens.White, start.X, start.Y, end.X, end.Y);
+                for (int i = 0; i <= points.Length; i++)
+                {
+                    Vector2 point = Position + points[i % points.Length] * radius;
+
+                    path.Add(new(point.X, point.Y));
                 }
+
+                g.FillPolygon(Brushes.Black, path.ToArray());
+                g.DrawPolygon(Pens.White, path.ToArray());
             }
             draw();
         }
