@@ -30,8 +30,8 @@ namespace Asteroids
                     args: [],
                     interval: 0.02f,
                     lifetime: 1f,
-                    impulse: 100,
-                    count: 1000,
+                    impulse: 50,
+                    count: 100,
                     maxTriggers: 5,
                     impulseRange: (-150, 250),
                     lifetimeRange: (-0.5f, 0.5f),
@@ -61,7 +61,7 @@ namespace Asteroids
         // Public ship properties
         public bool Respawning => respawning;
         public int numBullets = 0;
-        public int lives = 5;
+        public int lives = 100000;
 
         public static List<Ship> Ships = [];
 

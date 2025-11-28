@@ -407,8 +407,8 @@ namespace Asteroids
             float xdiff = ClientSize.Width - renderWidth;
             float ydiff = ClientSize.Height - renderHeight;
 
+            // Transform the Graphics object to fit the window size
             Matrix originalTransform = g.Transform.Clone();
-
             g.TranslateTransform(xdiff / 2, ydiff / 2);
             g.ScaleTransform(scale, scale);
 
@@ -420,12 +420,15 @@ namespace Asteroids
                     ParticleEffect.DebugDrawAll(g);
             }
 
-            if (Global.FPSDISPLAY)
-            {
-                g.DrawString($"Framerate: {frameRate}fps", Font, Brushes.White, 10, preferredSize.Height - 60);
-                g.DrawString($"Frametime: {frameTime}ms", Font, Brushes.White, 10, preferredSize.Height - 30);
-            }
+            // Draw all particles
+            Particle.DrawAll(g);
 
+            // Draw all wrapable objects
+            Wrapable[] wrapables = [.. Wrapable.Wrapables];
+            foreach (Wrapable wrapable in wrapables)
+                wrapable?.Draw(g);
+
+            // Draw UI elements on top of everything
             string score = LevelManager.Instance.Score.ToString("D10");
             g.DrawString(score, Font, Brushes.White, 10, 10);
 
@@ -444,16 +447,17 @@ namespace Asteroids
                     (i == Ship.Ships[0].lives - 1) && !Ship.Ships[0].Respawning);
             }
 
-            Particle.DrawAll(g);
+            if (Global.FPSDISPLAY)
+            {
+                g.DrawString($"Framerate: {frameRate}fps", Font, Brushes.White, 10, preferredSize.Height - 60);
+                g.DrawString($"Frametime: {frameTime}ms", Font, Brushes.White, 10, preferredSize.Height - 30);
+            }
 
-            Wrapable[] wrapables = [.. Wrapable.Wrapables];
-            foreach (Wrapable wrapable in wrapables)
-                wrapable?.Draw(g);
-
+            // reset the transform of the graphics object
             g.Transform = originalTransform;
 
+            // Draw the bars on the top & bottom || left & right to hide how wrapping works when the graphics object doesn't scale exactly
             Brush barBrush = new SolidBrush(Color.FromArgb(255, 30, 30, 30));
-
             if (xdiff > 0)
             {
                 float barW = xdiff / 2;
