@@ -4,8 +4,8 @@ namespace Asteroids
 {
     internal class Wrapable : Entity
     {
-        public static List<Wrapable> Wrapables = [];
         internal static RectangleF Bounds = new Rectangle(0, 0, 0, 0);
+        public static List<Wrapable> Wrapables = [];
 
         /// <summary>
         /// Overload for SetBounds(<see cref="float">, <see cref="float">) using <see cref="Size"/>

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.DirectoryServices.ActiveDirectory;
 using System.Numerics;
 
 namespace Asteroids
@@ -24,12 +25,16 @@ namespace Asteroids
                 (Color.White, 0.5f),
                 ]);
 
+        // properties
         private readonly int removeTime = 1000;
         private readonly Stopwatch lifeTimer;
+        private readonly object parent;
         private bool disposing = false;
-        
-        public bool collided = false;
-        public readonly object parent; 
+        private bool collided = false;
+
+        // public properties
+        public bool Collided { get { return collided; } set { collided = value; } }
+        public object Parent => parent; 
 
         /// <summary>
         /// The constructor for the <see cref="Bullet"> class
@@ -90,7 +95,7 @@ namespace Asteroids
         {
             if (parent is Ship p)
             {
-                p.numBullets--;
+                p.NumBullets--;
             }
 
             if (collided)

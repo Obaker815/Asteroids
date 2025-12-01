@@ -20,6 +20,7 @@ namespace Asteroids
         private Task animationTask;
         private Stopwatch elapsedTimeSW;
 
+        private readonly Type particleType;
         private readonly float interval;    // Time between triggers
         private readonly float duration;    // Duration of the effect
         private readonly int maxTriggers;   // Maximum number of triggers of the effect
@@ -27,7 +28,6 @@ namespace Asteroids
         private int numTriggers;
 
         // Particle effect properties
-        private Type particleType;
         private Vector2 position;
         private float radius;
         private float angle;
@@ -35,7 +35,6 @@ namespace Asteroids
         private bool isPlaying;
 
         // Public properties
-        public Type ParticleType { get { return particleType; } set { particleType = value; } }
         public object[] Args    { get { return args; } set { args = value; } }
         public Vector2 Position { get { return position; } set { position = value; } }
         public float Radius     { get { return radius; } set { radius = value; } }

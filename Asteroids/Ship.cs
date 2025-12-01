@@ -57,10 +57,11 @@ namespace Asteroids
         private bool respawning = false;
         private float respawnTime = 0f;
         private float iFrames = 0f;
+        private int numBullets = 0;
 
         // Public ship properties
         public bool Respawning => respawning;
-        public int numBullets = 0;
+        public int NumBullets { get { return numBullets; } set { numBullets = int.Clamp(value, 0, 4); } }
         public int lives = 5;
 
         public static List<Ship> Ships = [];
@@ -189,8 +190,6 @@ namespace Asteroids
         /// <param name="dt">Deltatime in seconds</param>
         public void Update(Dictionary<string, Keybind> Keys, Controller controller, float dt)
         {
-            numBullets = int.Clamp(numBullets, 0, 4);
-
             if (respawning)
             {
                 GameForm.AddFreezeTime(time: 0.5f, modifier: 0.5f);
@@ -338,7 +337,7 @@ namespace Asteroids
                 if (collidedBullet is not null)
                 {
                     Bullet? b = collidedBullet as Bullet;
-                    if (b?.parent != this)
+                    if (b?.Parent != this)
                     {
                         collisionHandle(collidedBullet);
                     }

@@ -4,7 +4,7 @@ namespace Asteroids
 {
     internal class Asteroid : Wrapable
     {
-        private static List<PointF[]> paths = new();
+        private static readonly List<PointF[]> paths = [];
         private static readonly Random random = new();
         public static List<Asteroid> AsteroidEntities = [];
         private static readonly ParticleEffect[] destroyEffects =
@@ -133,10 +133,10 @@ namespace Asteroids
             if (collided is not null && collided is Bullet)
             {
                 Bullet? collidedBullet = collided as Bullet;
-                if (collidedBullet?.parent is Ship)
+                if (collidedBullet?.Parent is Ship)
                 {
                     LevelManager.Instance.AddScore(SizePropertyDict[size].score);
-                    collidedBullet.collided = true;
+                    collidedBullet.Collided = true;
                     toRemove.Add(this);
                 }
                 toRemove.Add(collided);
@@ -181,7 +181,7 @@ namespace Asteroids
                     path.Add(new(point.X, point.Y));
                 }
 
-                paths.Add(path.ToArray());
+                paths.Add([.. path]);
             }
             draw();
         }

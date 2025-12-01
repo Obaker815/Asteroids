@@ -87,10 +87,10 @@ namespace Asteroids
             if (collided is not null)
             {
                 Bullet? b = collided as Bullet;
-                if (b?.parent is Ship)
+                if (b?.Parent is Ship)
                 {
                     LevelManager.Instance.AddScore((radius == 8)? 1000: 200);
-                    b.collided = true;
+                    b.Collided = true;
                     toRemove.Add(collided);
                     toRemove.Add(this);
                 }

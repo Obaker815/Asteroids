@@ -6,11 +6,14 @@ namespace Asteroids
     {
         public static readonly LevelManager Instance = new();
         private const int lifeInterval = 10000;
-        private float currentSaucerTime = 0f;
 
+        // properties
+        private float currentSaucerTime = 0f;
         private Rectangle screen;
         private long score;
         private int round;
+
+        // public properties
         public long Score => score;
 
         public LevelManager()

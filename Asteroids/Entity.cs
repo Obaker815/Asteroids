@@ -6,6 +6,8 @@ namespace Asteroids
     {
         public static List<Entity> toRemove = [];
         public static List<Entity> Entities = [];
+
+        // properties
         internal Vector2 position;
         internal Vector2 velocity;
         internal float radius = 0;

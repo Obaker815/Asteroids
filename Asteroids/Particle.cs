@@ -3,7 +3,7 @@
 namespace Asteroids
 {
     internal class Particle
-    {
+{
         public static List<Particle> Particles = [];
         public static List<Particle> toRemove = [];
 
