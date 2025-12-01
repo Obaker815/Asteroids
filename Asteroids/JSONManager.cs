@@ -2,7 +2,7 @@
 
 namespace Asteroids
 {
-    internal static class JSONReader
+    internal static class JSONManager
     {
         private static readonly JsonSerializerOptions options = new() { WriteIndented = true, AllowTrailingCommas = true };
         public static void WriteJson(string filePath, object obj)

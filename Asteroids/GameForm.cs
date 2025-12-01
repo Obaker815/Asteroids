@@ -480,7 +480,7 @@ namespace Asteroids
                 ControlStyle = Global.CONTROL_STYLE
             };
 
-            JSONReader.WriteJson("./config.json", cfg);
+            JSONManager.WriteJson("./config.json", cfg);
         }
 
         private void GameForm_Load(object sender, EventArgs e)
@@ -495,11 +495,11 @@ namespace Asteroids
                     ControlStyle = Global.CONTROL_STYLE
                 };
 
-                JSONReader.WriteJson("./config.json", cfg);
+                JSONManager.WriteJson("./config.json", cfg);
             }
             else
             {
-                ConfigsJSON cfg = JSONReader.ReadJson<ConfigsJSON>("./config.json");
+                ConfigsJSON cfg = JSONManager.ReadJson<ConfigsJSON>("./config.json");
 
                 Global.FULLSCREEN = cfg.Fullscreen;
                 Global.CONTROL_STYLE = cfg.ControlStyle;
