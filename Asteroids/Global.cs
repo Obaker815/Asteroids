@@ -8,7 +8,7 @@ namespace Asteroids
         public static bool FPSDISPLAY = false;
         public static bool DEBUG_PARTICLE_DRAW = false;
         public static bool FULLSCREEN = false;
-        public static int FPS = 67;
+        public static int FPS = 165;
         public static int CONTROL_STYLE = 0;
 
         public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;

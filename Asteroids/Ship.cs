@@ -61,7 +61,7 @@ namespace Asteroids
         // Public ship properties
         public bool Respawning => respawning;
         public int numBullets = 0;
-        public int lives = 100000;
+        public int lives = 5;
 
         public static List<Ship> Ships = [];
 
