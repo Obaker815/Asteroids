@@ -23,34 +23,11 @@ namespace Asteroids
         /// <param name="velocity">The <see cref="Vector2"/> velocity for the <see cref="Particle"/> to have</param>
         /// <param name="angularVelocity">The <see cref="float"/> angular velocity for the <see cref="Particle"/> to have</param>
         /// <param name="lifetime">The <see cref="float"/> lifetime of the <see cref="Particle"/></param>
-        /// <peram name="rotation">The initial <see cref="float"/> rotation of the <see cref="Particle"/></peram>
-        /// <peram name="gradient">The gradient for the <see cref="Particle"/>'s <see cref="Color"/> to follow as it progresses through its life</peram>
+        /// <param name="rotation">The initial <see cref="float"/> rotation of the <see cref="Particle"/></peram>
+        /// <param name="gradient">The gradient for the <see cref="Particle"/>'s <see cref="Color"/> to follow as it progresses through its life</peram>
         protected Particle(Vector2 position, Vector2 velocity, float angularVelocity, float lifetime, float rotation, (Color color, float t)[] gradient)
         {
             this.angularVelocity = angularVelocity;
-            this.position = position;
-            this.velocity = velocity;
-            this.lifetime = lifetime;
-            this.gradient = gradient;
-            this.rotation = rotation;
-
-            age = 0;
-
-            Particles.Add(this);
-        }
-
-        /// <summary>
-        /// The constructor for the <see cref="Particle"/> class
-        /// </summary>
-        /// <param name="position">The <see cref="Vector2"/> position for the <see cref="Particle"/> to start</param>
-        /// <param name="velocity">The <see cref="Vector2"/> velocity for the <see cref="Particle"/> to have</param>
-        /// <param name="angularVelocity">The <see cref="float"/> range of angular velocities for the <see cref="Particle"/> to have</param>
-        /// <param name="lifetime">The <see cref="float"/> lifetime of the <see cref="Particle"/></param>
-        /// <peram name="rotation">The initial <see cref="float"/> rotation of the <see cref="Particle"/></peram>
-        /// <peram name="gradient">The gradient for the <see cref="Particle"/>'s <see cref="Color"/> to follow as it progresses through its life</peram>
-        protected Particle(Vector2 position, Vector2 velocity, (float Min, float Max) angularVelocity, float lifetime, float rotation, (Color color, float t)[] gradient)
-        {
-            this.angularVelocity = (float)new Random().NextDouble() * (angularVelocity.Max - angularVelocity.Min) + angularVelocity.Min;
             this.position = position;
             this.velocity = velocity;
             this.lifetime = lifetime;

@@ -427,6 +427,7 @@ namespace Asteroids
             Wrapable[] wrapables = [.. Wrapable.Wrapables];
             foreach (Wrapable wrapable in wrapables)
                 wrapable?.Draw(g);
+            Asteroid.FinalDraw(g);
 
             // Draw UI elements on top of everything
             string score = LevelManager.Instance.Score.ToString("D10");

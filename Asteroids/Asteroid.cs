@@ -1,10 +1,10 @@
-﻿using System.Drawing.Drawing2D;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace Asteroids
 {
     internal class Asteroid : Wrapable
     {
+        private static List<PointF[]> paths = new();
         private static readonly Random random = new();
         public static List<Asteroid> AsteroidEntities = [];
         private static readonly ParticleEffect[] destroyEffects =
@@ -173,20 +173,28 @@ namespace Asteroids
             async void draw()
             {
                 points ??= await GenShape();
-
                 List<PointF> path = [];
 
                 for (int i = 0; i <= points.Length; i++)
                 {
                     Vector2 point = Position + points[i % points.Length] * radius;
-
                     path.Add(new(point.X, point.Y));
                 }
 
-                g.FillPolygon(Brushes.Black, path.ToArray());
-                g.DrawPolygon(Pens.White, path.ToArray());
+                paths.Add(path.ToArray());
             }
             draw();
+        }
+
+        public static void FinalDraw(Graphics g)
+        {
+            foreach (PointF[] path in paths)
+                g.FillPolygon(Brushes.Black, path);
+            
+            foreach (PointF[] path in paths)
+                g.DrawPolygon(Pens.White, path);
+
+            paths.Clear();
         }
 
         public override void Remove()
