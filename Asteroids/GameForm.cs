@@ -17,7 +17,6 @@ namespace Asteroids
             { "DebugShowParticles", new Keybind(Keys.F2     )    },
             { "Fullscreen",         new Keybind(Keys.F11    )    },
             { "ShowFramerate",      new Keybind(Keys.F12    )    },
-            { "ChangeControlStyle", new Keybind(Keys.F10    )    },
         };
 
         private string frameRate = "";
@@ -150,9 +149,6 @@ namespace Asteroids
             if (OptionBindings["ShowFramerate"].FirstPress)
                 Global.FPSDISPLAY = !Global.FPSDISPLAY;
 
-            if (OptionBindings["ChangeControlStyle"].FirstPress)
-                Global.CONFIGS.ControlStyle = (Global.CONFIGS.ControlStyle + 1) % 2;
-
             if (Global.CONFIGS.DebugAvailable)
             {
                 if (OptionBindings["DebugMode"].FirstPress)
@@ -194,6 +190,17 @@ namespace Asteroids
                     freezeTime = float.Max(freezeTime, 0);
                     dt *= dtModifier;
                 }
+                
+                await ProcessOptionChanges();
+                foreach (string Key in OptionBindings.Keys)
+                {
+                    Keybind kb = OptionBindings[Key];
+                    if (kb.FirstPress)
+                    {
+                        kb.FirstPress = false;
+                    }
+                    OptionBindings[Key] = kb;
+                }
 
                 if (Global.CURRENT_STATE != GameState.Playing)
                 {
@@ -211,17 +218,6 @@ namespace Asteroids
                         kb.FirstPress = false;
                     }
                     KeyBindings[Key] = kb;
-                }
-
-                await ProcessOptionChanges();
-                foreach (string Key in OptionBindings.Keys)
-                {
-                    Keybind kb = OptionBindings[Key];
-                    if (kb.FirstPress)
-                    {
-                        kb.FirstPress = false;
-                    }
-                    OptionBindings[Key] = kb;
                 }
 
                 if (Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
@@ -499,6 +495,10 @@ namespace Asteroids
 
         private void GameForm_Load(object sender, EventArgs e)
         {
+            Global.STATE_MENU[GameState.MainMenu]       = new MenuMain();
+            Global.STATE_MENU[GameState.SettingsMenu]   = new MenuSettings();
+            Global.STATE_MENU[GameState.KeybindsMenu]   = new MenuKeybinds();
+
             if (!File.Exists(Global.CONFIG_PATH))
             {
                 File.Create(Global.CONFIG_PATH).Close();
@@ -513,8 +513,32 @@ namespace Asteroids
 
                 JSONManager.WriteJson(Global.CONFIG_PATH, tempcfg);
             }
+            if (!File.Exists(Global.SCOREBOARD_PATH))
+            {
+                File.Create(Global.SCOREBOARD_PATH).Close();
 
-            Global.CONFIGS = JSONManager.ReadJson<ConfigsJSON>(Global.CONFIG_PATH);
+                ScoreboardEntry defaultEntry = new()
+                {
+                    Name = "---",
+                    Score = 0, 
+                };
+
+                Scoreboard tempScoreboard = new()
+                {
+                    Entries = Enumerable.Range(0, 10)
+                        .Select(_ => new ScoreboardEntry 
+                        {
+                            Name = defaultEntry.Name,
+                            Score = defaultEntry.Score
+                        })
+                        .ToArray()
+                };
+
+                JSONManager.WriteJson(Global.SCOREBOARD_PATH, tempScoreboard);
+            }
+
+            Global.CONFIGS      = JSONManager.ReadJson<ConfigsJSON> (Global.CONFIG_PATH);
+            MenuMain.Scoreboard = JSONManager.ReadJson<Scoreboard>  (Global.SCOREBOARD_PATH);
         }
     }
 }
