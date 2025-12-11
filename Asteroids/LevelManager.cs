@@ -19,7 +19,7 @@ namespace Asteroids
         public LevelManager()
         {
             score = 0;
-            round = 0;
+            round = 1000000;
         }
 
         public void AddScore(int amount)

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Web;
 
 namespace Asteroids
 {
@@ -7,12 +8,22 @@ namespace Asteroids
         public static bool DEBUG = false;
         public static bool FPSDISPLAY = false;
         public static bool DEBUG_PARTICLE_DRAW = false;
-        public static bool FULLSCREEN = false;
-        public static int FPS = 165;
-        public static int CONTROL_STYLE = 0;
-
         public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;
         public const bool PLAYER_COLLISION = true;
+
+        public const string CONFIG_PATH = "./Data/config.json";
+        public const string SCOREBOARD_PATH = "./Data/scoreboard.json";
+        public const string KEYBIND_PATH_BASE = "./Data/Keybinds/";
+        public const string FONT_PATH_BASE = "./Data/Fonts/";
+
+        public static ConfigsJSON CONFIGS = null!;
+        public static GameState CURRENT_STATE = GameState.MainMenu;
+        public static Dictionary<GameState, iMenu> STATE_MENU = new()
+            {
+                {GameState.MainMenu,        null!},
+                {GameState.SettingsMenu,    null!},
+                {GameState.KeybindsMenu,    null!},
+            };
 
         /// <summary>
         /// A safe normalization function for <see cref="Vector2"/> values

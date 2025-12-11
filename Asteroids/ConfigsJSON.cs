@@ -9,5 +9,11 @@ namespace Asteroids
 
         [JsonPropertyName("ControlStyle")]
         public int ControlStyle { get; set; }
+
+        [JsonPropertyName("FPS")]
+        public int FPS { get; set; }
+
+        [JsonPropertyName("DebugAvailable")]
+        public bool DebugAvailable { get; set; }
     }
 }

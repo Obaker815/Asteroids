@@ -253,21 +253,21 @@ namespace Asteroids
 
                 // 0 = Classic, 1 = TwoStick
 
-                if (Global.CONTROL_STYLE == 0)
+                if (Global.CONFIGS.ControlStyle == 0)
                 {
                     float throttle = gamepad.RightTrigger / 255;
                     float brake = gamepad.LeftTrigger / 255;
 
                     Classic(Lstick, throttle, brake);
 
-                } else if (Global.CONTROL_STYLE == 1)
+                } else if (Global.CONFIGS.ControlStyle == 1)
                 {
                     TwoStick(Lstick, Rstick);
                 }
             }
             else
             {
-                if (Global.CONTROL_STYLE == 0)
+                if (Global.CONFIGS.ControlStyle == 0)
                 {
                     Vector2 moveDir = this.moveDir;
 
@@ -282,7 +282,7 @@ namespace Asteroids
 
                     Classic(moveDir, throttle, brake);
                 }
-                else if (Global.CONTROL_STYLE == 1)
+                else if (Global.CONFIGS.ControlStyle == 1)
                 {
                     Vector2 moveDir = Vector2.Zero;
                     Vector2 lookDir = Vector2.Zero;
@@ -299,11 +299,6 @@ namespace Asteroids
 
                     TwoStick(moveDir, lookDir);
                 }
-
-                string debugString = "Ship Keybinds:\n";
-                foreach (string key in Keys.Keys)
-                    debugString += (key + ": " + Keys[key].IsPressed + "\n");
-                Debug.WriteLine(debugString);
 
                 if (Keys["Shoot"].FirstPress && numBullets < MAX_BULLETS)
                 {

@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.DirectoryServices.ActiveDirectory;
 using System.Numerics;
 
 namespace Asteroids

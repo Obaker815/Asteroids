@@ -12,12 +12,12 @@ namespace Asteroids
         private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
         private readonly Dictionary<string, Keybind> OptionBindings = new()
         {
-            { "Exit", new Keybind(Keys.Escape) },
-            { "DebugMode", new Keybind(Keys.F1) },
-            { "DebugShowParticles", new Keybind(Keys.F2) },
-            { "Fullscreen", new Keybind(Keys.F11) },
-            { "ShowFramerate", new Keybind(Keys.F12) },
-            { "ChangeControlStyle", new Keybind(Keys.F10) },
+            { "Exit",               new Keybind(Keys.Escape )    },
+            { "DebugMode",          new Keybind(Keys.F1     )    },
+            { "DebugShowParticles", new Keybind(Keys.F2     )    },
+            { "Fullscreen",         new Keybind(Keys.F11    )    },
+            { "ShowFramerate",      new Keybind(Keys.F12    )    },
+            { "ChangeControlStyle", new Keybind(Keys.F10    )    },
         };
 
         private string frameRate = "";
@@ -48,7 +48,7 @@ namespace Asteroids
 
             // Load font
             privateFonts = new PrivateFontCollection();
-            privateFonts.AddFontFile(@"./font/OrchestraOfStrings-yoLd.ttf");
+            privateFonts.AddFontFile(Global.FONT_PATH_BASE + @"OrchestraOfStrings/OrchestraOfStrings-yoLd.ttf");
             FontFamily fontFamily = privateFonts.Families[0];
             Font = new Font(fontFamily, 20f);
 
@@ -61,7 +61,9 @@ namespace Asteroids
                 lifetime: 10f,
                 impulse: 0f,
                 count: 5,
-                radius: float.Sqrt(preferredSize.Width * preferredSize.Width / 4 + preferredSize.Height * preferredSize.Height / 4),
+                radius: float.Sqrt(
+                    preferredSize.Width  * preferredSize.Width / 4 + 
+                    preferredSize.Height * preferredSize.Height / 4),
                 lifetimeRange: (-5, 5),
                 impulseRange: (0, 1),
                 gradient: [
@@ -78,11 +80,13 @@ namespace Asteroids
 
         private void GameForm_Shown(object sender, EventArgs e)
         {
+            this.Focus();
+
             Wrapable.SetBounds(preferredSize);
 
             _ = new Ship(new(preferredSize.Width / 2, preferredSize.Height / 2));
 
-            if (Global.FULLSCREEN)
+            if (Global.CONFIGS.Fullscreen)
                 Fullscreen(true);
 
             Task.Run(GameMainLoop);
@@ -121,7 +125,7 @@ namespace Asteroids
 
                     this.Size = new Size(preferredSize.Width + borderSize.Width, preferredSize.Height + borderSize.Height);
 
-                    Global.FULLSCREEN = false;
+                    Global.CONFIGS.Fullscreen = false;
                 });
             }
             else
@@ -131,29 +135,32 @@ namespace Asteroids
                     this.FormBorderStyle = FormBorderStyle.None;
                     this.WindowState = FormWindowState.Maximized;
                 });
-                Global.FULLSCREEN = true;
+                Global.CONFIGS.Fullscreen = true;
             }
         }
 
         private Task ProcessOptionChanges()
         {
             if (OptionBindings["Exit"].FirstPress)
-                InvokeAction(this.Close);
+                InvokeAction(Application.Exit);
 
-            if (OptionBindings["DebugMode"].FirstPress)
-                Global.DEBUG = !Global.DEBUG;
+            if (OptionBindings["Fullscreen"].FirstPress)
+                Fullscreen(!Global.CONFIGS.Fullscreen);
 
             if (OptionBindings["ShowFramerate"].FirstPress)
                 Global.FPSDISPLAY = !Global.FPSDISPLAY;
 
             if (OptionBindings["ChangeControlStyle"].FirstPress)
-                Global.CONTROL_STYLE = (Global.CONTROL_STYLE + 1) % 2;
+                Global.CONFIGS.ControlStyle = (Global.CONFIGS.ControlStyle + 1) % 2;
 
-            if (OptionBindings["DebugShowParticles"].FirstPress)
-                Global.DEBUG_PARTICLE_DRAW = !Global.DEBUG_PARTICLE_DRAW;
+            if (Global.CONFIGS.DebugAvailable)
+            {
+                if (OptionBindings["DebugMode"].FirstPress)
+                    Global.DEBUG = !Global.DEBUG;
 
-            if (OptionBindings["Fullscreen"].FirstPress)
-                Fullscreen(!Global.FULLSCREEN);
+                if (OptionBindings["DebugShowParticles"].FirstPress)
+                    Global.DEBUG_PARTICLE_DRAW = !Global.DEBUG_PARTICLE_DRAW;
+            }
             
             return Task.CompletedTask;
         }
@@ -188,9 +195,10 @@ namespace Asteroids
                     dt *= dtModifier;
                 }
 
-                if (Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
+                if (Global.CURRENT_STATE != GameState.Playing)
                 {
-                    InvokeAction(Application.Restart);
+                    Global.STATE_MENU[Global.CURRENT_STATE].Update();
+                    continue;
                 }
 
                 // Update keybinds
@@ -214,6 +222,11 @@ namespace Asteroids
                         kb.FirstPress = false;
                     }
                     OptionBindings[Key] = kb;
+                }
+
+                if (Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
+                {
+                    InvokeAction(Application.Restart);
                 }
 
                 if (Asteroid.AsteroidEntities.Count == 0 && !roundStarting)
@@ -291,8 +304,8 @@ namespace Asteroids
                 Particle.RemoveAll();
 
                 float frameTime;
-                if (Global.FPS != 0)
-                    frameTime = 1000f / Global.FPS;
+                if (Global.CONFIGS.FPS != 0)
+                    frameTime = 1000f / Global.CONFIGS.FPS;
                 else
                     frameTime = 0;
 
@@ -412,42 +425,48 @@ namespace Asteroids
             g.TranslateTransform(xdiff / 2, ydiff / 2);
             g.ScaleTransform(scale, scale);
 
-            if (Global.DEBUG)
+            if (Global.CURRENT_STATE == GameState.Playing)
             {
-                g.ScaleTransform(0.5f, 0.5f);
-                g.TranslateTransform(preferredSize.Width / 2, preferredSize.Height / 2);
-                if (Global.DEBUG_PARTICLE_DRAW)
-                    ParticleEffect.DebugDrawAll(g);
+                if (Global.DEBUG)
+                {
+                    g.ScaleTransform(0.5f, 0.5f);
+                    g.TranslateTransform(preferredSize.Width / 2, preferredSize.Height / 2);
+                    if (Global.DEBUG_PARTICLE_DRAW)
+                        ParticleEffect.DebugDrawAll(g);
+                }
+
+                // Draw all particles
+                Particle.DrawAll(g);
+
+                // Draw all wrapable objects
+                Wrapable[] wrapables = [.. Wrapable.Wrapables];
+                foreach (Wrapable wrapable in wrapables)
+                    wrapable?.Draw(g);
+                Asteroid.FinalDraw(g);
+
+                // Draw UI elements on top of everything
+                string score = LevelManager.Instance.Score.ToString("D10");
+                g.DrawString(score, Font, Brushes.White, 10, 10);
+
+                // Draw the current life count
+                float livesYPos = 60;
+                float livesXPos = 25;
+                float livesSpacing = 24;
+                for (int i = 0; i < Ship.Ships[0].lives; i++)
+                {
+                    float posX = livesXPos + i * livesSpacing;
+                    float posY = livesYPos;
+
+                    Ship.Draw(g,
+                        new(posX, posY),
+                        new(0, -1),
+                        10,
+                        (i == Ship.Ships[0].lives - 1) && !Ship.Ships[0].Respawning);
+                }
             }
+            else Global.STATE_MENU[Global.CURRENT_STATE].Draw(g);    
 
-            // Draw all particles
-            Particle.DrawAll(g);
-
-            // Draw all wrapable objects
-            Wrapable[] wrapables = [.. Wrapable.Wrapables];
-            foreach (Wrapable wrapable in wrapables)
-                wrapable?.Draw(g);
-            Asteroid.FinalDraw(g);
-
-            // Draw UI elements on top of everything
-            string score = LevelManager.Instance.Score.ToString("D10");
-            g.DrawString(score, Font, Brushes.White, 10, 10);
-
-            float livesYPos = 60;
-            float livesXPos = 25;
-            float livesSpacing = 24;
-            for (int i = 0; i < Ship.Ships[0].lives; i++)
-            {
-                float posX = livesXPos + i * livesSpacing;
-                float posY = livesYPos;
-
-                Ship.Draw(g,
-                    new(posX, posY),
-                    new(0, -1),
-                    10,
-                    (i == Ship.Ships[0].lives - 1) && !Ship.Ships[0].Respawning);
-            }
-
+            // if the fps display is enabled, draw it
             if (Global.FPSDISPLAY)
             {
                 g.DrawString($"Framerate: {frameRate}fps", Font, Brushes.White, 10, preferredSize.Height - 60);
@@ -475,36 +494,27 @@ namespace Asteroids
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            ConfigsJSON cfg = new()
-            {
-                Fullscreen = Global.FULLSCREEN,
-                ControlStyle = Global.CONTROL_STYLE
-            };
-
-            JSONManager.WriteJson("./config.json", cfg);
+            JSONManager.WriteJson(Global.CONFIG_PATH, Global.CONFIGS);
         }
 
         private void GameForm_Load(object sender, EventArgs e)
         {
-            if (!File.Exists("./config.json"))
+            if (!File.Exists(Global.CONFIG_PATH))
             {
-                File.Create("./config.json").Close();
+                File.Create(Global.CONFIG_PATH).Close();
 
-                ConfigsJSON cfg = new()
+                ConfigsJSON tempcfg = new()
                 {
-                    Fullscreen = Global.FULLSCREEN,
-                    ControlStyle = Global.CONTROL_STYLE
+                    Fullscreen = false,
+                    ControlStyle = 0,
+                    FPS = 60,
+                    DebugAvailable = false
                 };
 
-                JSONManager.WriteJson("./config.json", cfg);
+                JSONManager.WriteJson(Global.CONFIG_PATH, tempcfg);
             }
-            else
-            {
-                ConfigsJSON cfg = JSONManager.ReadJson<ConfigsJSON>("./config.json");
 
-                Global.FULLSCREEN = cfg.Fullscreen;
-                Global.CONTROL_STYLE = cfg.ControlStyle;
-            }
+            Global.CONFIGS = JSONManager.ReadJson<ConfigsJSON>(Global.CONFIG_PATH);
         }
     }
 }

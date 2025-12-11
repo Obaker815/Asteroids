@@ -4,9 +4,10 @@ namespace Asteroids
 {
     internal class Asteroid : Wrapable
     {
-        private static readonly List<PointF[]> paths = [];
-        private static readonly Random random = new();
         public static List<Asteroid> AsteroidEntities = [];
+
+        private static readonly Random random = new();
+        private static readonly List<PointF[]> paths = [];
         private static readonly ParticleEffect[] destroyEffects =
             [
                 new(
