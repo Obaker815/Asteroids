@@ -4,7 +4,7 @@ namespace Asteroids
 {
     internal class LevelManager
     {
-        public static readonly LevelManager Instance = new();
+        public static LevelManager Instance = new();
         private const int lifeInterval = 10000;
 
         // properties

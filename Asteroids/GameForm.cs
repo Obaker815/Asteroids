@@ -7,7 +7,7 @@ namespace Asteroids
 {
     public partial class GameForm : Form
     {
-        private readonly PrivateFontCollection? privateFonts;
+        public static readonly PrivateFontCollection? PublicFonts = new();
         private readonly Controller controller = new(UserIndex.One);
         private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
         private readonly Dictionary<string, Keybind> OptionBindings = new()
@@ -22,14 +22,14 @@ namespace Asteroids
         private string frameRate = "";
         private string frameTime = "";
 
-        private readonly Rectangle preferredRect = new(0, 0, 800, 480);
+        public static readonly Rectangle preferredRect = new(0, 0, 800, 480);
         private readonly Size preferredSize = new(800, 450);
         private readonly Size borderSize;
         private readonly ParticleEffect starsEffect;
 
         private const float ROUND_START_TIME = 4;
         private float currentRoundEndTime;
-        private bool roundStarting = false;
+        public  bool roundStarting = false;
 
         private static float freezeTime = 0f;
         private static float dtModifier = 1f;
@@ -46,9 +46,8 @@ namespace Asteroids
                 this.Size.Height - this.ClientSize.Height);
 
             // Load font
-            privateFonts = new PrivateFontCollection();
-            privateFonts.AddFontFile(Global.FONT_PATH_BASE + @"OrchestraOfStrings/OrchestraOfStrings-yoLd.ttf");
-            FontFamily fontFamily = privateFonts.Families[0];
+            PublicFonts!.AddFontFile(Global.FONT_PATH_BASE + @"OrchestraOfStrings/OrchestraOfStrings-yoLd.ttf");
+            FontFamily fontFamily = PublicFonts.Families[0];
             Font = new Font(fontFamily, 20f);
 
             // Stars background
@@ -70,7 +69,6 @@ namespace Asteroids
                     ]);
             starsEffect.Start();
         }
-
 
         private void GameForm_GotFocus(object sender, EventArgs e)
         {
@@ -201,13 +199,6 @@ namespace Asteroids
                     }
                     OptionBindings[Key] = kb;
                 }
-
-                if (Global.CURRENT_STATE != GameState.Playing)
-                {
-                    Global.STATE_MENU[Global.CURRENT_STATE].Update();
-                    continue;
-                }
-
                 // Update keybinds
                 Dictionary<string, Keybind> currentKeyBindings = DuplicateKeybindings(KeyBindings);
                 foreach (string Key in KeyBindings.Keys)
@@ -220,84 +211,91 @@ namespace Asteroids
                     KeyBindings[Key] = kb;
                 }
 
-                if (Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
+                if (Global.CURRENT_STATE != GameState.Playing)
                 {
-                    InvokeAction(Application.Restart);
+                    Global.STATE_MENU[Global.CURRENT_STATE].Update();
                 }
-
-                if (Asteroid.AsteroidEntities.Count == 0 && !roundStarting)
+                else
                 {
-                    currentRoundEndTime = 0;
-                    roundStarting = true;
-                }
-                if (roundStarting)
-                {
-                    currentRoundEndTime += dt;
-                    if (currentRoundEndTime >= ROUND_START_TIME)
+                    if (Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
                     {
-                        await LevelManager.Instance.NewRound(preferredRect);
-                        roundStarting = false;
+                        InvokeAction(Application.Restart);
                     }
-                }
-                LevelManager.Instance.SaucerUpdate(dt);
 
-                // Update Ships
-                Ship[] ships = [.. Ship.Ships];
-                foreach (Ship ship in ships)
-                {
-                    ship?.Update(currentKeyBindings, controller, dt);
-                }
+                    if (Asteroid.AsteroidEntities.Count == 0 && !roundStarting)
+                    {
+                        currentRoundEndTime = 0;
+                        roundStarting = true;
+                    }
+                    if (roundStarting)
+                    {
+                        currentRoundEndTime += dt;
+                        if (currentRoundEndTime >= ROUND_START_TIME)
+                        {
+                            await LevelManager.Instance.NewRound(preferredRect);
+                            roundStarting = false;
+                        }
+                    }
+                    LevelManager.Instance.SaucerUpdate(dt);
 
-                // Update Saucers
-                Saucer[] saucers = [.. Saucer.Saucers];
-                foreach (Saucer saucer in saucers)
-                {
-                    saucer?.Update(dt);
-                }
+                    // Update Ships
+                    Ship[] ships = [.. Ship.Ships];
+                    foreach (Ship ship in ships)
+                    {
+                        ship?.Update(currentKeyBindings, controller, dt);
+                    }
 
-                // Update Asteroids
-                Asteroid[] asteroids = [.. Asteroid.AsteroidEntities];
-                foreach (Asteroid asteroid in asteroids)
-                {
-                    asteroid?.Update(dt);
-                }
+                    // Update Saucers
+                    Saucer[] saucers = [.. Saucer.Saucers];
+                    foreach (Saucer saucer in saucers)
+                    {
+                        saucer?.Update(dt);
+                    }
 
-                // Update Bullets
-                Bullet[] bullets = [.. Bullet.Bullets];
-                foreach (Bullet bullet in bullets)
-                {
-                    bullet?.Update();
-                }
+                    // Update Asteroids
+                    Asteroid[] asteroids = [.. Asteroid.AsteroidEntities];
+                    foreach (Asteroid asteroid in asteroids)
+                    {
+                        asteroid?.Update(dt);
+                    }
 
-                // Update all entities
-                Entity[] entities = [.. Entity.Entities];
-                foreach (Entity entity in entities)
-                {
-                    entity?.Update(dt);
-                }
+                    // Update Bullets
+                    Bullet[] bullets = [.. Bullet.Bullets];
+                    foreach (Bullet bullet in bullets)
+                    {
+                        bullet?.Update();
+                    }
 
-                // Wrap all wrapables
-                Wrapable[] wrapables = [.. Wrapable.Wrapables];
-                foreach (Wrapable wrapable in wrapables)
-                {
-                    wrapable?.WrapPosition();
-                }
+                    // Update all entities
+                    Entity[] entities = [.. Entity.Entities];
+                    foreach (Entity entity in entities)
+                    {
+                        entity?.Update(dt);
+                    }
 
-                // Update all particles
-                Particle[] particles = [.. Particle.Particles];
-                foreach (Particle particle in particles)
-                {
-                    particle?.Update(dt);
+                    // Wrap all wrapables
+                    Wrapable[] wrapables = [.. Wrapable.Wrapables];
+                    foreach (Wrapable wrapable in wrapables)
+                    {
+                        wrapable?.WrapPosition();
+                    }
+
+                    // Update all particles
+                    Particle[] particles = [.. Particle.Particles];
+                    foreach (Particle particle in particles)
+                    {
+                        particle?.Update(dt);
+                    }
+
+                    // Remove entities
+                    Entity.RemoveAll();
+
+                    // Remove particles
+                    Particle.RemoveAll();
                 }
 
                 // Redraw the screen
                 InvokeAction(this.Invalidate);
-
-                // Remove entities
-                Entity.RemoveAll();
-
-                // Remove particles
-                Particle.RemoveAll();
 
                 float frameTime;
                 if (Global.CONFIGS.FPS != 0)
@@ -318,7 +316,6 @@ namespace Asteroids
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
             foreach (string Key in KeyBindings.Keys)
-            {
                 // check if the key pressed matches any keybinds
                 if (e.KeyCode == KeyBindings[Key].Key)
                 {
@@ -328,10 +325,8 @@ namespace Asteroids
                     kb.IsPressed = true;
                     KeyBindings[Key] = kb;
                 }
-            }
 
             foreach (string Key in OptionBindings.Keys)
-            {
                 // check if the key pressed matches any keybinds
                 if (e.KeyCode == OptionBindings[Key].Key)
                 {
@@ -341,7 +336,18 @@ namespace Asteroids
                     kb.IsPressed = true;
                     OptionBindings[Key] = kb;
                 }
-            }
+
+            if (Global.CURRENT_STATE == GameState.MainMenu)
+                foreach (string Key in MenuMain.MenuKeys.Keys)
+                    // check if the key pressed matches any keybinds
+                    if (e.KeyCode == MenuMain.MenuKeys[Key].Key)
+                    {
+                        // edit the Keybind in the dictionary
+                        Keybind kb = MenuMain.MenuKeys[Key];
+                        kb.FirstPress = true;
+                        kb.IsPressed = true;
+                        MenuMain.MenuKeys[Key] = kb;
+                    }
         }
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
@@ -499,6 +505,8 @@ namespace Asteroids
             Global.STATE_MENU[GameState.SettingsMenu]   = new MenuSettings();
             Global.STATE_MENU[GameState.KeybindsMenu]   = new MenuKeybinds();
 
+            File.Delete(Global.SCOREBOARD_PATH);
+
             if (!File.Exists(Global.CONFIG_PATH))
             {
                 File.Create(Global.CONFIG_PATH).Close();
@@ -517,19 +525,14 @@ namespace Asteroids
             {
                 File.Create(Global.SCOREBOARD_PATH).Close();
 
-                ScoreboardEntry defaultEntry = new()
-                {
-                    Name = "---",
-                    Score = 0, 
-                };
-
+                Random rnd = new Random();
                 Scoreboard tempScoreboard = new()
                 {
                     Entries = Enumerable.Range(0, 10)
                         .Select(_ => new ScoreboardEntry 
                         {
-                            Name = defaultEntry.Name,
-                            Score = defaultEntry.Score
+                            Name = "~~~~~",
+                            Score = rnd.Next(0, 100000000),
                         })
                         .ToArray()
                 };
