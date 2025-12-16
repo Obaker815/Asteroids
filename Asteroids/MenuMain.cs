@@ -5,8 +5,8 @@ namespace Asteroids
     internal class MenuMain : iMenu
     {
         public static Scoreboard Scoreboard = new();
-
         private static int fontSize = 15;
+
         private static Rectangle scoreboardRectangele = new()
         {
             Height = GameForm.preferredRect.Height / 2,

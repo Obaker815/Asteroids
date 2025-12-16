@@ -12,11 +12,11 @@ namespace Asteroids
         private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
         private readonly Dictionary<string, Keybind> OptionBindings = new()
         {
-            { "Exit",               new Keybind(Keys.Escape )    },
-            { "DebugMode",          new Keybind(Keys.F1     )    },
-            { "DebugShowParticles", new Keybind(Keys.F2     )    },
-            { "Fullscreen",         new Keybind(Keys.F11    )    },
-            { "ShowFramerate",      new Keybind(Keys.F12    )    },
+            { "Exit",               new Keybind(Keys.Escape )},
+            { "DebugMode",          new Keybind(Keys.F1     )},
+            { "DebugShowParticles", new Keybind(Keys.F2     )},
+            { "Fullscreen",         new Keybind(Keys.F11    )},
+            { "ShowFramerate",      new Keybind(Keys.F12    )},
         };
 
         private string frameRate = "";
@@ -67,7 +67,6 @@ namespace Asteroids
                 gradient: [
                     (Color.White, 0.5f),
                     ]);
-            starsEffect.Start();
         }
 
         private void GameForm_GotFocus(object sender, EventArgs e)
@@ -213,13 +212,16 @@ namespace Asteroids
 
                 if (Global.CURRENT_STATE != GameState.Playing)
                 {
+                    if (starsEffect.IsPlaying) starsEffect.Stop();
                     Global.STATE_MENU[Global.CURRENT_STATE].Update();
                 }
                 else
                 {
+                    if (!starsEffect.IsPlaying) starsEffect.Start();
+
                     if (Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
                     {
-                        InvokeAction(Application.Restart);
+                        Global.CURRENT_STATE = GameState.MainMenu;
                     }
 
                     if (Asteroid.AsteroidEntities.Count == 0 && !roundStarting)
