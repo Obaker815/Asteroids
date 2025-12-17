@@ -15,5 +15,8 @@ namespace Asteroids
 
         [JsonPropertyName("DebugAvailable")]
         public bool DebugAvailable { get; set; }
+
+        [JsonPropertyName("LastUsedKeymap")]
+        public string LastUsedKeymap { get; set; } = "";
     }
 }

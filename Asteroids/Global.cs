@@ -16,6 +16,8 @@ namespace Asteroids
         public const string KEYBIND_PATH_BASE = "./Data/Keybinds/";
         public const string FONT_PATH_BASE = "./Data/Fonts/";
 
+        public const string DEFAULT_KEYBIND_FILE = "default_keybinds.json";
+
         public static ConfigsJSON CONFIGS = null!;
         public static GameState CURRENT_STATE = GameState.MainMenu;
         public static Dictionary<GameState, IMenu> STATE_MENU = new()

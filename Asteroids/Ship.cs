@@ -208,7 +208,7 @@ namespace Asteroids
             }
 
             // Classic control method
-            void Classic(Vector2 moveDir, float throttle, float brake)
+            void Classic(Vector2 moveDir, float throttle)
             {
                 accelerating = throttle > 0f;
 
@@ -219,7 +219,6 @@ namespace Asteroids
 
                 Vector2 velocity = Vector2.Zero;
                 velocity += ACCELERATION * moveDir * throttle * dt;
-                velocity -= Global.Normalize(base.velocity) * ACCELERATION * brake * dt;
 
                 base.velocity += velocity;
                 this.moveDir = moveDir;
@@ -256,9 +255,8 @@ namespace Asteroids
                 if (Global.CONFIGS.ControlStyle == 0)
                 {
                     float throttle = gamepad.RightTrigger / 255;
-                    float brake = gamepad.LeftTrigger / 255;
 
-                    Classic(Lstick, throttle, brake);
+                    Classic(Lstick, throttle);
 
                 } else if (Global.CONFIGS.ControlStyle == 1)
                 {
@@ -278,9 +276,8 @@ namespace Asteroids
                     moveDir = Vector2.Transform(moveDir, Matrix3x2.CreateRotation(angularVelocity));
 
                     float throttle = Keys["Up"].IsPressed ? 1f : 0f;
-                    float brake = Keys["Down"].IsPressed ? 1f : 0f;
 
-                    Classic(moveDir, throttle, brake);
+                    Classic(moveDir, throttle);
                 }
                 else if (Global.CONFIGS.ControlStyle == 1)
                 {
@@ -288,7 +285,6 @@ namespace Asteroids
                     Vector2 lookDir = Vector2.Zero;
                     
                     if (Keys["Up"].IsPressed) moveDir.Y -= 1;
-                    if (Keys["Down"].IsPressed) moveDir.Y += 1;
                     if (Keys["Left"].IsPressed) moveDir.X -= 1;
                     if (Keys["Right"].IsPressed) moveDir.X += 1;
 

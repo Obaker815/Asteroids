@@ -5,30 +5,30 @@ namespace Asteroids
     internal class Keymap
     {
         [JsonPropertyName("accelerate")]
-        string Accelerate { get; set; } = "W";
+        public string Accelerate { get; set; } = "W";
 
         [JsonPropertyName("right")]
-        string Right { get; set; } = "D";
+        public string Right { get; set; } = "D";
 
         [JsonPropertyName("left")]
-        string Left { get; set; } = "A";
+        public string Left { get; set; } = "A";
 
         [JsonPropertyName("upDirection")]
-        string UpDirection { get; set; } = "I";
+        public string UpDirection { get; set; } = "I";
 
         [JsonPropertyName("downDirection")]
-        string DownDirection { get; set; } = "K";
+        public string DownDirection { get; set; } = "K";
 
         [JsonPropertyName("rightDirection")]
-        string RightDirection { get; set; } = "L";
+        public string RightDirection { get; set; } = "L";
 
         [JsonPropertyName("leftDirection")]
-        string LeftDirection { get; set; } = "J";
+        public string LeftDirection { get; set; } = "J";
 
         [JsonPropertyName("shoot")]
-        string Shoot { get; set; } = "Space";
+        public string Shoot { get; set; } = "Space";
 
-        private Dictionary<string, Keybind> keybinds;
+        public Dictionary<string, Keybind> keybinds;
 
         public Keymap()
         {

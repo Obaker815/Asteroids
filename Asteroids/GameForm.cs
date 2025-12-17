@@ -9,7 +9,6 @@ namespace Asteroids
     {
         public static readonly PrivateFontCollection? PublicFonts = new();
         private readonly Controller controller = new(UserIndex.One);
-        private readonly Dictionary<string, Keybind> KeyBindings = ConstructKeybindings();
         private readonly Dictionary<string, Keybind> OptionBindings = new()
         {
             { "Exit",               new Keybind(Keys.Escape )},
@@ -18,6 +17,7 @@ namespace Asteroids
             { "Fullscreen",         new Keybind(Keys.F11    )},
             { "ShowFramerate",      new Keybind(Keys.F12    )},
         };
+        private Keymap Keymap;
 
         private string frameRate = "";
         private string frameTime = "";
@@ -39,6 +39,7 @@ namespace Asteroids
         {
             InitializeComponent();
             elapsedtimeSW = null!;
+            Keymap = null!;
 
             // Get the size of the border
             borderSize = new Size(
@@ -187,26 +188,6 @@ namespace Asteroids
                 }
                 
                 await ProcessOptionChanges();
-                foreach (string Key in OptionBindings.Keys)
-                {
-                    Keybind kb = OptionBindings[Key];
-                    if (kb.FirstPress)
-                    {
-                        kb.FirstPress = false;
-                    }
-                    OptionBindings[Key] = kb;
-                }
-                // Update keybinds
-                Dictionary<string, Keybind> currentKeyBindings = DuplicateKeybindings(KeyBindings);
-                foreach (string Key in KeyBindings.Keys)
-                {
-                    Keybind kb = KeyBindings[Key];
-                    if (kb.FirstPress)
-                    {
-                        kb.FirstPress = false;
-                    }
-                    KeyBindings[Key] = kb;
-                }
 
                 if (Global.CURRENT_STATE != GameState.Playing)
                 {
@@ -242,7 +223,7 @@ namespace Asteroids
                     Ship[] ships = [.. Ship.Ships];
                     foreach (Ship ship in ships)
                     {
-                        ship?.Update(currentKeyBindings, controller, dt);
+                        ship?.Update(Keymap.keybinds, controller, dt);
                     }
 
                     // Update Saucers
@@ -294,6 +275,27 @@ namespace Asteroids
                     Particle.RemoveAll();
                 }
 
+                // Update keybinds
+                foreach (string Key in OptionBindings.Keys)
+                {
+                    Keybind kb = OptionBindings[Key];
+                    if (kb.FirstPress)
+                    {
+                        kb.FirstPress = false;
+                    }
+                    OptionBindings[Key] = kb;
+                }
+
+                foreach (string Key in Keymap.keybinds.Keys)
+                {
+                    Keybind kb = Keymap.keybinds[Key];
+                    if (kb.FirstPress)
+                    {
+                        kb.FirstPress = false;
+                    }
+                    Keymap.keybinds[Key] = kb;
+                }
+
                 // Redraw the screen
                 InvokeAction(this.Invalidate);
 
@@ -315,15 +317,15 @@ namespace Asteroids
         // key down and key up event
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
-            foreach (string Key in KeyBindings.Keys)
+            foreach (string Key in Keymap.keybinds.Keys)
                 // check if the key pressed matches any keybinds
-                if (e.KeyCode == KeyBindings[Key].Key)
+                if (e.KeyCode == Keymap.keybinds[Key].Key)
                 {
                     // edit the Keybind in the dictionary
-                    Keybind kb = KeyBindings[Key];
+                    Keybind kb = Keymap.keybinds[Key];
                     kb.FirstPress = true;
                     kb.IsPressed = true;
-                    KeyBindings[Key] = kb;
+                    Keymap.keybinds[Key] = kb;
                 }
 
             foreach (string Key in OptionBindings.Keys)
@@ -352,52 +354,17 @@ namespace Asteroids
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
         {
-            foreach (string Key in KeyBindings.Keys)
+            foreach (string Key in Keymap.keybinds.Keys)
             {
                 // check if the key pressed matches any keybinds
-                if (e.KeyCode == KeyBindings[Key].Key)
+                if (e.KeyCode == Keymap.keybinds[Key].Key)
                 {
                     // edit the Keybind in the dictionary
-                    Keybind kb = KeyBindings[Key];
+                    Keybind kb = Keymap.keybinds[Key];
                     kb.IsPressed = false;
-                    KeyBindings[Key] = kb;
+                    Keymap.keybinds[Key] = kb;
                 }
             }
-        }
-
-        /// <summary>
-        /// Constructor for the keybindings dictionary
-        /// </summary>
-        /// <returns>A dictionary with a string key and struct Keybind value</returns>
-        private static Dictionary<string, Keybind> ConstructKeybindings()
-        {
-            return new()
-            {
-                { "Up", new Keybind(Keys.W) },
-                { "Down", new Keybind(Keys.S) },
-                { "Left", new Keybind(Keys.A) },
-                { "Right", new Keybind(Keys.D) },
-                { "UpAlt", new Keybind(Keys.I) },
-                { "DownAlt", new Keybind(Keys.K) },
-                { "LeftAlt", new Keybind(Keys.J) },
-                { "RightAlt", new Keybind(Keys.L) },
-                { "Shoot", new Keybind(Keys.Space) },
-            };
-        }
-
-        /// <summary>
-        /// Duplicate a keybinding dictionary
-        /// </summary>
-        /// <param name="old">The dictionary to be duplicated</param>
-        /// <returns>A dictionary with a string key and struct Keybind value</returns>
-        private static Dictionary<string, Keybind> DuplicateKeybindings(Dictionary<string, Keybind> old)
-        {
-            Dictionary<string, Keybind> keys = ConstructKeybindings();
-            foreach (var key in old.Keys)
-            {
-                keys[key] = old[key];
-            }
-            return keys;
         }
 
         /// <summary>
@@ -497,6 +464,8 @@ namespace Asteroids
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             JSONManager.WriteJson(Global.CONFIG_PATH, Global.CONFIGS);
+            if (Global.CONFIGS.LastUsedKeymap != "default_keybinds.json") 
+                JSONManager.WriteJson(Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap, Keymap);
         }
 
         private void GameForm_Load(object sender, EventArgs e)
@@ -539,9 +508,22 @@ namespace Asteroids
 
                 JSONManager.WriteJson(Global.SCOREBOARD_PATH, tempScoreboard);
             }
+            string defaultKeybindPath = Global.KEYBIND_PATH_BASE + Global.DEFAULT_KEYBIND_FILE;
+            if (!File.Exists(defaultKeybindPath))
+            {
+                File.Create(defaultKeybindPath).Close();
+                JSONManager.WriteJson(defaultKeybindPath, new Keymap());
+            }
 
             Global.CONFIGS      = JSONManager.ReadJson<ConfigsJSON> (Global.CONFIG_PATH);
             MenuMain.Scoreboard = JSONManager.ReadJson<Scoreboard>  (Global.SCOREBOARD_PATH);
+
+            string keybindFile = (Global.CONFIGS.LastUsedKeymap == null || Global.CONFIGS.LastUsedKeymap == "")
+                ? Global.DEFAULT_KEYBIND_FILE
+                : Global.CONFIGS.LastUsedKeymap;
+
+            Global.CONFIGS.LastUsedKeymap = keybindFile;
+            Keymap = JSONManager.ReadJson<Keymap>(Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap);
         }
     }
 }
