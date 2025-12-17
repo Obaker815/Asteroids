@@ -62,7 +62,7 @@ namespace Asteroids
         // Public ship properties
         public bool Respawning => respawning;
         public int NumBullets { get { return numBullets; } set { numBullets = int.Clamp(value, 0, 4); } }
-        public int lives = 5;
+        public int lives = 1;
 
         public static List<Ship> Ships = [];
 

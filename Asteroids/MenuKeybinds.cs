@@ -1,6 +1,6 @@
 ﻿namespace Asteroids
 {
-    internal class MenuKeybinds : iMenu
+    internal class MenuKeybinds : IMenu
     {
         public void Draw(Graphics g)
         {

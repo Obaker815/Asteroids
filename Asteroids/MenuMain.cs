@@ -1,11 +1,11 @@
-﻿using System.Drawing.Text;
+﻿using System.Numerics;
 
 namespace Asteroids
 {
-    internal class MenuMain : iMenu
+    internal class MenuMain : IMenu
     {
+        private static readonly int fontSize = 15;
         public static Scoreboard Scoreboard = new();
-        private static int fontSize = 15;
 
         private static Rectangle scoreboardRectangele = new()
         {
@@ -108,14 +108,7 @@ namespace Asteroids
 
         public void Update()
         {
-            if (MenuKeys["Start"].FirstPress)
-            {
-                GameForm gf = GameForm.ActiveGameform!;
-                gf.roundStarting = true;
-                LevelManager.Instance = new();
-
-                Global.CURRENT_STATE = GameState.Playing;
-            }
+            if (MenuKeys["Start"].FirstPress) Global.GameStart();
 
             foreach (string Key in MenuKeys.Keys)
             {

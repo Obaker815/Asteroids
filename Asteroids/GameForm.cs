@@ -80,8 +80,6 @@ namespace Asteroids
 
             Wrapable.SetBounds(preferredSize);
 
-            _ = new Ship(new(preferredSize.Width / 2, preferredSize.Height / 2));
-
             if (Global.CONFIGS.Fullscreen)
                 Fullscreen(true);
 
@@ -527,7 +525,7 @@ namespace Asteroids
             {
                 File.Create(Global.SCOREBOARD_PATH).Close();
 
-                Random rnd = new Random();
+                Random rnd = new();
                 Scoreboard tempScoreboard = new()
                 {
                     Entries = Enumerable.Range(0, 10)

@@ -18,12 +18,31 @@ namespace Asteroids
 
         public static ConfigsJSON CONFIGS = null!;
         public static GameState CURRENT_STATE = GameState.MainMenu;
-        public static Dictionary<GameState, iMenu> STATE_MENU = new()
+        public static Dictionary<GameState, IMenu> STATE_MENU = new()
             {
                 {GameState.MainMenu,        null!},
                 {GameState.SettingsMenu,    null!},
                 {GameState.KeybindsMenu,    null!},
             };
+
+        public static void GameStart()
+        {
+            Entity.Entities.Clear();
+            Wrapable.Wrapables.Clear();
+            Asteroid.AsteroidEntities.Clear();
+            Saucer.Saucers.Clear();
+            Bullet.Bullets.Clear();
+            Ship.Ships.Clear();
+
+            Particle.Particles.Clear();
+
+            _ = new Ship(new Vector2(
+                GameForm.preferredRect.Width / 2, 
+                GameForm.preferredRect.Height / 2));
+
+            LevelManager.Instance = new();
+            CURRENT_STATE = GameState.Playing;
+        }
 
         /// <summary>
         /// A safe normalization function for <see cref="Vector2"/> values
