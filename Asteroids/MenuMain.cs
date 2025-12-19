@@ -24,25 +24,28 @@ namespace Asteroids
 
         public void Draw(Graphics g)
         {
+            // Format for the header
             using StringFormat headerFormat = new()
             {
                 Alignment = StringAlignment.Center,
                 LineAlignment = StringAlignment.Near
             };
 
+            // Height and font of each entry on the scoreboard
             float height = scoreboardRectangele.Height / (Scoreboard.Entries!.Length + 1);
-
             Font font = new(GameForm.PublicFonts!.Families[0], fontSize);
 
-            string[] lines = Scoreboard.Entries
-                                      .Select(e => e.Name + " ---------------- " + e.Score.ToString("D10"))
+            string[] lines = Scoreboard.Entries.Select(e => 
+                                      (e.Name + "     ")[0.. 5].ToUpper() + 
+                                      " ---------------- " + 
+                                      e.Score.ToString("D8"))
                                       .ToArray();
 
+            // Maximum number of characters in any line
             int maxChars = Math.Max(1, lines.Max(s => s.Length));
-
             var measureFormat = StringFormat.GenericTypographic;
 
-            // Cache measurements per character
+            // Measurements per character
             var charSizeCache = new Dictionary<char, SizeF>();
             SizeF MeasureChar(char c)
             {
@@ -54,13 +57,16 @@ namespace Asteroids
                 return size;
             }
 
+            // Get max glyph width
             float maxGlyphWidth = 0f;
             foreach (var line in lines)
                 foreach (char ch in line)
                     maxGlyphWidth = Math.Max(maxGlyphWidth, MeasureChar(ch).Width);
 
+            // Base case
             if (maxGlyphWidth <= 0f) maxGlyphWidth = g.MeasureString("W", font, PointF.Empty, measureFormat).Width;
 
+            // Padding
             const float perSlotPadding = 0f;
             float slotWidth = maxGlyphWidth + perSlotPadding;
 

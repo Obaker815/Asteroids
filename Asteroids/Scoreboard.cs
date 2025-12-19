@@ -6,6 +6,15 @@ namespace Asteroids
     {
         [JsonPropertyName("ScoreboardEntries")]
         public ScoreboardEntry[]? Entries { get; set; }
+
+        public void SortEntries()
+        {
+            if (Entries == null) return;
+            Entries = Sorting.Bubble(
+                Entries, 
+                (a) => { return a.Score; }, 
+                inverse: true);
+        }
     }
     internal class ScoreboardEntry
     {

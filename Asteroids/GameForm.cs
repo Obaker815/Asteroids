@@ -136,15 +136,6 @@ namespace Asteroids
 
         private Task ProcessOptionChanges()
         {
-            if (OptionBindings["Exit"].FirstPress)
-                InvokeAction(Application.Exit);
-
-            if (OptionBindings["Fullscreen"].FirstPress)
-                Fullscreen(!Global.CONFIGS.Fullscreen);
-
-            if (OptionBindings["ShowFramerate"].FirstPress)
-                Global.FPSDISPLAY = !Global.FPSDISPLAY;
-
             if (Global.CONFIGS.DebugAvailable)
             {
                 if (OptionBindings["DebugMode"].FirstPress)
@@ -153,6 +144,29 @@ namespace Asteroids
                 if (OptionBindings["DebugShowParticles"].FirstPress)
                     Global.DEBUG_PARTICLE_DRAW = !Global.DEBUG_PARTICLE_DRAW;
             }
+
+            if (OptionBindings["Exit"].FirstPress)
+                switch (Global.CURRENT_STATE)
+                {
+                    case GameState.Playing:
+                        Global.CURRENT_STATE = GameState.MainMenu;
+                        break;
+                    case GameState.KeybindsMenu:
+                        Global.CURRENT_STATE = GameState.SettingsMenu;
+                        break;
+                    case GameState.SettingsMenu:
+                        Global.CURRENT_STATE = GameState.MainMenu;
+                        break;
+                    case GameState.MainMenu:
+                        InvokeAction(Application.Exit);
+                        break;
+                }
+
+            if (OptionBindings["Fullscreen"].FirstPress)
+                Fullscreen(!Global.CONFIGS.Fullscreen);
+
+            if (OptionBindings["ShowFramerate"].FirstPress)
+                Global.FPSDISPLAY = !Global.FPSDISPLAY;
             
             return Task.CompletedTask;
         }
@@ -414,7 +428,7 @@ namespace Asteroids
                 Asteroid.FinalDraw(g);
 
                 // Draw UI elements on top of everything
-                string score = LevelManager.Instance.Score.ToString("D10");
+                string score = LevelManager.Instance.Score.ToString("D8");
                 g.DrawString(score, Font, Brushes.White, 10, 10);
 
                 // Draw the current life count
@@ -439,7 +453,7 @@ namespace Asteroids
             if (Global.FPSDISPLAY)
             {
                 g.DrawString($"Framerate: {frameRate}fps", Font, Brushes.White, 10, preferredSize.Height - 60);
-                g.DrawString($"Frametime: {frameTime}ms", Font, Brushes.White, 10, preferredSize.Height - 30);
+                g.DrawString($"Frametime: {frameTime}ms",  Font, Brushes.White, 10, preferredSize.Height - 30);
             }
 
             // reset the transform of the graphics object
@@ -464,6 +478,8 @@ namespace Asteroids
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             JSONManager.WriteJson(Global.CONFIG_PATH, Global.CONFIGS);
+            JSONManager.WriteJson(Global.SCOREBOARD_PATH, MenuMain.Scoreboard);
+
             if (Global.CONFIGS.LastUsedKeymap != "default_keybinds.json") 
                 JSONManager.WriteJson(Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap, Keymap);
         }
@@ -473,8 +489,6 @@ namespace Asteroids
             Global.STATE_MENU[GameState.MainMenu]       = new MenuMain();
             Global.STATE_MENU[GameState.SettingsMenu]   = new MenuSettings();
             Global.STATE_MENU[GameState.KeybindsMenu]   = new MenuKeybinds();
-
-            File.Delete(Global.SCOREBOARD_PATH);
 
             if (!File.Exists(Global.CONFIG_PATH))
             {
@@ -517,6 +531,7 @@ namespace Asteroids
 
             Global.CONFIGS      = JSONManager.ReadJson<ConfigsJSON> (Global.CONFIG_PATH);
             MenuMain.Scoreboard = JSONManager.ReadJson<Scoreboard>  (Global.SCOREBOARD_PATH);
+            MenuMain.Scoreboard.SortEntries();
 
             string keybindFile = (Global.CONFIGS.LastUsedKeymap == null || Global.CONFIGS.LastUsedKeymap == "")
                 ? Global.DEFAULT_KEYBIND_FILE
