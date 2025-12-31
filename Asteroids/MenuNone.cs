@@ -1,22 +1,15 @@
 ﻿namespace Asteroids
 {
-    internal class MenuKeybinds : IMenu
+    internal class MenuNone : IMenu
     {
         public List<Control> Controls { get; set; } = [];
-        
-        public MenuKeybinds()
-        {
-
-        }
 
         public void Draw(Graphics g)
         {
-
         }
 
         public void Update()
         {
-
         }
     }
 }

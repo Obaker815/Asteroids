@@ -111,7 +111,7 @@ namespace Asteroids
 
         private void Fullscreen(bool fullscreen)
         {
-            if (!fullscreen)
+            if (!fullscreen && this.FormBorderStyle != FormBorderStyle.Sizable)
             {
                 this.InvokeAction(() =>
                 {
@@ -123,7 +123,7 @@ namespace Asteroids
                     Global.CONFIGS.Fullscreen = false;
                 });
             }
-            else
+            else if (fullscreen && this.FormBorderStyle != FormBorderStyle.None)
             {
                 this.InvokeAction(() =>
                 {
@@ -146,28 +146,19 @@ namespace Asteroids
             }
 
             if (OptionBindings["Exit"].FirstPress)
-                switch (Global.CURRENT_STATE)
-                {
-                    case GameState.Playing:
-                        Global.CURRENT_STATE = GameState.MainMenu;
-                        break;
-                    case GameState.KeybindsMenu:
-                        Global.CURRENT_STATE = GameState.SettingsMenu;
-                        break;
-                    case GameState.SettingsMenu:
-                        Global.CURRENT_STATE = GameState.MainMenu;
-                        break;
-                    case GameState.MainMenu:
-                        InvokeAction(Application.Exit);
-                        break;
-                }
+                Global.CURRENT_STATE = Global.STATE_RETURN[Global.CURRENT_STATE];
 
             if (OptionBindings["Fullscreen"].FirstPress)
-                Fullscreen(!Global.CONFIGS.Fullscreen);
+                Global.CONFIGS.Fullscreen = !Global.CONFIGS.Fullscreen;
 
             if (OptionBindings["ShowFramerate"].FirstPress)
                 Global.FPSDISPLAY = !Global.FPSDISPLAY;
             
+            if (Global.CURRENT_STATE == GameState.None)
+                Application.Exit();
+
+            Fullscreen(Global.CONFIGS.Fullscreen);
+
             return Task.CompletedTask;
         }
 
@@ -202,6 +193,18 @@ namespace Asteroids
                 }
                 
                 await ProcessOptionChanges();
+
+                // Load and unload menus if the state has changed
+                if (Global.CURRENT_STATE != Global.PREVIOUS_STATE)
+                {
+                    this.InvokeAction(() =>
+                    {
+                        foreach (Control control in Global.STATE_MENU[Global.PREVIOUS_STATE].Controls) this.Controls.Remove(control);
+                        foreach (Control control in Global.STATE_MENU[Global.CURRENT_STATE].Controls)  this.Controls.Add(control);
+                    });
+                    
+                    Global.PREVIOUS_STATE = Global.CURRENT_STATE;
+                }
 
                 if (Global.CURRENT_STATE != GameState.Playing)
                 {
@@ -486,10 +489,6 @@ namespace Asteroids
 
         private void GameForm_Load(object sender, EventArgs e)
         {
-            Global.STATE_MENU[GameState.MainMenu]       = new MenuMain();
-            Global.STATE_MENU[GameState.SettingsMenu]   = new MenuSettings();
-            Global.STATE_MENU[GameState.KeybindsMenu]   = new MenuKeybinds();
-
             if (!File.Exists(Global.CONFIG_PATH))
             {
                 File.Create(Global.CONFIG_PATH).Close();
@@ -539,6 +538,12 @@ namespace Asteroids
 
             Global.CONFIGS.LastUsedKeymap = keybindFile;
             Keymap = JSONManager.ReadJson<Keymap>(Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap);
+
+            Global.STATE_MENU[GameState.MainMenu]     = new MenuMain();
+            Global.STATE_MENU[GameState.SettingsMenu] = new MenuSettings();
+            Global.STATE_MENU[GameState.KeybindsMenu] = new MenuKeybinds();
+            Global.STATE_MENU[GameState.Playing]      = new MenuNone();
+            Global.STATE_MENU[GameState.None]         = new MenuNone();
         }
     }
 }

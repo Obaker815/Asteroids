@@ -6,7 +6,7 @@ namespace Asteroids
     internal static class Global
     {
         public static bool DEBUG = false;
-        public static bool FPSDISPLAY = false;
+        public static bool FPSDISPLAY = true;
         public static bool DEBUG_PARTICLE_DRAW = false;
         public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;
         public const bool PLAYER_COLLISION = true;
@@ -19,13 +19,24 @@ namespace Asteroids
         public const string DEFAULT_KEYBIND_FILE = "default_keybinds.json";
 
         public static ConfigsJSON CONFIGS = null!;
-        public static GameState CURRENT_STATE = GameState.MainMenu;
+        public static GameState PREVIOUS_STATE = GameState.None;
+        public static GameState CURRENT_STATE  = GameState.SettingsMenu;
         public static Dictionary<GameState, IMenu> STATE_MENU = new()
-            {
-                {GameState.MainMenu,        null!},
-                {GameState.SettingsMenu,    null!},
-                {GameState.KeybindsMenu,    null!},
-            };
+        {
+            {GameState.MainMenu,        null!},
+            {GameState.SettingsMenu,    null!},
+            {GameState.KeybindsMenu,    null!},
+            {GameState.Playing,         null!},
+            {GameState.None,            null!},
+        };
+        public static Dictionary<GameState, GameState> STATE_RETURN = new()
+        {
+            {GameState.MainMenu,        GameState.None},
+            {GameState.SettingsMenu,    GameState.MainMenu},
+            {GameState.KeybindsMenu,    GameState.SettingsMenu},
+            {GameState.Playing,         GameState.MainMenu},
+            {GameState.None,            GameState.None},
+        };
 
         public static void GameStart()
         {

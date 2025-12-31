@@ -62,7 +62,7 @@ namespace Asteroids
         // Public ship properties
         public bool Respawning => respawning;
         public int NumBullets { get { return numBullets; } set { numBullets = int.Clamp(value, 0, 4); } }
-        public int lives = 1;
+        public int lives = 5;
 
         public static List<Ship> Ships = [];
 
@@ -285,6 +285,7 @@ namespace Asteroids
                     Vector2 lookDir = Vector2.Zero;
                     
                     if (Keys["Up"].IsPressed) moveDir.Y -= 1;
+                    if (Keys["Down"].IsPressed) moveDir.Y += 1;
                     if (Keys["Left"].IsPressed) moveDir.X -= 1;
                     if (Keys["Right"].IsPressed) moveDir.X += 1;
 

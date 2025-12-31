@@ -4,6 +4,8 @@ namespace Asteroids
 {
     internal class MenuMain : IMenu
     {
+        public List<Control> Controls { get; set; } = [];
+
         private static readonly int fontSize = 15;
         public static Scoreboard Scoreboard = new();
 
