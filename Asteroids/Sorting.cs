@@ -19,7 +19,7 @@
                     // Compare the two values
                     if (Comparer<T2>.Default.Compare(
                         GetValue(ToSort[inverse? i + 1: i]), 
-                        GetValue(ToSort[inverse? i: i + 1])) > 0)
+                        GetValue(ToSort[inverse? i: i + 1])) < 0)
                     {
                         // Tuple swap
                         (ToSort[i], ToSort[i + 1]) = (ToSort[i + 1], ToSort[i]);
