@@ -3,23 +3,23 @@
     internal class MenuSettings : IMenu
     {
         public List<Control> Controls { get; set; } = [];
-        private Dictionary<string, int> ControlStyleOptions = new()
+        private readonly Dictionary<string, int> ControlStyleOptions = new()
         {
             {"Classic", 0 },
             {"Two-Stick", 1 },
         };
         
-        private Label Fullscreenlbl;
-        private Label ControlStylelbl;
-        private Label FPSlbl;
-        private Label Debuglbl;
-        private Label KeyLayoutlbl;
+        private Label? Fullscreenlbl;
+        private Label? ControlStylelbl;
+        private Label? FPSlbl;
+        private Label? Debuglbl;
+        private Label? KeyLayoutlbl;
 
-        private CheckBox Fullscreencb;
-        private ComboBox ControlStyleddm;
-        private TextBox FPStb;
-        private CheckBox Debugcb;
-        private Button KeyLayoutbtn;
+        private CheckBox? Fullscreencb;
+        private ComboBox? ControlStyleddm;
+        private TextBox? FPStb;
+        private CheckBox? Debugcb;
+        private Button? KeyLayoutbtn;
 
         public MenuSettings()
         {
@@ -68,7 +68,7 @@
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 BackColor = Color.White,
             });
-            ControlStyleddm.Items.AddRange(ControlStyleOptions.Keys.ToArray());
+            ControlStyleddm.Items.AddRange([.. ControlStyleOptions.Keys]);
             ControlStyleddm.SelectedItem = ControlStyleOptions
                 .FirstOrDefault(kv => kv.Value == Global.CONFIGS.ControlStyle).Key;
 
@@ -90,14 +90,14 @@
             Controls.Add(Debuglbl = new Label()
             {
                 Text = "Debug Mode:",
-                Location = new Point(labelX, 200),
+                Location = new Point(labelX, 250),
                 AutoSize = true,
                 ForeColor = Color.White,
                 BackColor = Color.Transparent,
             });
             Controls.Add(Debugcb = new CheckBox()
             {
-                Location = new Point(controlX, 203),
+                Location = new Point(controlX, 253),
                 Checked = Global.CONFIGS.DebugAvailable,
                 BackColor = Color.Transparent,
             });
@@ -105,7 +105,7 @@
             Controls.Add(KeyLayoutlbl = new Label()
             {
                 Text = "Keyboard Layout:",
-                Location = new Point(labelX, 250),
+                Location = new Point(labelX, 200),
                 AutoSize = true,
                 ForeColor = Color.White,
                 BackColor = Color.Transparent,
@@ -113,7 +113,7 @@
             Controls.Add(KeyLayoutbtn = new Button()
             {
                 Text = "Edit Keybinds",
-                Location = new Point(controlX, 245),
+                Location = new Point(controlX, 195),
                 AutoSize = true,
                 BackColor = Color.White,
             });
