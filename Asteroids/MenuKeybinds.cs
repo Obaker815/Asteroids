@@ -91,7 +91,7 @@ namespace Asteroids
             { 
                 if (dontUpdate) return;
                 if (Keymapddm.SelectedItem != null)
-                    Global.CONFIGS.LastUsedKeymap = '/' + keybindConfigs[Keymapddm.SelectedIndex].Replace(' ', '_') + ".json";
+                    Global.CONFIGS.LastUsedKeymap = keybindConfigs[Keymapddm.SelectedIndex].Replace(' ', '_') + ".json";
                 UpdateControls();
             };
 
