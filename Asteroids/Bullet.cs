@@ -76,6 +76,7 @@ namespace Asteroids
         public override void Draw(Graphics g, Vector2 Position)
         {
             g.DrawEllipse(Pens.White, Position.X - radius, Position.Y - radius, 2 * radius, 2 * radius);
+            g.FillEllipse(Brushes.DarkGray, Position.X - radius, Position.Y - radius, 2 * radius, 2 * radius);
         }
 
         /// <summary>

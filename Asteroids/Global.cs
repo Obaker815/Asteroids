@@ -18,6 +18,7 @@ namespace Asteroids
 
         public const string DEFAULT_KEYBIND_FILE = "default_keybinds.json";
 
+        public static bool SUPPRESS_OPTION_CHANGED_EVENT = false;
         public static ConfigsJSON CONFIGS = null!;
         public static GameState PREVIOUS_STATE = GameState.None;
         public static GameState CURRENT_STATE  = GameState.SettingsMenu;

@@ -17,7 +17,7 @@ namespace Asteroids
             { "Fullscreen",         new Keybind(Keys.F11    )},
             { "ShowFramerate",      new Keybind(Keys.F12    )},
         };
-        private Keymap Keymap;
+        public Keymap Keymap;
 
         private string frameRate = "";
         private string frameTime = "";
@@ -84,6 +84,12 @@ namespace Asteroids
             if (Global.CONFIGS.Fullscreen)
                 Fullscreen(true);
 
+            Global.STATE_MENU[GameState.MainMenu]     = new MenuMain();
+            Global.STATE_MENU[GameState.SettingsMenu] = new MenuSettings();
+            Global.STATE_MENU[GameState.KeybindsMenu] = new MenuKeybinds();
+            Global.STATE_MENU[GameState.Playing]      = new MenuNone();
+            Global.STATE_MENU[GameState.None]         = new MenuNone();
+
             Task.Run(GameMainLoop);
             Focus();
         }
@@ -136,6 +142,9 @@ namespace Asteroids
 
         private Task ProcessOptionChanges()
         {
+            if (Global.SUPPRESS_OPTION_CHANGED_EVENT)
+                return Task.CompletedTask;
+
             if (Global.CONFIGS.DebugAvailable)
             {
                 if (OptionBindings["DebugMode"].FirstPress)
@@ -334,39 +343,26 @@ namespace Asteroids
         // key down and key up event
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
-            foreach (string Key in Keymap.keybinds.Keys)
-                // check if the key pressed matches any keybinds
-                if (e.KeyCode == Keymap.keybinds[Key].Key)
-                {
-                    // edit the Keybind in the dictionary
-                    Keybind kb = Keymap.keybinds[Key];
-                    kb.FirstPress = true;
-                    kb.IsPressed = true;
-                    Keymap.keybinds[Key] = kb;
-                }
-
-            foreach (string Key in OptionBindings.Keys)
-                // check if the key pressed matches any keybinds
-                if (e.KeyCode == OptionBindings[Key].Key)
-                {
-                    // edit the Keybind in the dictionary
-                    Keybind kb = OptionBindings[Key];
-                    kb.FirstPress = true;
-                    kb.IsPressed = true;
-                    OptionBindings[Key] = kb;
-                }
-
-            if (Global.CURRENT_STATE == GameState.MainMenu)
-                foreach (string Key in MenuMain.MenuKeys.Keys)
+            void CheckDict(Dictionary<string, Keybind> dict)
+            {
+                foreach (string Key in dict.Keys)
                     // check if the key pressed matches any keybinds
-                    if (e.KeyCode == MenuMain.MenuKeys[Key].Key)
+                    if (e.KeyCode == dict[Key].Key)
                     {
                         // edit the Keybind in the dictionary
-                        Keybind kb = MenuMain.MenuKeys[Key];
+                        Keybind kb = dict[Key];
                         kb.FirstPress = true;
                         kb.IsPressed = true;
-                        MenuMain.MenuKeys[Key] = kb;
+                        dict[Key] = kb;
                     }
+            }
+
+            CheckDict(Keymap.keybinds);
+            CheckDict(OptionBindings);
+            if (Global.CURRENT_STATE == GameState.MainMenu) CheckDict(MenuMain.MenuKeys);
+            
+            if (Global.CURRENT_STATE == GameState.KeybindsMenu)
+                ((MenuKeybinds)Global.STATE_MENU[GameState.KeybindsMenu]).LastPressedKey = e.KeyCode;
         }
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
@@ -538,12 +534,6 @@ namespace Asteroids
 
             Global.CONFIGS.LastUsedKeymap = keybindFile;
             Keymap = JSONManager.ReadJson<Keymap>(Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap);
-
-            Global.STATE_MENU[GameState.MainMenu]     = new MenuMain();
-            Global.STATE_MENU[GameState.SettingsMenu] = new MenuSettings();
-            Global.STATE_MENU[GameState.KeybindsMenu] = new MenuKeybinds();
-            Global.STATE_MENU[GameState.Playing]      = new MenuNone();
-            Global.STATE_MENU[GameState.None]         = new MenuNone();
         }
     }
 }

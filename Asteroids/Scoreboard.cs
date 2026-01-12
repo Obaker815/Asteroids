@@ -11,8 +11,8 @@ namespace Asteroids
         {
             if (Entries == null) return;
             Entries = Sorting.Bubble(
-                Entries, 
-                (a) => { return a.Score; }, 
+                ToSort: Entries,
+                GetValue: (a) => { return a.Score; },
                 inverse: true);
         }
     }
