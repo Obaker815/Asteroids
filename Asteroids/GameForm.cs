@@ -47,7 +47,7 @@ namespace Asteroids
                 this.Size.Height - this.ClientSize.Height);
 
             // Load font
-            PublicFonts!.AddFontFile(Global.FONT_PATH_BASE + @"OrchestraOfStrings/OrchestraOfStrings-yoLd.ttf");
+            PublicFonts!.AddFontFile(Global.DATA_PATH + Global.FONT_PATH_BASE + @"OrchestraOfStrings/OrchestraOfStrings-yoLd.ttf");
             FontFamily fontFamily = PublicFonts.Families[0];
             Font = new Font(fontFamily, 20f);
 
@@ -476,18 +476,22 @@ namespace Asteroids
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            JSONManager.WriteJson(Global.CONFIG_PATH, Global.CONFIGS);
-            JSONManager.WriteJson(Global.SCOREBOARD_PATH, MenuMain.Scoreboard);
+            JSONManager.WriteJson(Global.DATA_PATH + Global.CONFIG_PATH, Global.CONFIGS);
+            JSONManager.WriteJson(Global.DATA_PATH + Global.SCOREBOARD_PATH, MenuMain.Scoreboard);
 
             if (Global.CONFIGS.LastUsedKeymap != "default_keybinds.json") 
-                JSONManager.WriteJson(Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap, Keymap);
+                JSONManager.WriteJson(Global.DATA_PATH + Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap, Keymap);
         }
 
         private void GameForm_Load(object sender, EventArgs e)
         {
-            if (!File.Exists(Global.CONFIG_PATH))
+            string ScoreboardPath = Global.DATA_PATH + Global.SCOREBOARD_PATH;
+            string ConfigPath = Global.DATA_PATH + Global.CONFIG_PATH;
+
+            File.Delete(ScoreboardPath);
+            if (!File.Exists(ConfigPath))
             {
-                File.Create(Global.CONFIG_PATH).Close();
+                File.Create(ConfigPath).Close();
 
                 ConfigsJSON tempcfg = new()
                 {
@@ -497,35 +501,34 @@ namespace Asteroids
                     DebugAvailable = false
                 };
 
-                JSONManager.WriteJson(Global.CONFIG_PATH, tempcfg);
+                JSONManager.WriteJson(ConfigPath, tempcfg);
             }
-            if (!File.Exists(Global.SCOREBOARD_PATH))
+            if (!File.Exists(ScoreboardPath))
             {
-                File.Create(Global.SCOREBOARD_PATH).Close();
+                File.Create(ScoreboardPath).Close();
 
-                Random rnd = new();
                 Scoreboard tempScoreboard = new()
                 {
                     Entries = Enumerable.Range(0, 10)
-                        .Select(_ => new ScoreboardEntry 
+                        .Select(_ => new ScoreboardEntry
                         {
-                            Name = "~~~~~",
-                            Score = rnd.Next(0, 100000000),
+                            Name = "_____",
+                            Score = 0,
                         })
                         .ToArray()
                 };
 
-                JSONManager.WriteJson(Global.SCOREBOARD_PATH, tempScoreboard);
+                JSONManager.WriteJson(ScoreboardPath, tempScoreboard);
             }
-            string defaultKeybindPath = Global.KEYBIND_PATH_BASE + Global.DEFAULT_KEYBIND_FILE;
+            string defaultKeybindPath = Global.DATA_PATH + Global.KEYBIND_PATH_BASE + Global.DEFAULT_KEYBIND_FILE;
             if (!File.Exists(defaultKeybindPath))
             {
                 File.Create(defaultKeybindPath).Close();
                 JSONManager.WriteJson(defaultKeybindPath, new Keymap());
             }
 
-            Global.CONFIGS      = JSONManager.ReadJson<ConfigsJSON> (Global.CONFIG_PATH);
-            MenuMain.Scoreboard = JSONManager.ReadJson<Scoreboard>  (Global.SCOREBOARD_PATH);
+            Global.CONFIGS      = JSONManager.ReadJson<ConfigsJSON> (ConfigPath);
+            MenuMain.Scoreboard = JSONManager.ReadJson<Scoreboard>  (ScoreboardPath);
             MenuMain.Scoreboard.SortEntries();
 
             string keybindFile = (Global.CONFIGS.LastUsedKeymap == null || Global.CONFIGS.LastUsedKeymap == "")
@@ -533,7 +536,7 @@ namespace Asteroids
                 : Global.CONFIGS.LastUsedKeymap;
 
             Global.CONFIGS.LastUsedKeymap = keybindFile;
-            Keymap = JSONManager.ReadJson<Keymap>(Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap);
+            Keymap = JSONManager.ReadJson<Keymap>(Global.DATA_PATH + Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap);
         }
     }
 }

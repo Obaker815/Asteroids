@@ -21,7 +21,7 @@ namespace Asteroids
         public static Dictionary<string, Keybind> MenuKeys = new()
         {
             {"Start", new(Keys.Space) },
-            {"Settings", new(Keys.Control) }
+            {"Settings", new(Keys.ControlKey) }
         };
 
         public void Draw(Graphics g)
@@ -44,7 +44,11 @@ namespace Asteroids
                                       .ToArray();
 
             // Maximum number of characters in any line
-            int maxChars = Math.Max(1, lines.Max(s => s.Length));
+            int maxChars;
+            if (lines.Length != 0)
+                maxChars = Math.Max(1, lines.Max(s => s.Length));
+            else
+                maxChars = 29;
             var measureFormat = StringFormat.GenericTypographic;
 
             // Measurements per character
@@ -117,6 +121,7 @@ namespace Asteroids
         public void Update()
         {
             if (MenuKeys["Start"].FirstPress) Global.GameStart();
+            if (MenuKeys["Settings"].FirstPress) Global.CURRENT_STATE = GameState.SettingsMenu;
 
             foreach (string Key in MenuKeys.Keys)
             {

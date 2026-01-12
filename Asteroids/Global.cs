@@ -11,10 +11,11 @@ namespace Asteroids
         public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;
         public const bool PLAYER_COLLISION = true;
 
-        public const string CONFIG_PATH = "./Data/config.json";
-        public const string SCOREBOARD_PATH = "./Data/scoreboard.json";
-        public const string KEYBIND_PATH_BASE = "./Data/Keybinds/";
-        public const string FONT_PATH_BASE = "./Data/Fonts/";
+        public const string DATA_PATH = "./data";
+        public const string CONFIG_PATH = "/config.json";
+        public const string SCOREBOARD_PATH = "/scoreboard.json";
+        public const string KEYBIND_PATH_BASE = "/Keybinds/";
+        public const string FONT_PATH_BASE = "/Fonts/";
 
         public const string DEFAULT_KEYBIND_FILE = "default_keybinds.json";
 
@@ -95,6 +96,13 @@ namespace Asteroids
         public static float Lerp(float a, float b, float t)
         {
             return a + (b - a) * t;
+        }
+
+        public static string GetFileName(string path)
+        {
+            int endIndex = path.LastIndexOf('.');
+            int startIndex = path.LastIndexOf('/') + 1;
+            return path.Substring(startIndex, endIndex - startIndex);
         }
     }
 }
