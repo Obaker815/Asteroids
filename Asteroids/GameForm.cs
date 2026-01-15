@@ -227,7 +227,7 @@ namespace Asteroids
                 {
                     if (!starsEffect.IsPlaying) starsEffect.Start();
 
-                    if (Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
+                    if (Ship.Ships.Count > 0 && Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
                     {
                         Global.CURRENT_STATE = GameState.MainMenu;
                     }
