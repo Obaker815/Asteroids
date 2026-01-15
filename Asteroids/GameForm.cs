@@ -535,9 +535,12 @@ namespace Asteroids
             MenuMain.Scoreboard = JSONManager.ReadJson<Scoreboard>  (ScoreboardPath);
             MenuMain.Scoreboard.SortEntries();
 
-            string keybindFile = (Global.CONFIGS.LastUsedKeymap == null || Global.CONFIGS.LastUsedKeymap == "")
+            string keybindFile = (String.IsNullOrEmpty(Global.CONFIGS.LastUsedKeymap))
                 ? Global.DEFAULT_KEYBIND_FILE
                 : Global.CONFIGS.LastUsedKeymap;
+            keybindFile = (File.Exists(Global.DATA_PATH + Global.KEYBIND_PATH_BASE + keybindFile))
+                ? keybindFile
+                : Global.DEFAULT_KEYBIND_FILE;
 
             Global.CONFIGS.LastUsedKeymap = keybindFile;
             Keymap = JSONManager.ReadJson<Keymap>(Global.DATA_PATH + Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap);

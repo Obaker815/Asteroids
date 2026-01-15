@@ -96,10 +96,18 @@ namespace Asteroids
                 if (Keymapddm.SelectedItem != null)
                 {
                     keybindConfigs = Directory.GetFiles(KeybindBasePath);
-                    JSONManager.WriteJson(
-                        Global.DATA_PATH + Global.KEYBIND_PATH_BASE + 
-                        Global.CONFIGS.LastUsedKeymap, 
-                        GameForm.ActiveGameform!.Keymap);
+                    for (int i = 0; i < keybindConfigs.Length; i++)
+                    {
+                        keybindConfigs[i] = Global.GetFileName(keybindConfigs[i]);
+                        keybindConfigs[i] = keybindConfigs[i].Replace('_', ' ');
+                    }
+                    if (Global.CONFIGS.LastUsedKeymap != Global.DEFAULT_KEYBIND_FILE)
+                    {
+                        JSONManager.WriteJson(
+                            Global.DATA_PATH + Global.KEYBIND_PATH_BASE + 
+                            Global.CONFIGS.LastUsedKeymap, 
+                            GameForm.ActiveGameform!.Keymap);
+                    }
 
                     Global.CONFIGS.LastUsedKeymap = keybindConfigs[Keymapddm.SelectedIndex].Replace(' ', '_') + ".json";
                 }
