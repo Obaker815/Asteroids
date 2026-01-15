@@ -9,12 +9,6 @@
             {"Two-Stick", 1 },
         };
         
-        private Label? Fullscreenlbl;
-        private Label? ControlStylelbl;
-        private Label? FPSlbl;
-        private Label? Debuglbl;
-        private Label? KeyLayoutlbl;
-
         private CheckBox? Fullscreencb;
         private ComboBox? ControlStyleddm;
         private TextBox? FPStb;
@@ -38,7 +32,7 @@
         {
             int labelX = 100;
             int controlX = 350;
-            Controls.Add(Fullscreenlbl = new Label()
+            Controls.Add(new Label()
             {
                 Text = "Fullscreen:",
                 Location = new Point(labelX, 50),
@@ -53,7 +47,7 @@
                 BackColor = Color.Transparent,
             });
 
-            Controls.Add(ControlStylelbl = new Label()
+            Controls.Add(new Label()
             {
                 Text = "Control Style:",
                 Location = new Point(labelX, 100),
@@ -72,7 +66,7 @@
             ControlStyleddm.SelectedItem = ControlStyleOptions
                 .FirstOrDefault(kv => kv.Value == Global.CONFIGS.ControlStyle).Key;
 
-            Controls.Add(FPSlbl = new Label()
+            Controls.Add(new Label()
             {
                 Text = "FPS:",
                 Location = new Point(labelX, 150),
@@ -87,7 +81,7 @@
                 BackColor = Color.White,
             });
 
-            Controls.Add(Debuglbl = new Label()
+            Controls.Add(new Label()
             {
                 Text = "Debug Mode:",
                 Location = new Point(labelX, 250),
@@ -102,7 +96,7 @@
                 BackColor = Color.Transparent,
             });
 
-            Controls.Add(KeyLayoutlbl = new Label()
+            Controls.Add(new Label()
             {
                 Text = "Keyboard Layout:",
                 Location = new Point(labelX, 200),

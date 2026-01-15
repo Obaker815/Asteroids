@@ -175,6 +175,7 @@ namespace Asteroids
         bool running = false;
         private async void GameMainLoop()
         {
+
             if (running) return;
             running = true;
 
@@ -213,6 +214,8 @@ namespace Asteroids
                     });
                     
                     Global.PREVIOUS_STATE = Global.CURRENT_STATE;
+
+                    if (Global.CURRENT_STATE == GameState.Playing) Global.GameStart();
                 }
 
                 if (Global.CURRENT_STATE != GameState.Playing)
@@ -434,17 +437,18 @@ namespace Asteroids
                 float livesYPos = 60;
                 float livesXPos = 25;
                 float livesSpacing = 24;
-                for (int i = 0; i < Ship.Ships[0].lives; i++)
-                {
-                    float posX = livesXPos + i * livesSpacing;
-                    float posY = livesYPos;
+                if (Ship.Ships.Count > 0)
+                    for (int i = 0; i < Ship.Ships[0].lives; i++)
+                    {
+                        float posX = livesXPos + i * livesSpacing;
+                        float posY = livesYPos;
 
-                    Ship.Draw(g,
-                        new(posX, posY),
-                        new(0, -1),
-                        10,
-                        (i == Ship.Ships[0].lives - 1) && !Ship.Ships[0].Respawning);
-                }
+                        Ship.Draw(g,
+                            new(posX, posY),
+                            new(0, -1),
+                            10,
+                            (i == Ship.Ships[0].lives - 1) && !Ship.Ships[0].Respawning);
+                    }
             }
             else Global.STATE_MENU[Global.CURRENT_STATE].Draw(g);    
 

@@ -56,7 +56,6 @@ namespace Asteroids
                 GameForm.preferredRect.Height / 2));
 
             LevelManager.Instance = new();
-            CURRENT_STATE = GameState.Playing;
         }
 
         /// <summary>
@@ -102,7 +101,7 @@ namespace Asteroids
         {
             int endIndex = path.LastIndexOf('.');
             int startIndex = path.LastIndexOf('/') + 1;
-            return path.Substring(startIndex, endIndex - startIndex);
+            return path[startIndex..endIndex];
         }
     }
 }

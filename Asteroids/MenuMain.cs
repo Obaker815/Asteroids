@@ -21,7 +21,7 @@ namespace Asteroids
         public static Dictionary<string, Keybind> MenuKeys = new()
         {
             {"Start", new(Keys.Space) },
-            {"Settings", new(Keys.ControlKey) }
+            {"Settings", new(Keys.F10) }
         };
 
         public void Draw(Graphics g)
@@ -120,7 +120,7 @@ namespace Asteroids
 
         public void Update()
         {
-            if (MenuKeys["Start"].FirstPress) Global.GameStart();
+            if (MenuKeys["Start"].FirstPress)    Global.CURRENT_STATE = GameState.Playing;
             if (MenuKeys["Settings"].FirstPress) Global.CURRENT_STATE = GameState.SettingsMenu;
 
             foreach (string Key in MenuKeys.Keys)
