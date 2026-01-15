@@ -7,6 +7,9 @@ namespace Asteroids
         public List<Control> Controls { get; set; } = [];
         public Keys LastPressedKey { get; set; }
 
+        private TextBox FilenameBox;
+        private Button SaveBtn;
+        private Button DeleteBtn;
         private ComboBox Keymapddm;
         private bool dontUpdate = true;
         public MenuKeybinds()
@@ -91,7 +94,88 @@ namespace Asteroids
             { 
                 if (dontUpdate) return;
                 if (Keymapddm.SelectedItem != null)
+                {
+                    keybindConfigs = Directory.GetFiles(KeybindBasePath);
+                    JSONManager.WriteJson(
+                        Global.DATA_PATH + Global.KEYBIND_PATH_BASE + 
+                        Global.CONFIGS.LastUsedKeymap, 
+                        GameForm.ActiveGameform!.Keymap);
+
                     Global.CONFIGS.LastUsedKeymap = keybindConfigs[Keymapddm.SelectedIndex].Replace(' ', '_') + ".json";
+                }
+                UpdateControls();
+            };
+
+            currentY += SpacingY;
+            LabelX -= OffsetX;
+            ButtonX -= OffsetX;
+
+            Controls.Add(new Label()
+            {
+                Text = "New keymap name:",
+                AutoSize = true,
+                ForeColor = Color.White,
+                BackColor = Color.Black,
+                Location = new Point(LabelX, currentY - 20),
+            });
+            Controls.Add(FilenameBox = new TextBox()
+            {
+                Location = new Point(LabelX + OffsetX, currentY - 20),
+                Width = 250,
+                BackColor = Color.White,
+            });
+
+            currentY += SpacingY;
+
+            Controls.Add(SaveBtn = new Button()
+            {
+                Text = "Save",
+                Location = new Point(LabelX, currentY - 20),
+                Width = 150,
+                Height = 50,
+                BackColor = Color.Green,
+            });
+            Controls.Add(DeleteBtn = new Button()
+            {
+                Text = "Delete",
+                Location = new Point(ButtonX, currentY - 20),
+                Width = 150,
+                Height = 50,
+                BackColor = Color.Red,
+            });
+
+            SaveBtn.Click += (s, e) =>
+            {
+                string filename = FilenameBox.Text.Trim();
+                if (string.IsNullOrEmpty(filename))
+                {
+                    MessageBox.Show("Please enter a valid keymap name.");
+                    return;
+                }
+                filename = filename.Replace(' ', '_') + ".json";
+                string fullPath = Global.DATA_PATH + Global.KEYBIND_PATH_BASE + filename;
+                if (File.Exists(fullPath))
+                {
+                    MessageBox.Show("A keymap with this name already exists.");
+                    return;
+                }
+                JSONManager.WriteJson(fullPath, GameForm.ActiveGameform!.Keymap);
+                Global.CONFIGS.LastUsedKeymap = filename;
+                UpdateControls();
+            };
+            DeleteBtn.Click += (s, e) =>
+            {
+                if (Global.CONFIGS.LastUsedKeymap == Global.DEFAULT_KEYBIND_FILE)
+                {
+                    MessageBox.Show("You cannot delete the default keymap.");
+                    return;
+                }
+
+                string filename = Global.DATA_PATH + Global.KEYBIND_PATH_BASE +
+                                  Global.CONFIGS.LastUsedKeymap.Replace(' ', '_');
+
+                Global.CONFIGS.LastUsedKeymap = Global.DEFAULT_KEYBIND_FILE;
+                File.Delete(filename);
                 UpdateControls();
             };
 
@@ -104,7 +188,7 @@ namespace Asteroids
         {
             dontUpdate = true;
             Dictionary<string, Keybind> keymap = GameForm.ActiveGameform!.Keymap.ToDictionary();
-            for (int i = 1; i < Controls.Count - 2; i += 2)
+            for (int i = 1; i < Controls.Count - 6; i += 2)
             {
                 Controls[i].Text = keymap.ElementAt((i - 1) / 2).Value.Key.ToString();
             }
