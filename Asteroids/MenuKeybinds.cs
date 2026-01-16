@@ -11,9 +11,16 @@ namespace Asteroids
         private Button SaveBtn;
         private Button DeleteBtn;
         private ComboBox Keymapddm;
+        private TextBox FocusStealer;
+
         private bool dontUpdate = true;
         public MenuKeybinds()
         {
+            Controls.Add(FocusStealer = new TextBox()
+            {
+                Location = new Point(0, -100)
+            });
+
             string KeybindBasePath = Global.DATA_PATH + Global.KEYBIND_PATH_BASE;
 
             string[] keybindConfigs = Directory.GetFiles(KeybindBasePath);
@@ -54,11 +61,12 @@ namespace Asteroids
                 };
                 keybindButton.Click += async (s, e) =>
                 {
+                    FocusStealer.Focus();
                     keybindButton.Text = "...";
                     Keys newKey = await GetKeypress();
                     ChangeKeybind(keybindName, newKey);
                     keybindButton.Text = GameForm.ActiveGameform!.Keymap.keybinds[keybindName].Key.ToString();
-                    GameForm.ActiveGameform!.Focus();
+                    keybindButton.Focus();
                 };
                 Controls.Add(KeybindLabel);
                 Controls.Add(keybindButton);
@@ -141,7 +149,7 @@ namespace Asteroids
 
             Controls.Add(SaveBtn = new Button()
             {
-                Text = "Save",
+                Text = "Create",
                 Location = new Point(LabelX, currentY - 20),
                 Width = 150,
                 Height = 50,
@@ -164,6 +172,7 @@ namespace Asteroids
                     MessageBox.Show("Please enter a valid keymap name.");
                     return;
                 }
+
                 filename = filename.Replace(' ', '_') + ".json";
                 string fullPath = Global.DATA_PATH + Global.KEYBIND_PATH_BASE + filename;
                 if (File.Exists(fullPath))
@@ -171,6 +180,7 @@ namespace Asteroids
                     MessageBox.Show("A keymap with this name already exists.");
                     return;
                 }
+
                 JSONManager.WriteJson(fullPath, GameForm.ActiveGameform!.Keymap);
                 Global.CONFIGS.LastUsedKeymap = filename;
                 UpdateControls();
@@ -186,8 +196,14 @@ namespace Asteroids
                 string filename = Global.DATA_PATH + Global.KEYBIND_PATH_BASE +
                                   Global.CONFIGS.LastUsedKeymap.Replace(' ', '_');
 
+                Keymapddm.SelectedIndex = Keymapddm.Items.IndexOf("default keymap");
                 Global.CONFIGS.LastUsedKeymap = Global.DEFAULT_KEYBIND_FILE;
                 File.Delete(filename);
+
+                if (GameForm.ActiveGameform != null)
+                    GameForm.ActiveGameform!.Keymap = 
+                        JSONManager.ReadJson<Keymap>(KeybindBasePath + Global.CONFIGS.LastUsedKeymap);
+
                 UpdateControls();
             };
 
@@ -202,7 +218,7 @@ namespace Asteroids
             Dictionary<string, Keybind> keymap = GameForm.ActiveGameform!.Keymap.ToDictionary();
             for (int i = 0; i < 9 ; i++)
             {
-                Controls[i * 2 + 1].Text = keymap.ElementAt(i).Value.Key.ToString();
+                Controls[i * 2 + 2].Text = keymap.ElementAt(i).Value.Key.ToString();
             }
 
             string KeybindBasePath = Global.DATA_PATH + Global.KEYBIND_PATH_BASE;

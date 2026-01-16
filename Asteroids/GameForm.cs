@@ -463,18 +463,21 @@ namespace Asteroids
             g.Transform = originalTransform;
 
             // Draw the bars on the top & bottom || left & right to hide how wrapping works when the graphics object doesn't scale exactly
-            Brush barBrush = new SolidBrush(Color.FromArgb(255, 30, 30, 30));
-            if (xdiff > 0)
+            if (Global.CURRENT_STATE == GameState.Playing)
             {
-                float barW = xdiff / 2;
-                g.FillRectangle(barBrush, -10, -10, barW + 10, ClientSize.Height + 20);
-                g.FillRectangle(barBrush, ClientSize.Width - barW, -10, barW + 10, ClientSize.Height + 10);
-            }
-            else if (ydiff > 0)
-            {
-                float barH = ydiff / 2;
-                g.FillRectangle(barBrush, -10, -10, ClientSize.Width + 20, barH + 10);
-                g.FillRectangle(barBrush, -10, ClientSize.Height - barH, ClientSize.Width + 20, barH + 10);
+                Brush barBrush = new SolidBrush(Color.FromArgb(255, 30, 30, 30));
+                if (xdiff > 0)
+                {
+                    float barW = xdiff / 2;
+                    g.FillRectangle(barBrush, -10, -10, barW + 10, ClientSize.Height + 20);
+                    g.FillRectangle(barBrush, ClientSize.Width - barW, -10, barW + 10, ClientSize.Height + 10);
+                }
+                else if (ydiff > 0)
+                {
+                    float barH = ydiff / 2;
+                    g.FillRectangle(barBrush, -10, -10, ClientSize.Width + 20, barH + 10);
+                    g.FillRectangle(barBrush, -10, ClientSize.Height - barH, ClientSize.Width + 20, barH + 10);
+                }
             }
         }
 
