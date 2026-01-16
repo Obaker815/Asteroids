@@ -104,12 +104,16 @@ namespace Asteroids
                     if (Global.CONFIGS.LastUsedKeymap != Global.DEFAULT_KEYBIND_FILE)
                     {
                         JSONManager.WriteJson(
-                            Global.DATA_PATH + Global.KEYBIND_PATH_BASE + 
-                            Global.CONFIGS.LastUsedKeymap, 
+                            Global.DATA_PATH + Global.KEYBIND_PATH_BASE +
+                            Global.CONFIGS.LastUsedKeymap,
                             GameForm.ActiveGameform!.Keymap);
                     }
 
                     Global.CONFIGS.LastUsedKeymap = keybindConfigs[Keymapddm.SelectedIndex].Replace(' ', '_') + ".json";
+
+                    if (GameForm.ActiveGameform != null)
+                        GameForm.ActiveGameform!.Keymap = 
+                            JSONManager.ReadJson<Keymap>(KeybindBasePath + Global.CONFIGS.LastUsedKeymap);
                 }
                 UpdateControls();
             };
@@ -196,9 +200,9 @@ namespace Asteroids
         {
             dontUpdate = true;
             Dictionary<string, Keybind> keymap = GameForm.ActiveGameform!.Keymap.ToDictionary();
-            for (int i = 1; i < Controls.Count - 6; i += 2)
+            for (int i = 0; i < 9 ; i++)
             {
-                Controls[i].Text = keymap.ElementAt((i - 1) / 2).Value.Key.ToString();
+                Controls[i * 2 + 1].Text = keymap.ElementAt(i).Value.Key.ToString();
             }
 
             string KeybindBasePath = Global.DATA_PATH + Global.KEYBIND_PATH_BASE;
