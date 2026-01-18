@@ -14,7 +14,7 @@ namespace Asteroids
             Height = GameForm.preferredRect.Height / 2,
             Width = GameForm.preferredRect.Width,
 
-            Y = GameForm.preferredRect.Height / 4,
+            Y = GameForm.preferredRect.Height / 5,
             X = 0,
         };
 
