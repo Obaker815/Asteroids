@@ -25,7 +25,7 @@ namespace Asteroids
 
             int LabelX = 100;
             int ButtonX = 250;
-            int StartY = 50;
+            int StartY = 70;
             int SpacingY = 50;
             int OffsetX = 300;
             int RepeatAfter = 5;
@@ -122,6 +122,15 @@ namespace Asteroids
             LabelX -= OffsetX;
             ButtonX -= OffsetX;
 
+            Controls.Add(new Label()
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Font = new Font(GameForm.PublicFonts!.Families[0], 20),
+                Location = new Point(10, 10),
+                Text = "Exit : Esc"
+            });
             Controls.Add(new Label()
             {
                 Text = "New keymap name:",
