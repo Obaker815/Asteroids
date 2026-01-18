@@ -84,11 +84,12 @@ namespace Asteroids
             if (Global.CONFIGS.Fullscreen)
                 Fullscreen(true);
 
-            Global.STATE_MENU[GameState.MainMenu]     = new MenuMain();
-            Global.STATE_MENU[GameState.SettingsMenu] = new MenuSettings();
-            Global.STATE_MENU[GameState.KeybindsMenu] = new MenuKeybinds();
-            Global.STATE_MENU[GameState.Playing]      = new MenuNone();
-            Global.STATE_MENU[GameState.None]         = new MenuNone();
+            Global.STATE_MENU[GameState.MainMenu]       = new MenuMain();
+            Global.STATE_MENU[GameState.SettingsMenu]   = new MenuSettings();
+            Global.STATE_MENU[GameState.KeybindsMenu]   = new MenuKeybinds();
+            Global.STATE_MENU[GameState.Playing]        = new MenuNone();
+            Global.STATE_MENU[GameState.NameEntryMenu]  = new MenuName();
+            Global.STATE_MENU[GameState.None]           = new MenuNone();
 
             Task.Run(GameMainLoop);
             Focus();
@@ -228,9 +229,7 @@ namespace Asteroids
                     if (!starsEffect.IsPlaying) starsEffect.Start();
 
                     if (Ship.Ships.Count > 0 && Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
-                    {
-                        Global.CURRENT_STATE = GameState.MainMenu;
-                    }
+                        Global.CURRENT_STATE = GameState.NameEntryMenu;
 
                     if (Asteroid.AsteroidEntities.Count == 0 && !roundStarting)
                     {
@@ -501,10 +500,6 @@ namespace Asteroids
 
             string ScoreboardPath = Global.DATA_PATH + Global.SCOREBOARD_PATH;
             string ConfigPath = Global.DATA_PATH + Global.CONFIG_PATH;
-
-            // Delete config file for testing purposes 
-            if (File.Exists(ScoreboardPath))
-                File.Delete(ScoreboardPath);
 
             // Create config file if it doesn't exist
             if (!File.Exists(ConfigPath))

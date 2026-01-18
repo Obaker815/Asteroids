@@ -14,6 +14,8 @@ namespace Asteroids
                 ToSort: Entries,
                 GetValue: (a) => { return a.Score; },
                 inverse: true);
+
+            Entries = Entries[.. Math.Min(Entries.Length, 10)];
         }
     }
     internal class ScoreboardEntry

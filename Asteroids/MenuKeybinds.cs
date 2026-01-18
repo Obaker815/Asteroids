@@ -197,7 +197,8 @@ namespace Asteroids
 
                 Global.CONFIGS.LastUsedKeymap = Global.DEFAULT_KEYBIND_FILE;
                 File.Delete(filename);
-                UpdateControls();
+                Keymapddm.SelectedItem = 
+                    Global.GetFileName(Global.CONFIGS.LastUsedKeymap).Replace('_', ' ');
             };
 
             Controls.Add(Keymaplbl);

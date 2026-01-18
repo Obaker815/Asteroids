@@ -6,7 +6,7 @@ namespace Asteroids
     internal static class Global
     {
         public static bool DEBUG = false;
-        public static bool FPSDISPLAY = true;
+        public static bool FPSDISPLAY = false;
         public static bool DEBUG_PARTICLE_DRAW = false;
         public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;
         public const bool PLAYER_COLLISION = true;
@@ -22,7 +22,7 @@ namespace Asteroids
         public static bool SUPPRESS_OPTION_CHANGED_EVENT = false;
         public static ConfigsJSON CONFIGS = null!;
         public static GameState PREVIOUS_STATE = GameState.None;
-        public static GameState CURRENT_STATE  = GameState.MainMenu;
+        public static GameState CURRENT_STATE  = GameState.NameEntryMenu;
         public static Dictionary<GameState, IMenu> STATE_MENU = new()
         {
             {GameState.MainMenu,        null!},
@@ -30,6 +30,7 @@ namespace Asteroids
             {GameState.KeybindsMenu,    null!},
             {GameState.Playing,         null!},
             {GameState.None,            null!},
+            {GameState.NameEntryMenu,   null!},
         };
         public static Dictionary<GameState, GameState> STATE_RETURN = new()
         {
@@ -37,6 +38,7 @@ namespace Asteroids
             {GameState.SettingsMenu,    GameState.MainMenu},
             {GameState.KeybindsMenu,    GameState.SettingsMenu},
             {GameState.Playing,         GameState.MainMenu},
+            {GameState.NameEntryMenu,   GameState.NameEntryMenu },
             {GameState.None,            GameState.None},
         };
 
