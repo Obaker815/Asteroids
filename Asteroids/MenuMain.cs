@@ -24,6 +24,19 @@ namespace Asteroids
             {"Settings", new(Keys.F10) }
         };
 
+        public MenuMain()
+        {
+            Controls.Add(new Label()
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Font = new Font(GameForm.PublicFonts!.Families[0], 20),
+                Location = new Point(10, 10),
+                Text = "Options : F10 \nExit : Esc"
+            });
+        }
+
         public void Draw(Graphics g)
         {
             // Format for the header
@@ -113,6 +126,11 @@ namespace Asteroids
                     g.DrawString(ch.ToString(), font, Brushes.White, new PointF(xChar, yChar), measureFormat);
                 }
             }
+
+            float StartTextY = scoreboardRectangele.Bottom + height * 1;
+            g.DrawString("-- Space to start game --", font, Brushes.White,
+                         new RectangleF(scoreboardRectangele.Left, StartTextY, scoreboardRectangele.Width, fontHeight * 1.3f),
+                         headerFormat);
 
             if (Global.DEBUG)
                 g.DrawRectangle(Pens.Red, scoreboardRectangele);
