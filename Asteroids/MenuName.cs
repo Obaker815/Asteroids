@@ -70,18 +70,19 @@ namespace Asteroids
                     scoreboard.Entries![index].Score = (int)Math.Max(
                         scoreboard.Entries[index].Score,
                         LevelManager.Instance.Score);
-                    return;
+                }
+                else
+                {
+                    ScoreboardEntry newEntry = new()
+                    {
+                        Name = name,
+                        Score = (int)LevelManager.Instance.Score,
+                    };
+
+                    scoreboard.Entries = [.. scoreboard.Entries!.Append(newEntry)];
                 }
 
-                ScoreboardEntry newEntry = new()
-                {
-                    Name = name,
-                    Score = (int)LevelManager.Instance.Score,
-                };
-
-                scoreboard.Entries = [.. scoreboard.Entries!.Append(newEntry)];
                 scoreboard.SortEntries();
-
                 Global.CURRENT_STATE = GameState.MainMenu;
             };
 

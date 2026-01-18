@@ -33,7 +33,7 @@ namespace Asteroids
                 BackColor = Color.Transparent,
                 Font = new Font(GameForm.PublicFonts!.Families[0], 20),
                 Location = new Point(10, 10),
-                Text = "Exit : Esc \nOptions : F10"
+                Text = $"Exit : Esc \nOptions : {MenuKeys["Settings"].Key.ToString()}".ToUpper()
             });
         }
 
@@ -129,7 +129,7 @@ namespace Asteroids
 
             // Draw start text
             float StartTextY = scoreboardRectangele.Bottom + height * 1;
-            g.DrawString("-- Space to start game --", font, Brushes.White,
+            g.DrawString($"-- {MenuKeys["Start"].Key.ToString()} to start game --".ToUpper(), font, Brushes.White,
                          new RectangleF(scoreboardRectangele.Left, StartTextY, scoreboardRectangele.Width, fontHeight * 1.3f),
                          headerFormat);
         }

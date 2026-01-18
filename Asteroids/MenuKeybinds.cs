@@ -129,7 +129,7 @@ namespace Asteroids
                 BackColor = Color.Transparent,
                 Font = new Font(GameForm.PublicFonts!.Families[0], 20),
                 Location = new Point(10, 10),
-                Text = "Exit : Esc"
+                Text = "Exit : Esc".ToUpper()
             });
             Controls.Add(new Label()
             {
