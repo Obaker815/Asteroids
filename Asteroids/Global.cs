@@ -22,7 +22,7 @@ namespace Asteroids
         public static bool SUPPRESS_OPTION_CHANGED_EVENT = false;
         public static ConfigsJSON CONFIGS = null!;
         public static GameState PREVIOUS_STATE = GameState.None;
-        public static GameState CURRENT_STATE  = GameState.KeybindsMenu;
+        public static GameState CURRENT_STATE  = GameState.MainMenu;
         public static Dictionary<GameState, IMenu> STATE_MENU = new()
         {
             {GameState.MainMenu,        null!},
