@@ -32,7 +32,7 @@ namespace Asteroids
 
             int LabelX = 100;
             int ButtonX = 250;
-            int StartY = 50;
+            int StartY = 70;
             int SpacingY = 50;
             int OffsetX = 300;
             int RepeatAfter = 5;
@@ -132,6 +132,15 @@ namespace Asteroids
 
             Controls.Add(new Label()
             {
+                AutoSize = true,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Font = new Font(GameForm.PublicFonts!.Families[0], 20),
+                Location = new Point(10, 10),
+                Text = "Exit : Esc".ToUpper()
+            });
+            Controls.Add(new Label()
+            {
                 Text = "New keymap name:",
                 AutoSize = true,
                 ForeColor = Color.White,
@@ -199,12 +208,8 @@ namespace Asteroids
                 Keymapddm.SelectedIndex = Keymapddm.Items.IndexOf("default keymap");
                 Global.CONFIGS.LastUsedKeymap = Global.DEFAULT_KEYBIND_FILE;
                 File.Delete(filename);
-
-                if (GameForm.ActiveGameform != null)
-                    GameForm.ActiveGameform!.Keymap = 
-                        JSONManager.ReadJson<Keymap>(KeybindBasePath + Global.CONFIGS.LastUsedKeymap);
-
-                UpdateControls();
+                Keymapddm.SelectedItem = 
+                    Global.GetFileName(Global.CONFIGS.LastUsedKeymap).Replace('_', ' ');
             };
 
             Controls.Add(Keymaplbl);

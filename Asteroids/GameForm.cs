@@ -84,11 +84,12 @@ namespace Asteroids
             if (Global.CONFIGS.Fullscreen)
                 Fullscreen(true);
 
-            Global.STATE_MENU[GameState.MainMenu]     = new MenuMain();
-            Global.STATE_MENU[GameState.SettingsMenu] = new MenuSettings();
-            Global.STATE_MENU[GameState.KeybindsMenu] = new MenuKeybinds();
-            Global.STATE_MENU[GameState.Playing]      = new MenuNone();
-            Global.STATE_MENU[GameState.None]         = new MenuNone();
+            Global.STATE_MENU[GameState.MainMenu]       = new MenuMain();
+            Global.STATE_MENU[GameState.SettingsMenu]   = new MenuSettings();
+            Global.STATE_MENU[GameState.KeybindsMenu]   = new MenuKeybinds();
+            Global.STATE_MENU[GameState.Playing]        = new MenuNone();
+            Global.STATE_MENU[GameState.NameEntryMenu]  = new MenuName();
+            Global.STATE_MENU[GameState.None]           = new MenuNone();
 
             Task.Run(GameMainLoop);
             Focus();
@@ -228,9 +229,7 @@ namespace Asteroids
                     if (!starsEffect.IsPlaying) starsEffect.Start();
 
                     if (Ship.Ships.Count > 0 && Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
-                    {
-                        Global.CURRENT_STATE = GameState.MainMenu;
-                    }
+                        Global.CURRENT_STATE = GameState.NameEntryMenu;
 
                     if (Asteroid.AsteroidEntities.Count == 0 && !roundStarting)
                     {
@@ -492,10 +491,20 @@ namespace Asteroids
 
         private void GameForm_Load(object sender, EventArgs e)
         {
+            // Create any missing directories
+            if (!Directory.Exists(Global.DATA_PATH))
+                Directory.CreateDirectory(Global.DATA_PATH);
+
+            if (!Directory.Exists(Global.DATA_PATH + Global.KEYBIND_PATH_BASE))
+                Directory.CreateDirectory(Global.DATA_PATH + Global.KEYBIND_PATH_BASE);
+
+            if (!Directory.Exists(Global.DATA_PATH + Global.FONT_PATH_BASE))
+                Directory.CreateDirectory(Global.DATA_PATH + Global.FONT_PATH_BASE);
+
             string ScoreboardPath = Global.DATA_PATH + Global.SCOREBOARD_PATH;
             string ConfigPath = Global.DATA_PATH + Global.CONFIG_PATH;
 
-            File.Delete(ScoreboardPath);
+            // Create config file if it doesn't exist
             if (!File.Exists(ConfigPath))
             {
                 File.Create(ConfigPath).Close();
@@ -510,12 +519,15 @@ namespace Asteroids
 
                 JSONManager.WriteJson(ConfigPath, tempcfg);
             }
+
+            // Create scoreboard if the scoreboard file doesn't exist
             if (!File.Exists(ScoreboardPath))
             {
                 File.Create(ScoreboardPath).Close();
 
                 Scoreboard tempScoreboard = new()
                 {
+                    // Create 10 default entries
                     Entries = Enumerable.Range(0, 10)
                         .Select(_ => new ScoreboardEntry
                         {
@@ -527,25 +539,35 @@ namespace Asteroids
 
                 JSONManager.WriteJson(ScoreboardPath, tempScoreboard);
             }
-            string defaultKeybindPath = Global.DATA_PATH + Global.KEYBIND_PATH_BASE + Global.DEFAULT_KEYBIND_FILE;
-            if (!File.Exists(defaultKeybindPath))
-            {
-                File.Create(defaultKeybindPath).Close();
-                JSONManager.WriteJson(defaultKeybindPath, new Keymap());
-            }
 
+            // Delete the default keybind file
+            string defaultKeybindPath = Global.DATA_PATH + Global.KEYBIND_PATH_BASE + Global.DEFAULT_KEYBIND_FILE;
+            if (File.Exists(defaultKeybindPath))
+                File.Delete(defaultKeybindPath);
+
+            // Create the default keybind file
+            File.Create(defaultKeybindPath).Close();
+            JSONManager.WriteJson(defaultKeybindPath, new Keymap());
+
+            // Load configs and scoreboard
             Global.CONFIGS      = JSONManager.ReadJson<ConfigsJSON> (ConfigPath);
             MenuMain.Scoreboard = JSONManager.ReadJson<Scoreboard>  (ScoreboardPath);
             MenuMain.Scoreboard.SortEntries();
 
+            // If the last used keymap is invalid, set it to the default keymap
             string keybindFile = (String.IsNullOrEmpty(Global.CONFIGS.LastUsedKeymap))
                 ? Global.DEFAULT_KEYBIND_FILE
                 : Global.CONFIGS.LastUsedKeymap;
-            keybindFile = (File.Exists(Global.DATA_PATH + Global.KEYBIND_PATH_BASE + keybindFile))
-                ? keybindFile
-                : Global.DEFAULT_KEYBIND_FILE;
 
+            // If the keybind file doesn't exist, use the default keybind file
+            keybindFile = (!File.Exists(Global.DATA_PATH + Global.KEYBIND_PATH_BASE + keybindFile))
+                ? Global.DEFAULT_KEYBIND_FILE
+                : keybindFile;
+
+            // Set the last used keymap to the valid file
             Global.CONFIGS.LastUsedKeymap = keybindFile;
+
+            // Load the keymap
             Keymap = JSONManager.ReadJson<Keymap>(Global.DATA_PATH + Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap);
         }
     }

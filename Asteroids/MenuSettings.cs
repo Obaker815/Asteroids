@@ -68,6 +68,15 @@
 
             Controls.Add(new Label()
             {
+                AutoSize = true,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Font = new Font(GameForm.PublicFonts!.Families[0], 20),
+                Location = new Point(10, 10),
+                Text = "Exit : Esc".ToUpper()
+            });
+            Controls.Add(new Label()
+            {
                 Text = "FPS:",
                 Location = new Point(labelX, 150),
                 AutoSize = true,

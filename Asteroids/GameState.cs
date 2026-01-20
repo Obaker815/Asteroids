@@ -6,6 +6,7 @@
         SettingsMenu,
         KeybindsMenu,
         Playing,
+        NameEntryMenu,
         None
     }
 }

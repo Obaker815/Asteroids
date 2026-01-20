@@ -14,7 +14,7 @@ namespace Asteroids
             Height = GameForm.preferredRect.Height / 2,
             Width = GameForm.preferredRect.Width,
 
-            Y = GameForm.preferredRect.Height / 4,
+            Y = GameForm.preferredRect.Height / 5,
             X = 0,
         };
 
@@ -23,6 +23,19 @@ namespace Asteroids
             {"Start", new(Keys.Space) },
             {"Settings", new(Keys.F10) }
         };
+
+        public MenuMain()
+        {
+            Controls.Add(new Label()
+            {
+                AutoSize = true,
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                Font = new Font(GameForm.PublicFonts!.Families[0], 20),
+                Location = new Point(10, 10),
+                Text = $"Exit : Esc \nOptions : {MenuKeys["Settings"].Key.ToString()}".ToUpper()
+            });
+        }
 
         public void Draw(Graphics g)
         {
@@ -114,8 +127,11 @@ namespace Asteroids
                 }
             }
 
-            if (Global.DEBUG)
-                g.DrawRectangle(Pens.Red, scoreboardRectangele);
+            // Draw start text
+            float StartTextY = scoreboardRectangele.Bottom + height * 1;
+            g.DrawString($"-- {MenuKeys["Start"].Key.ToString()} to start game --".ToUpper(), font, Brushes.White,
+                         new RectangleF(scoreboardRectangele.Left, StartTextY, scoreboardRectangele.Width, fontHeight * 1.3f),
+                         headerFormat);
         }
 
         public void Update()
