@@ -189,8 +189,9 @@ namespace Asteroids
 
         public static void FinalDraw(Graphics g)
         {
-            Pen p = new(Global.DEMO_ENABLED?
-                Color.LightGray: Color.White,
+            Pen p = new(Global.DEMO_ENABLED
+                ? Color.Gray
+                : Color.White,
                 1);
 
             foreach (PointF[] path in paths)

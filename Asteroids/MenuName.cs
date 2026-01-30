@@ -49,7 +49,7 @@ namespace Asteroids
                 string name = NameInput.Text.Trim();
                 if (string.IsNullOrEmpty(name)) name = "idiot";
                 if (name.Length > 5) name = name[0..5];
-                if (name.Length < 5) name = name.PadRight(5, ' ');
+                if (name.Length < 5) name = name.PadRight(5, '_');
                 name = name.ToUpper();
 
                 Scoreboard scoreboard = MenuMain.Scoreboard;

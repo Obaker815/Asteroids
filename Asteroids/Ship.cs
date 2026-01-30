@@ -149,7 +149,7 @@ namespace Asteroids
             }
 
             // Draw the ship in white with thickness 1
-            DrawShip(Color.White, 1);
+            DrawShip(color, 1);
 
             if (Global.DEBUG)
             {

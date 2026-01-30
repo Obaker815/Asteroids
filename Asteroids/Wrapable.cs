@@ -74,8 +74,9 @@ namespace Asteroids
         /// <param name="g">The <see cref="Graphics"/> object to be drawn to</param>
         public void Draw(Graphics g)
         {
-            Color c = Global.DEMO_ENABLED ?
-                Color.LightGray : Color.White;
+            Color c = Global.DEMO_ENABLED 
+                ? Color.Gray 
+                : Color.White;
 
             Vector2[] positions = GetPositions();
 
