@@ -34,12 +34,34 @@ namespace Asteroids
 
                 return;
             }
-            lookDir = Vector2.Transform(lookDir, Matrix3x2.CreateRotation(ANGULAR_ACCELERATION * dt));
+
+            Vector2 closestAsteroid = new(100000000, 100000000);
+
+            Asteroid[] asteroids = [.. Asteroid.AsteroidEntities];
+            foreach(var asteroid in asteroids)
+            {
+                Vector2 closest = asteroid.GetClosest(position);
+                float distOld = Vector2.DistanceSquared(position, closestAsteroid);
+                float distNew = Vector2.DistanceSquared(position, closest);
+
+                if (distNew < distOld)
+                    closestAsteroid = closest;
+            }
+
+            Vector2 offset = closestAsteroid - position;
+
+            // approach
+            if (offset.LengthSquared() > 100 * 100)
+                lookDir = Global.Normalize(offset);
+            // scatter
+            else
+                lookDir = -Global.Normalize(offset);
 
             velocity += lookDir * ACCELERATION * dt;
 
             if (base.velocity.LengthSquared() > MAX_VELOCITY * MAX_VELOCITY)
                 base.velocity = Global.Normalize(base.velocity) * MAX_VELOCITY;
+
 
             void collisionHandle(Entity collided)
             {
