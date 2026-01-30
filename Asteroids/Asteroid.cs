@@ -169,7 +169,7 @@ namespace Asteroids
             return Task.FromResult(shape.ToArray());
         }
 
-        public override void Draw(Graphics g, Vector2 Position)
+        public override void Draw(Graphics g, Vector2 Position, Color color)
         {
             async void draw()
             {
@@ -189,11 +189,15 @@ namespace Asteroids
 
         public static void FinalDraw(Graphics g)
         {
+            Pen p = new(Global.DEMO_ENABLED?
+                Color.LightGray: Color.White,
+                1);
+
             foreach (PointF[] path in paths)
                 g.FillPolygon(Brushes.Black, path);
             
             foreach (PointF[] path in paths)
-                g.DrawPolygon(Pens.White, path);
+                g.DrawPolygon(p, path);
 
             paths.Clear();
         }

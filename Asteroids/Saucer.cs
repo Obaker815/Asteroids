@@ -102,7 +102,7 @@ namespace Asteroids
         /// </summary>
         /// <param name="g"><see cref="Graphics"/> object to be drawn to</param>
         /// <param name="position">The <see cref="Vector2"/> position to draw a saucer</param>
-        public override void Draw(Graphics g, Vector2 position)
+        public override void Draw(Graphics g, Vector2 position, Color color)
         {
             // Make an action to draw a line
             void DrawLine(Pen p, Vector2 v1, Vector2 v2)
@@ -145,7 +145,7 @@ namespace Asteroids
             }
 
             // Draw the saucer in white with thickness 1
-            DrawSaucer(Color.White, 1);
+            DrawSaucer(color, 1);
 
             if (Global.DEBUG)
             {

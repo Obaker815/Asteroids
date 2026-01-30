@@ -68,6 +68,7 @@ namespace Asteroids
                 gradient: [
                     (Color.White, 0.5f),
                     ]);
+            starsEffect.Start();
         }
 
         private void GameForm_GotFocus(object sender, EventArgs e)
@@ -84,12 +85,14 @@ namespace Asteroids
             if (Global.CONFIGS.Fullscreen)
                 Fullscreen(true);
 
-            Global.STATE_MENU[GameState.MainMenu]       = new MenuMain();
-            Global.STATE_MENU[GameState.SettingsMenu]   = new MenuSettings();
-            Global.STATE_MENU[GameState.KeybindsMenu]   = new MenuKeybinds();
-            Global.STATE_MENU[GameState.Playing]        = new MenuNone();
-            Global.STATE_MENU[GameState.NameEntryMenu]  = new MenuName();
-            Global.STATE_MENU[GameState.None]           = new MenuNone();
+            Global.STATE_MENU[GameState.MainMenu]      = new MenuMain();
+            Global.STATE_MENU[GameState.SettingsMenu]  = new MenuSettings();
+            Global.STATE_MENU[GameState.KeybindsMenu]  = new MenuKeybinds();
+            Global.STATE_MENU[GameState.Playing]       = new MenuNone();
+            Global.STATE_MENU[GameState.NameEntryMenu] = new MenuName();
+            Global.STATE_MENU[GameState.None]          = new MenuNone();
+
+            Global.GameStart();
 
             Task.Run(GameMainLoop);
             Focus();
@@ -156,7 +159,10 @@ namespace Asteroids
             }
 
             if (OptionBindings["Exit"].FirstPress)
+            {
                 Global.CURRENT_STATE = Global.STATE_RETURN[Global.CURRENT_STATE];
+
+            }
 
             if (OptionBindings["Fullscreen"].FirstPress)
                 Global.CONFIGS.Fullscreen = !Global.CONFIGS.Fullscreen;
@@ -213,95 +219,100 @@ namespace Asteroids
                         foreach (Control control in Global.STATE_MENU[Global.PREVIOUS_STATE].Controls) this.Controls.Remove(control);
                         foreach (Control control in Global.STATE_MENU[Global.CURRENT_STATE].Controls)  this.Controls.Add(control);
                     });
+
+                    if (Global.CURRENT_STATE != GameState.Playing && Global.PREVIOUS_STATE == GameState.Playing)
+                    {
+                        Ship[] tempships = [.. Ship.Ships];
+                        foreach (Ship s in tempships)
+                            s.Remove();
+
+                        Global.DEMO_ENABLED = true;
+                        Global.GameStart();
+                    }
                     
                     Global.PREVIOUS_STATE = Global.CURRENT_STATE;
-
                     if (Global.CURRENT_STATE == GameState.Playing) Global.GameStart();
+
                 }
 
                 if (Global.CURRENT_STATE != GameState.Playing)
                 {
-                    if (starsEffect.IsPlaying) starsEffect.Stop();
                     Global.STATE_MENU[Global.CURRENT_STATE].Update();
                 }
-                else
+
+                if (Ship.Ships.Count > 0 && Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
+                    Global.CURRENT_STATE = GameState.NameEntryMenu;
+
+                if (Asteroid.AsteroidEntities.Count == 0 && !roundStarting)
                 {
-                    if (!starsEffect.IsPlaying) starsEffect.Start();
-
-                    if (Ship.Ships.Count > 0 && Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
-                        Global.CURRENT_STATE = GameState.NameEntryMenu;
-
-                    if (Asteroid.AsteroidEntities.Count == 0 && !roundStarting)
-                    {
-                        currentRoundEndTime = 0;
-                        roundStarting = true;
-                    }
-                    if (roundStarting)
-                    {
-                        currentRoundEndTime += dt;
-                        if (currentRoundEndTime >= ROUND_START_TIME)
-                        {
-                            await LevelManager.Instance.NewRound(preferredRect);
-                            roundStarting = false;
-                        }
-                    }
-                    LevelManager.Instance.SaucerUpdate(dt);
-
-                    // Update Ships
-                    Ship[] ships = [.. Ship.Ships];
-                    foreach (Ship ship in ships)
-                    {
-                        ship?.Update(Keymap.keybinds, controller, dt);
-                    }
-
-                    // Update Saucers
-                    Saucer[] saucers = [.. Saucer.Saucers];
-                    foreach (Saucer saucer in saucers)
-                    {
-                        saucer?.Update(dt);
-                    }
-
-                    // Update Asteroids
-                    Asteroid[] asteroids = [.. Asteroid.AsteroidEntities];
-                    foreach (Asteroid asteroid in asteroids)
-                    {
-                        asteroid?.Update(dt);
-                    }
-
-                    // Update Bullets
-                    Bullet[] bullets = [.. Bullet.Bullets];
-                    foreach (Bullet bullet in bullets)
-                    {
-                        bullet?.Update();
-                    }
-
-                    // Update all entities
-                    Entity[] entities = [.. Entity.Entities];
-                    foreach (Entity entity in entities)
-                    {
-                        entity?.Update(dt);
-                    }
-
-                    // Wrap all wrapables
-                    Wrapable[] wrapables = [.. Wrapable.Wrapables];
-                    foreach (Wrapable wrapable in wrapables)
-                    {
-                        wrapable?.WrapPosition();
-                    }
-
-                    // Update all particles
-                    Particle[] particles = [.. Particle.Particles];
-                    foreach (Particle particle in particles)
-                    {
-                        particle?.Update(dt);
-                    }
-
-                    // Remove entities
-                    Entity.RemoveAll();
-
-                    // Remove particles
-                    Particle.RemoveAll();
+                    currentRoundEndTime = 0;
+                    roundStarting = true;
                 }
+                if (roundStarting)
+                {
+                    currentRoundEndTime += dt;
+                    if (currentRoundEndTime >= ROUND_START_TIME)
+                    {
+                        await LevelManager.Instance.NewRound(preferredRect);
+                        roundStarting = false;
+                    }
+                }
+                LevelManager.Instance.SaucerUpdate(dt);
+
+                // Update Ships
+                Ship[] ships = [.. Ship.Ships];
+                foreach (Ship ship in ships)
+                {
+                    ship?.Update(Keymap.keybinds, controller, dt);
+                }
+
+                // Update Saucers
+                Saucer[] saucers = [.. Saucer.Saucers];
+                foreach (Saucer saucer in saucers)
+                {
+                    saucer?.Update(dt);
+                }
+
+                // Update Asteroids
+                Asteroid[] asteroids = [.. Asteroid.AsteroidEntities];
+                foreach (Asteroid asteroid in asteroids)
+                {
+                    asteroid?.Update(dt);
+                }
+
+                // Update Bullets
+                Bullet[] bullets = [.. Bullet.Bullets];
+                foreach (Bullet bullet in bullets)
+                {
+                    bullet?.Update();
+                }
+
+                // Update all entities
+                Entity[] entities = [.. Entity.Entities];
+                foreach (Entity entity in entities)
+                {
+                    entity?.Update(dt);
+                }
+
+                // Wrap all wrapables
+                Wrapable[] wrapables = [.. Wrapable.Wrapables];
+                foreach (Wrapable wrapable in wrapables)
+                {
+                    wrapable?.WrapPosition();
+                }
+
+                // Update all particles
+                Particle[] particles = [.. Particle.Particles];
+                foreach (Particle particle in particles)
+                {
+                    particle?.Update(dt);
+                }
+
+                // Remove entities
+                Entity.RemoveAll();
+
+                // Remove particles
+                Particle.RemoveAll();
 
                 // Update keybinds
                 foreach (string Key in OptionBindings.Keys)
@@ -409,25 +420,25 @@ namespace Asteroids
             g.TranslateTransform(xdiff / 2, ydiff / 2);
             g.ScaleTransform(scale, scale);
 
-            if (Global.CURRENT_STATE == GameState.Playing)
+            if (Global.DEBUG)
             {
-                if (Global.DEBUG)
-                {
-                    g.ScaleTransform(0.5f, 0.5f);
-                    g.TranslateTransform(preferredSize.Width / 2, preferredSize.Height / 2);
-                    if (Global.DEBUG_PARTICLE_DRAW)
-                        ParticleEffect.DebugDrawAll(g);
-                }
+                g.ScaleTransform(0.5f, 0.5f);
+                g.TranslateTransform(preferredSize.Width / 2, preferredSize.Height / 2);
+                if (Global.DEBUG_PARTICLE_DRAW)
+                    ParticleEffect.DebugDrawAll(g);
+            }
 
-                // Draw all particles
-                Particle.DrawAll(g);
+            // Draw all particles
+            Particle.DrawAll(g);
 
-                // Draw all wrapable objects
-                Wrapable[] wrapables = [.. Wrapable.Wrapables];
-                foreach (Wrapable wrapable in wrapables)
-                    wrapable?.Draw(g);
-                Asteroid.FinalDraw(g);
+            // Draw all wrapable objects
+            Wrapable[] wrapables = [.. Wrapable.Wrapables];
+            foreach (Wrapable wrapable in wrapables)
+                wrapable?.Draw(g);
+            Asteroid.FinalDraw(g);
 
+            if (!Global.DEMO_ENABLED)
+            {
                 // Draw UI elements on top of everything
                 string score = LevelManager.Instance.Score.ToString("D8");
                 g.DrawString(score, Font, Brushes.White, 10, 10);
@@ -445,11 +456,16 @@ namespace Asteroids
                         Ship.Draw(g,
                             new(posX, posY),
                             new(0, -1),
+                            Color.White,
                             10,
                             (i == Ship.Ships[0].lives - 1) && !Ship.Ships[0].Respawning);
                     }
+
+            } 
+            if (Global.CURRENT_STATE != GameState.Playing)
+            {
+                Global.STATE_MENU[Global.CURRENT_STATE].Draw(g);    
             }
-            else Global.STATE_MENU[Global.CURRENT_STATE].Draw(g);    
 
             // if the fps display is enabled, draw it
             if (Global.FPSDISPLAY)

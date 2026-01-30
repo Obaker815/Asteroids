@@ -80,7 +80,7 @@ namespace Asteroids
         /// <param name="g">The <see cref="Graphics"/> object to draw the <see cref="Particle"/>(s) to</param>
         public static void DrawAll(Graphics g)
         {
-            Particle[] particles = [.. Particle.Particles];
+            Particle[] particles = [.. Particles];
             foreach (Particle p in particles)
             {
                 p?.Draw(g);

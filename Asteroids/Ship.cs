@@ -42,22 +42,22 @@ namespace Asteroids
                 ];
 
         // Constants
-        private const float ANGULAR_ACCELERATION = float.Pi * 2f;
-        private const float ACCELERATION = 400f;
-        private const float MAX_VELOCITY = 400f;
-        private const float DEADZONE = 0.25f;
-        private const int BULLET_TIME = 2000;
-        private const int MAX_BULLETS = 4;
+        internal const float ANGULAR_ACCELERATION = float.Pi * 2f;
+        internal const float ACCELERATION = 400f;
+        internal const float MAX_VELOCITY = 400f;
+        internal const float DEADZONE = 0.25f;
+        internal const int BULLET_TIME = 2000;
+        internal const int MAX_BULLETS = 4;
 
         // Private ship properties
-        private Vector2 respawnLocation;
-        private Vector2 lookDir = new(0, -1);
-        private Vector2 moveDir = new(0, -1);
-        private bool accelerating = false;
-        private bool respawning = false;
-        private float respawnTime = 0f;
-        private float iFrames = 0f;
-        private int numBullets = 0;
+        internal Vector2 respawnLocation;
+        internal Vector2 lookDir = new(0, -1);
+        internal Vector2 moveDir = new(0, -1);
+        internal bool accelerating = false;
+        internal bool respawning = false;
+        internal float respawnTime = 0f;
+        internal float iFrames = 0f;
+        internal int numBullets = 0;
 
         // Public ship properties
         public bool Respawning => respawning;
@@ -83,9 +83,9 @@ namespace Asteroids
         /// </summary>
         /// <param name="g">The <see cref="Graphics"/> to draw to</param>
         /// <param name="position">The <see cref="Vector2"/> position to be drawn</param>
-        public override void Draw(Graphics g, Vector2 Position)
+        public override void Draw(Graphics g, Vector2 Position, Color color)
         {
-            Draw(g, Position, lookDir,
+            Draw(g, Position, lookDir, color,
                 base.radius, accelerating, respawning, iFrames);
         }
 
@@ -99,7 +99,7 @@ namespace Asteroids
         /// <param name="accelerating">If the ship should have a flame</param>
         /// <param name="respawning">If the ship is respawning</param>
         /// <peram name="iframes">The current invincibility frames of the ship</peram>
-        public static void Draw(Graphics g, Vector2 position, Vector2 lookDir, float radius, bool accelerating, bool respawning = false, float iframes = 0f)
+        public static void Draw(Graphics g, Vector2 position, Vector2 lookDir, Color color, float radius, bool accelerating, bool respawning = false, float iframes = 0f)
         {
             if (respawning) return;
             if (float.Floor(iframes * 10) % 2 == 1) return;
@@ -164,7 +164,7 @@ namespace Asteroids
         /// <summary>
         /// Handles how the <see cref="Ship"/> respawns
         /// </summary>
-        private void Respawn()
+        internal virtual void Respawn()
         {
             lives--;
             foreach (ParticleEffect p in destroyEffects)
@@ -188,7 +188,7 @@ namespace Asteroids
         /// <param name="Keys">This frame's keybinds <see cref="Dictionary{string, Keybind}"/></param>
         /// <param name="controller">The controller</param>
         /// <param name="dt">Deltatime in seconds</param>
-        public void Update(Dictionary<string, Keybind> Keys, Controller controller, float dt)
+        public virtual void Update(Dictionary<string, Keybind> Keys, Controller controller, float dt)
         {
             if (respawning)
             {

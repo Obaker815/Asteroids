@@ -73,9 +73,9 @@ namespace Asteroids
         /// </summary>
         /// <param name="g">The <see cref="Graphics"/> to be drawn to</param>
         /// <param name="Position">The <see cref="Vector2"/> position to be drawn</param>
-        public override void Draw(Graphics g, Vector2 Position)
+        public override void Draw(Graphics g, Vector2 Position, Color color)
         {
-            g.DrawEllipse(Pens.White, Position.X - radius, Position.Y - radius, 2 * radius, 2 * radius);
+            g.DrawEllipse(new Pen(color, 1), Position.X - radius, Position.Y - radius, 2 * radius, 2 * radius);
             g.FillEllipse(Brushes.DarkGray, Position.X - radius, Position.Y - radius, 2 * radius, 2 * radius);
         }
 

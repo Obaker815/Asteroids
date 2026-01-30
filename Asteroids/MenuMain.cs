@@ -136,7 +136,11 @@ namespace Asteroids
 
         public void Update()
         {
-            if (MenuKeys["Start"].FirstPress)    Global.CURRENT_STATE = GameState.Playing;
+            if (MenuKeys["Start"].FirstPress)
+            {
+                Global.CURRENT_STATE = GameState.Playing;
+                Global.DEMO_ENABLED = false;
+            }
             if (MenuKeys["Settings"].FirstPress) Global.CURRENT_STATE = GameState.SettingsMenu;
 
             foreach (string Key in MenuKeys.Keys)

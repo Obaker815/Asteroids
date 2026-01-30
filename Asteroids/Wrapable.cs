@@ -74,13 +74,16 @@ namespace Asteroids
         /// <param name="g">The <see cref="Graphics"/> object to be drawn to</param>
         public void Draw(Graphics g)
         {
+            Color c = Global.DEMO_ENABLED ?
+                Color.LightGray : Color.White;
+
             Vector2[] positions = GetPositions();
 
             // Draw in the 4 directions
-            Draw(g, positions[0] + new Vector2(Bounds.X, Bounds.Y) );
-            Draw(g, positions[1] + new Vector2(Bounds.X, Bounds.Y) );
-            Draw(g, positions[2] + new Vector2(Bounds.X, Bounds.Y) );
-            Draw(g, positions[3] + new Vector2(Bounds.X, Bounds.Y) );
+            Draw(g, positions[0] + new Vector2(Bounds.X, Bounds.Y), c );
+            Draw(g, positions[1] + new Vector2(Bounds.X, Bounds.Y), c );
+            Draw(g, positions[2] + new Vector2(Bounds.X, Bounds.Y), c );
+            Draw(g, positions[3] + new Vector2(Bounds.X, Bounds.Y), c );
 
             if (Global.DEBUG)
             {
@@ -106,7 +109,7 @@ namespace Asteroids
         /// </summary>
         /// <param name="g"><see cref="Graphics"/> object to be drawn to</param>
         /// <param name="Position"><see cref="Vector2"/> Position to be drawn to</param>
-        public virtual void Draw(Graphics g, Vector2 Position)
+        public virtual void Draw(Graphics g, Vector2 Position, Color color)
         {
             throw new NotImplementedException($"Update method not implemented in {this.GetType()}");
         }

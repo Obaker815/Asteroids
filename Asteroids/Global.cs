@@ -5,6 +5,7 @@ namespace Asteroids
 {
     internal static class Global
     {
+        public static bool DEMO_ENABLED = true;
         public static bool DEBUG = false;
         public static bool FPSDISPLAY = false;
         public static bool DEBUG_PARTICLE_DRAW = false;
@@ -51,11 +52,14 @@ namespace Asteroids
             Bullet.Bullets.Clear();
             Ship.Ships.Clear();
 
-            Particle.Particles.Clear();
-
-            _ = new Ship(new Vector2(
-                GameForm.preferredRect.Width / 2, 
-                GameForm.preferredRect.Height / 2));
+            if (DEMO_ENABLED)
+                _ = new DemoShip(new Vector2(
+                    GameForm.preferredRect.Width / 2, 
+                    GameForm.preferredRect.Height / 2));
+            else
+                _ = new Ship(new Vector2(
+                    GameForm.preferredRect.Width / 2, 
+                    GameForm.preferredRect.Height / 2));
 
             LevelManager.Instance = new();
         }
