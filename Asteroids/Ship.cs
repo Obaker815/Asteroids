@@ -182,6 +182,23 @@ namespace Asteroids
             moveDir = new(0, -1);
         }
 
+        internal void Shoot()
+        {
+            if (numBullets < 0) numBullets = 0;
+
+            if (numBullets < MAX_BULLETS)
+            {
+                numBullets++;
+                Vector2 lookDir = (this.lookDir != Vector2.Zero) ? this.lookDir : new(1, 0);
+
+                Vector2 StartVelocity = base.velocity * Vector2.Dot(base.velocity, lookDir) / base.velocity.LengthSquared();
+                if (StartVelocity.X is float.NaN || StartVelocity.Y is float.NaN)
+                    StartVelocity = Vector2.Zero;
+
+                _ = new Bullet(position + (lookDir * radius * 1.2f), StartVelocity, lookDir, 200, BULLET_TIME, this);
+            }
+        }
+
         /// <summary>
         /// Handles all the updating logic of the <see cref="Ship"/> class
         /// </summary>
@@ -297,17 +314,7 @@ namespace Asteroids
                     TwoStick(moveDir, lookDir);
                 }
 
-                if (Keys["Shoot"].FirstPress && numBullets < MAX_BULLETS)
-                {
-                    numBullets++;
-                    Vector2 lookDir = (this.lookDir != Vector2.Zero) ? this.lookDir : new(1, 0);
-
-                    Vector2 StartVelocity = base.velocity * Vector2.Dot(base.velocity, lookDir) / base.velocity.LengthSquared();
-                    if (StartVelocity.X is float.NaN || StartVelocity.Y is float.NaN)
-                        StartVelocity = Vector2.Zero;
-
-                    _ = new Bullet(position + (lookDir * radius * 1.2f), StartVelocity, lookDir, 200, BULLET_TIME, this);
-                }
+                if (Keys["Shoot"].FirstPress) Shoot();
             }
 
             void collisionHandle(Entity collided)

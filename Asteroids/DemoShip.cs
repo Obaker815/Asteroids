@@ -1,11 +1,13 @@
 ﻿using SharpDX.XInput;
-using System.Drawing.Drawing2D;
 using System.Numerics;
 
 namespace Asteroids
 {
     internal class DemoShip : Ship
     {
+
+        private const float SCARE_DISTANCE = 135f;
+
         public DemoShip(Vector2 startPosition) : base(startPosition)
         {
         }
@@ -35,32 +37,60 @@ namespace Asteroids
                 return;
             }
 
-            Vector2 closestAsteroid = new(100000000, 100000000);
+            Vector2 closestWrapable = new(0, -100000000);
+            Wrapable? closestWrapableObject = null;
 
-            Asteroid[] asteroids = [.. Asteroid.AsteroidEntities];
-            foreach(var asteroid in asteroids)
+            Wrapable[] wrappers = [.. Wrapable.Wrapables];
+            foreach(var wrapper in wrappers)
             {
-                Vector2 closest = asteroid.GetClosest(position);
-                float distOld = Vector2.DistanceSquared(position, closestAsteroid);
+                if (wrapper as DemoShip == this) continue;
+                if ((wrapper as Bullet)?.Parent == this) continue;
+                if (wrapper is Bullet && Vector2.Dot(wrapper.velocity, velocity) > 0.2) continue;
+
+                Vector2 closest = wrapper.GetClosest(position);
+                float distOld = Vector2.DistanceSquared(position, closestWrapable);
                 float distNew = Vector2.DistanceSquared(position, closest);
 
-                if (distNew < distOld)
-                    closestAsteroid = closest;
+                if (distNew < distOld || closestWrapableObject == null)
+                {
+                    closestWrapableObject = wrapper;
+                    closestWrapable = closest;
+                }
             }
 
-            Vector2 offset = closestAsteroid - position;
+            Vector2 offset = closestWrapable - position;
+            bool scared = offset.LengthSquared() < SCARE_DISTANCE * SCARE_DISTANCE;
 
-            // approach
-            if (offset.LengthSquared() > 100 * 100)
-                lookDir = Global.Normalize(offset);
-            // scatter
-            else
-                lookDir = -Global.Normalize(offset);
+            if (closestWrapableObject is Bullet)
+            {
+                scared = true;
+                offset = Global.Normalize(closestWrapableObject.velocity);
+                offset.X *= -1;
+                (offset.X, offset.Y) = (offset.Y, offset.X);
+            }
+            
+            if (closestWrapableObject != null && !scared)
+            {
+                Vector2 velocity = closestWrapableObject.velocity;
+                offset += velocity;
+            }
 
-            velocity += lookDir * ACCELERATION * dt;
+            Vector2 targetDir = new(1, 0);
 
-            if (base.velocity.LengthSquared() > MAX_VELOCITY * MAX_VELOCITY)
-                base.velocity = Global.Normalize(base.velocity) * MAX_VELOCITY;
+            // scared
+            if (scared) targetDir = -Global.Normalize(offset);
+            else targetDir = Global.Normalize(offset);
+
+            lookDir += (targetDir - lookDir) * dt * ANGULAR_ACCELERATION;
+            lookDir = Global.Normalize(lookDir);
+
+            if (scared && Vector2.Dot(lookDir, targetDir) > 0.2)
+                velocity += lookDir * ACCELERATION * dt;
+            else if (closestWrapableObject != null && Vector2.Dot(targetDir, lookDir) > 0)
+                Shoot();
+
+            if (base.velocity.LengthSquared() > MAX_VELOCITY * MAX_VELOCITY / 16)
+                base.velocity = Global.Normalize(base.velocity) * MAX_VELOCITY / 4;
 
 
             void collisionHandle(Entity collided)
