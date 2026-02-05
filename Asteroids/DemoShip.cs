@@ -7,6 +7,8 @@ namespace Asteroids
     {
 
         private const float SCARE_DISTANCE = 135f;
+        private const float SHOOT_COOLDOWN = 0.5f;
+        private float SHOOT_TIME = SHOOT_COOLDOWN;
 
         public DemoShip(Vector2 startPosition) : base(startPosition)
         {
@@ -36,6 +38,9 @@ namespace Asteroids
 
                 return;
             }
+
+            if (SHOOT_TIME > 0)
+                SHOOT_TIME -= dt;
 
             Vector2 closestWrapable = new(0, -100000000);
             Wrapable? closestWrapableObject = null;
@@ -91,8 +96,11 @@ namespace Asteroids
 
             if (scared && Vector2.Dot(lookDir, targetDir) > 0.2)
                 velocity += lookDir * ACCELERATION * dt;
-            else if (closestWrapableObject != null && Vector2.Dot(targetDir, lookDir) > 0)
+            else if (closestWrapableObject != null && Vector2.Dot(targetDir, lookDir) > 0 && SHOOT_TIME <= 0)
+            {
+                SHOOT_TIME = (SHOOT_TIME + SHOOT_COOLDOWN) % SHOOT_COOLDOWN;
                 Shoot();
+            }
 
             float maxVel = (MAX_VELOCITY + extraSpeed) / 4;
 
