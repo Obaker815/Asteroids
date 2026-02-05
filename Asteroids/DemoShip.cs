@@ -61,6 +61,8 @@ namespace Asteroids
             Vector2 offset = closestWrapable - position;
             bool scared = offset.LengthSquared() < SCARE_DISTANCE * SCARE_DISTANCE;
 
+            float extraSpeed = 0;
+
             if (closestWrapableObject is Bullet)
             {
                 scared = true;
@@ -68,11 +70,14 @@ namespace Asteroids
                 offset.X *= -1;
                 (offset.X, offset.Y) = (offset.Y, offset.X);
             }
-            
-            if (closestWrapableObject != null && !scared)
+            if (closestWrapableObject != null)
             {
-                Vector2 velocity = closestWrapableObject.velocity;
-                offset += velocity;
+                extraSpeed = closestWrapableObject.velocity.Length();
+                if (!scared)
+                {
+                    Vector2 velocity = closestWrapableObject.velocity;
+                    offset += velocity;
+                }
             }
 
             Vector2 targetDir = new(1, 0);
@@ -89,8 +94,10 @@ namespace Asteroids
             else if (closestWrapableObject != null && Vector2.Dot(targetDir, lookDir) > 0)
                 Shoot();
 
-            if (base.velocity.LengthSquared() > MAX_VELOCITY * MAX_VELOCITY / 16)
-                base.velocity = Global.Normalize(base.velocity) * MAX_VELOCITY / 4;
+            float maxVel = (MAX_VELOCITY + extraSpeed) / 4;
+
+            if (base.velocity.LengthSquared() > maxVel * maxVel)
+                base.velocity = Global.Normalize(base.velocity) * maxVel;
 
 
             void collisionHandle(Entity collided)
