@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Asteroids
+namespace Asteroids.JSONs
 {
-    internal class ConfigsJSON
+    internal class Configs
     {
         [JsonPropertyName("Fullscreen")]
         public bool Fullscreen { get; set; }

@@ -1,4 +1,9 @@
-﻿using SharpDX.XInput;
+﻿using Asteroids.Entities;
+using Asteroids.JSONs;
+using Asteroids.Menus;
+using Asteroids.Particles;
+using Asteroids.Particles.Particles;
+using SharpDX.XInput;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
@@ -25,7 +30,7 @@ namespace Asteroids
         public static readonly Rectangle preferredRect = new(0, 0, 800, 480);
         private readonly Size preferredSize = new(800, 450);
         private readonly Size borderSize;
-        private readonly ParticleEffect starsEffect;
+        private readonly Effect starsEffect;
 
         private const float ROUND_START_TIME = 4;
         private float currentRoundEndTime;
@@ -53,7 +58,7 @@ namespace Asteroids
 
             // Stars background
             starsEffect = new(
-                typeof(ParticleDot),
+                typeof(Dot),
                 position: new(preferredSize.Width / 2, preferredSize.Height / 2),
                 args: [],
                 interval: 0.2f,
@@ -85,12 +90,12 @@ namespace Asteroids
             if (Global.CONFIGS.Fullscreen)
                 Fullscreen(true);
 
-            Global.STATE_MENU[GameState.MainMenu]      = new MenuMain();
-            Global.STATE_MENU[GameState.SettingsMenu]  = new MenuSettings();
-            Global.STATE_MENU[GameState.KeybindsMenu]  = new MenuKeybinds();
-            Global.STATE_MENU[GameState.Playing]       = new MenuNone();
-            Global.STATE_MENU[GameState.NameEntryMenu] = new MenuName();
-            Global.STATE_MENU[GameState.None]          = new MenuNone();
+            Global.STATE_MENU[GameState.MainMenu]      = new Main();
+            Global.STATE_MENU[GameState.SettingsMenu]  = new Settings();
+            Global.STATE_MENU[GameState.KeybindsMenu]  = new Keybinds();
+            Global.STATE_MENU[GameState.Playing]       = new None();
+            Global.STATE_MENU[GameState.NameEntryMenu] = new Name();
+            Global.STATE_MENU[GameState.None]          = new None();
 
             Global.GameStart();
 
@@ -372,10 +377,10 @@ namespace Asteroids
 
             CheckDict(Keymap.keybinds);
             CheckDict(OptionBindings);
-            if (Global.CURRENT_STATE == GameState.MainMenu) CheckDict(MenuMain.MenuKeys);
+            if (Global.CURRENT_STATE == GameState.MainMenu) CheckDict(Main.MenuKeys);
             
             if (Global.CURRENT_STATE == GameState.KeybindsMenu)
-                ((MenuKeybinds)Global.STATE_MENU[GameState.KeybindsMenu]).LastPressedKey = e.KeyCode;
+                ((Keybinds)Global.STATE_MENU[GameState.KeybindsMenu]).LastPressedKey = e.KeyCode;
         }
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
@@ -425,7 +430,7 @@ namespace Asteroids
                 g.ScaleTransform(0.5f, 0.5f);
                 g.TranslateTransform(preferredSize.Width / 2, preferredSize.Height / 2);
                 if (Global.DEBUG_PARTICLE_DRAW)
-                    ParticleEffect.DebugDrawAll(g);
+                    Effect.DebugDrawAll(g);
             }
 
             // Draw all particles
@@ -498,11 +503,11 @@ namespace Asteroids
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            JSONManager.WriteJson(Global.DATA_PATH + Global.CONFIG_PATH, Global.CONFIGS);
-            JSONManager.WriteJson(Global.DATA_PATH + Global.SCOREBOARD_PATH, MenuMain.Scoreboard);
+            Manager.WriteJson(Global.DATA_PATH + Global.CONFIG_PATH, Global.CONFIGS);
+            Manager.WriteJson(Global.DATA_PATH + Global.SCOREBOARD_PATH, Main.Scoreboard);
 
             if (Global.CONFIGS.LastUsedKeymap != "default_keybinds.json") 
-                JSONManager.WriteJson(Global.DATA_PATH + Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap, Keymap);
+                Manager.WriteJson(Global.DATA_PATH + Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap, Keymap);
         }
 
         private void GameForm_Load(object sender, EventArgs e)
@@ -525,7 +530,7 @@ namespace Asteroids
             {
                 File.Create(ConfigPath).Close();
 
-                ConfigsJSON tempcfg = new()
+                Configs tempcfg = new()
                 {
                     Fullscreen = false,
                     ControlStyle = 0,
@@ -533,7 +538,7 @@ namespace Asteroids
                     DebugAvailable = false
                 };
 
-                JSONManager.WriteJson(ConfigPath, tempcfg);
+                Manager.WriteJson(ConfigPath, tempcfg);
             }
 
             // Create scoreboard if the scoreboard file doesn't exist
@@ -553,7 +558,7 @@ namespace Asteroids
                         .ToArray()
                 };
 
-                JSONManager.WriteJson(ScoreboardPath, tempScoreboard);
+                Manager.WriteJson(ScoreboardPath, tempScoreboard);
             }
 
             // Delete the default keybind file
@@ -563,12 +568,12 @@ namespace Asteroids
 
             // Create the default keybind file
             File.Create(defaultKeybindPath).Close();
-            JSONManager.WriteJson(defaultKeybindPath, new Keymap());
+            Manager.WriteJson(defaultKeybindPath, new Keymap());
 
             // Load configs and scoreboard
-            Global.CONFIGS      = JSONManager.ReadJson<ConfigsJSON> (ConfigPath);
-            MenuMain.Scoreboard = JSONManager.ReadJson<Scoreboard>  (ScoreboardPath);
-            MenuMain.Scoreboard.SortEntries();
+            Global.CONFIGS      = Manager.ReadJson<Configs> (ConfigPath);
+            Main.Scoreboard = Manager.ReadJson<Scoreboard>  (ScoreboardPath);
+            Main.Scoreboard.SortEntries();
 
             // If the last used keymap is invalid, set it to the default keymap
             string keybindFile = (String.IsNullOrEmpty(Global.CONFIGS.LastUsedKeymap))
@@ -584,7 +589,7 @@ namespace Asteroids
             Global.CONFIGS.LastUsedKeymap = keybindFile;
 
             // Load the keymap
-            Keymap = JSONManager.ReadJson<Keymap>(Global.DATA_PATH + Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap);
+            Keymap = Manager.ReadJson<Keymap>(Global.DATA_PATH + Global.KEYBIND_PATH_BASE + Global.CONFIGS.LastUsedKeymap);
         }
     }
 }

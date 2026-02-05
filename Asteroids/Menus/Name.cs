@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Asteroids.JSONs;
 
-namespace Asteroids
+namespace Asteroids.Menus
 {
-    internal class MenuName : IMenu
+    internal class Name : IMenu
     {
         public List<Control> Controls { get; set; } = [];
 
-        public MenuName()
+        public Name()
         {
             TextBox NameInput;
             Button Submitbtn;
@@ -52,7 +48,7 @@ namespace Asteroids
                 if (name.Length < 5) name = name.PadRight(5, '_');
                 name = name.ToUpper();
 
-                Scoreboard scoreboard = MenuMain.Scoreboard;
+                Scoreboard scoreboard = Main.Scoreboard;
 
                 (bool exists, int index) = (false, 0);
                 for (int i = 0; i < scoreboard.Entries!.Length; i++)

@@ -2,11 +2,11 @@
 using System.Numerics;
 using System.Reflection;
 
-namespace Asteroids
+namespace Asteroids.Particles
 {
-    internal class ParticleEffect
+    internal class Effect
     {
-        private static readonly List<ParticleEffect> ParticleEffects = [];
+        private static readonly List<Effect> ParticleEffects = [];
         private static readonly ThreadLocal<Random> random = new(() => new Random());
 
         private readonly (Color color, float t)[] gradient;         // The color gradient the particles follow over their lifetime range
@@ -42,7 +42,7 @@ namespace Asteroids
         public float SweepAngle { get { return sweepAngle; } set { sweepAngle = value; } }
         public bool IsPlaying   { get { return isPlaying; }}
 
-        public ParticleEffect(Type particleType,
+        public Effect(Type particleType,
                               Vector2 position,
                               object[] args,
                               float interval,
@@ -90,7 +90,7 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Starts the <see cref="ParticleEffect"/> animation.
+        /// Starts the <see cref="Effect"/> animation.
         /// </summary>
         public void Start()
         {
@@ -101,7 +101,7 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Stops the <see cref="ParticleEffect"/> animation.
+        /// Stops the <see cref="Effect"/> animation.
         /// </summary>
         public async void Stop()
         {
@@ -111,7 +111,7 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// The animation loop for the <see cref="ParticleEffect"/> class
+        /// The animation loop for the <see cref="Effect"/> class
         /// </summary>
         private async Task Animate()
         {
@@ -141,7 +141,7 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Emits a single <see cref="Particle"/> from the <see cref="ParticleEffect"/>
+        /// Emits a single <see cref="Particle"/> from the <see cref="Effect"/>
         /// </summary>
         private void EmitParticle()
         {
@@ -189,19 +189,19 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// Debug procedure to draw all the <see cref="ParticleEffect"/> funnel
+        /// Debug procedure to draw all the <see cref="Effect"/> funnel
         /// </summary>
         /// <param name="g">The <see cref="Graphics"/> object to draw to</param>
         public static void DebugDrawAll(Graphics g)
         {
-            foreach (ParticleEffect p in ParticleEffects)
+            foreach (Effect p in ParticleEffects)
             {
                 p.DebugDraw(g);
             } 
         }
 
         /// <summary>
-        /// Debug procedure to draw the <see cref="ParticleEffect"/> funnel
+        /// Debug procedure to draw the <see cref="Effect"/> funnel
         /// </summary>
         /// <param name="g">The <see cref="Graphics"/> object to draw to</param>
         public void DebugDraw(Graphics g)

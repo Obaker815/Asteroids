@@ -1,14 +1,16 @@
-﻿using System.Numerics;
+﻿using Asteroids.Particles;
+using Asteroids.Particles.Particles;
+using System.Numerics;
 
-namespace Asteroids
+namespace Asteroids.Entities
 {
     internal class Saucer : Wrapable
     {
         public static List<Saucer> Saucers = [];
-        private static readonly ParticleEffect[] destroyEffects =
+        private static readonly Effect[] destroyEffects =
             [
                 new(
-                    particleType: typeof(ParticleDot),
+                    particleType: typeof(Dot),
                     position: new(0, 0),
                     args: [],
                     interval: 0.05f,
@@ -160,8 +162,8 @@ namespace Asteroids
         {
             Saucers.Remove(this);
 
-            ParticleEffect[] pe = [.. destroyEffects];
-            foreach (ParticleEffect e in pe)
+            Effect[] pe = [.. destroyEffects];
+            foreach (Effect e in pe)
             {
                 e.Position = base.position;
                 e.Radius = base.radius;

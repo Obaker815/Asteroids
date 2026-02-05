@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using Asteroids.Entities;
+using System.Numerics;
 
 namespace Asteroids
 {

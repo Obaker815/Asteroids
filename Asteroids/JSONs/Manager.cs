@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 
-namespace Asteroids
+namespace Asteroids.JSONs
 {
-    internal static class JSONManager
+    internal static class Manager
     {
         private static readonly JsonSerializerOptions options = new() { WriteIndented = true, AllowTrailingCommas = true };
         public static void WriteJson(string filePath, object obj)

@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Asteroids
+namespace Asteroids.Entities
 {
     internal class Wrapable : Entity
     {

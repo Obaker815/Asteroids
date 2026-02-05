@@ -1,6 +1,6 @@
-﻿namespace Asteroids
+﻿namespace Asteroids.Menus
 {
-    internal class MenuSettings : IMenu
+    internal class Settings : IMenu
     {
         public List<Control> Controls { get; set; } = [];
         private readonly Dictionary<string, int> ControlStyleOptions = new()
@@ -15,7 +15,7 @@
         private CheckBox? Debugcb;
         private Button? KeyLayoutbtn;
 
-        public MenuSettings()
+        public Settings()
         {
             MakeControls();
         }

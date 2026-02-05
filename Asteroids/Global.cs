@@ -1,4 +1,7 @@
-﻿using System.Numerics;
+﻿using Asteroids.Entities;
+using Asteroids.JSONs;
+using Asteroids.Menus;
+using System.Numerics;
 using System.Web;
 
 namespace Asteroids
@@ -21,7 +24,7 @@ namespace Asteroids
         public const string DEFAULT_KEYBIND_FILE = "default_keybinds.json";
 
         public static bool SUPPRESS_OPTION_CHANGED_EVENT = false;
-        public static ConfigsJSON CONFIGS = null!;
+        public static Configs CONFIGS = null!;
         public static GameState PREVIOUS_STATE = GameState.None;
         public static GameState CURRENT_STATE  = GameState.MainMenu;
         public static Dictionary<GameState, IMenu> STATE_MENU = new()

@@ -1,10 +1,10 @@
 ﻿using System.Numerics;
 
-namespace Asteroids
+namespace Asteroids.Particles.Particles
 {
-    internal class ParticleDot : Particle
+    internal class Dot : Particle
     {
-        public ParticleDot(object[] args,
+        public Dot(object[] args,
                            Vector2 position,
                            Vector2 velocity,
                            float angularVelocity,
@@ -22,7 +22,7 @@ namespace Asteroids
         }
 
         /// <summary>
-        /// The draw procedure for the <see cref="ParticleDot"/> class
+        /// The draw procedure for the <see cref="Dot"/> class
         /// </summary>
         /// <param name="g">The <see cref="Graphics"/> object to draw to</param>
         public override void Draw(Graphics g)

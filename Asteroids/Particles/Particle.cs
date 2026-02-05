@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Asteroids
+namespace Asteroids.Particles
 {
     internal class Particle
 {

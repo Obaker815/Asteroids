@@ -1,13 +1,15 @@
-﻿using System.Diagnostics;
+﻿using Asteroids.Particles;
+using Asteroids.Particles.Particles;
+using System.Diagnostics;
 using System.Numerics;
 
-namespace Asteroids
+namespace Asteroids.Entities
 {
     internal class Bullet : Wrapable, IDisposable
     {
         public static List<Bullet> Bullets = [];
-        private static readonly ParticleEffect DestroyEffect = new(
-            particleType: typeof(ParticleDot),
+        private static readonly Effect DestroyEffect = new(
+            particleType: typeof(Dot),
             position: new(0, 0),
             args: [],
             interval: 0.01f,

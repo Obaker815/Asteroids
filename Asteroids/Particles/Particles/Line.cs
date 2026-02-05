@@ -1,12 +1,12 @@
 ﻿using System.Numerics;
 
-namespace Asteroids
+namespace Asteroids.Particles.Particles
 {
-    internal class ParticleLine : Particle
+    internal class Line : Particle
     {
         private readonly float length;
         private readonly int thickness;
-        public ParticleLine(object[] args, 
+        public Line(object[] args, 
                 Vector2 position, 
                 Vector2 velocity, 
                 float angularVelocity, 

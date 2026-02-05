@@ -1,8 +1,9 @@
-﻿using System.Diagnostics;
+﻿using Asteroids.JSONs;
+using System.Diagnostics;
 
-namespace Asteroids
+namespace Asteroids.Menus
 {
-    internal class MenuKeybinds : IMenu
+    internal class Keybinds : IMenu
     {
         public List<Control> Controls { get; set; } = [];
         public Keys LastPressedKey { get; set; }
@@ -14,7 +15,7 @@ namespace Asteroids
         private TextBox FocusStealer;
 
         private bool dontUpdate = true;
-        public MenuKeybinds()
+        public Keybinds()
         {
             Controls.Add(FocusStealer = new TextBox()
             {
@@ -111,7 +112,7 @@ namespace Asteroids
                     }
                     if (Global.CONFIGS.LastUsedKeymap != Global.DEFAULT_KEYBIND_FILE)
                     {
-                        JSONManager.WriteJson(
+                        Manager.WriteJson(
                             Global.DATA_PATH + Global.KEYBIND_PATH_BASE +
                             Global.CONFIGS.LastUsedKeymap,
                             GameForm.ActiveGameform!.Keymap);
@@ -121,7 +122,7 @@ namespace Asteroids
 
                     if (GameForm.ActiveGameform != null)
                         GameForm.ActiveGameform!.Keymap = 
-                            JSONManager.ReadJson<Keymap>(KeybindBasePath + Global.CONFIGS.LastUsedKeymap);
+                            Manager.ReadJson<Keymap>(KeybindBasePath + Global.CONFIGS.LastUsedKeymap);
                 }
                 UpdateControls();
             };
@@ -190,7 +191,7 @@ namespace Asteroids
                     return;
                 }
 
-                JSONManager.WriteJson(fullPath, GameForm.ActiveGameform!.Keymap);
+                Manager.WriteJson(fullPath, GameForm.ActiveGameform!.Keymap);
                 Global.CONFIGS.LastUsedKeymap = filename;
                 UpdateControls();
             };

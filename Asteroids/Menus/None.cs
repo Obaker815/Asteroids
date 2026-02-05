@@ -1,6 +1,6 @@
-﻿namespace Asteroids
+﻿namespace Asteroids.Menus
 {
-    internal class MenuNone : IMenu
+    internal class None : IMenu
     {
         public List<Control> Controls { get; set; } = [];
 

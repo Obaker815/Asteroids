@@ -1,8 +1,9 @@
-﻿using System.Numerics;
+﻿using Asteroids.JSONs;
+using System.Numerics;
 
-namespace Asteroids
+namespace Asteroids.Menus
 {
-    internal class MenuMain : IMenu
+    internal class Main : IMenu
     {
         public List<Control> Controls { get; set; } = [];
 
@@ -24,7 +25,7 @@ namespace Asteroids
             {"Settings", new(Keys.F10) }
         };
 
-        public MenuMain()
+        public Main()
         {
             Controls.Add(new Label()
             {

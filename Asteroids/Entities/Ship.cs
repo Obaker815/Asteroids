@@ -1,16 +1,18 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
+using Asteroids.Particles;
+using Asteroids.Particles.Particles;
 using SharpDX.XInput;
 
-namespace Asteroids
+namespace Asteroids.Entities
 {
     internal class Ship : Wrapable
     {
         // Particle effects for when the ship is destroyed
-        private readonly ParticleEffect[] destroyEffects =
+        private readonly Effect[] destroyEffects =
             [
                 new(
-                    particleType: typeof(ParticleLine),
+                    particleType: typeof(Line),
                     position: new(0, 0),
                     args: [20f, 1],
                     interval: 0.01f,
@@ -25,7 +27,7 @@ namespace Asteroids
                         (Color.White, 0.5f),
                         ]),
                 new(
-                    particleType: typeof(ParticleDot),
+                    particleType: typeof(Dot),
                     position: new(0, 0),
                     args: [],
                     interval: 0.02f,
@@ -167,7 +169,7 @@ namespace Asteroids
         internal virtual void Respawn()
         {
             lives--;
-            foreach (ParticleEffect p in destroyEffects)
+            foreach (Effect p in destroyEffects)
             {
                 p.Radius = base.radius;
                 p.Position = this.position;

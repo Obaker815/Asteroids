@@ -1,6 +1,8 @@
-﻿using System.Numerics;
+﻿using Asteroids.Particles;
+using Asteroids.Particles.Particles;
+using System.Numerics;
 
-namespace Asteroids
+namespace Asteroids.Entities
 {
     internal class Asteroid : Wrapable
     {
@@ -8,10 +10,10 @@ namespace Asteroids
 
         private static readonly Random random = new();
         private static readonly List<PointF[]> paths = [];
-        private static readonly ParticleEffect[] destroyEffects =
+        private static readonly Effect[] destroyEffects =
             [
                 new(
-                    particleType: typeof(ParticleLine),
+                    particleType: typeof(Line),
                     position: new(0, 0),
                     args: [20f, 1],
                     interval: 0.01f,
@@ -26,7 +28,7 @@ namespace Asteroids
                         (Color.White, 0.5f),
                         ]),
                 new(
-                    particleType: typeof(ParticleDot),
+                    particleType: typeof(Dot),
                     position: new(0, 0),
                     args: [],
                     interval: 0.05f,
@@ -207,8 +209,8 @@ namespace Asteroids
         {
             AsteroidEntities.Remove(this);
 
-            ParticleEffect[] pe = [.. destroyEffects];
-            foreach (ParticleEffect e in destroyEffects)
+            Effect[] pe = [.. destroyEffects];
+            foreach (Effect e in destroyEffects)
             {
                 e.Position = this.position;
                 if (e.Args.Length == 2)
