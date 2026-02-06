@@ -52,7 +52,7 @@ namespace Asteroids
                 this.Size.Height - this.ClientSize.Height);
 
             // Load font
-            PublicFonts!.AddFontFile(Global.DATA_PATH + Global.FONT_PATH_BASE + @"OrchestraOfStrings/OrchestraOfStrings-yoLd.ttf");
+            PublicFonts!.AddFontFile(Global.FONT_PATH + @"OrchestraOfStrings/OrchestraOfStrings-yoLd.ttf");
             FontFamily fontFamily = PublicFonts.Families[0];
             Font = new Font(fontFamily, 20f);
 
@@ -96,6 +96,13 @@ namespace Asteroids
             Global.STATE_MENU[GameState.Playing]       = new None();
             Global.STATE_MENU[GameState.NameEntryMenu] = new Name();
             Global.STATE_MENU[GameState.None]          = new None();
+
+            foreach (var (_, val) in Global.STATE_MENU) 
+                foreach (var control in val.Controls)
+                {
+                    control.Hide();
+                    Controls.Add(control);
+                }
 
             Global.GameStart();
 
@@ -164,10 +171,7 @@ namespace Asteroids
             }
 
             if (OptionBindings["Exit"].FirstPress)
-            {
                 Global.CURRENT_STATE = Global.STATE_RETURN[Global.CURRENT_STATE];
-
-            }
 
             if (OptionBindings["Fullscreen"].FirstPress)
                 Global.CONFIGS.Fullscreen = !Global.CONFIGS.Fullscreen;
@@ -187,7 +191,6 @@ namespace Asteroids
         bool running = false;
         private async void GameMainLoop()
         {
-
             if (running) return;
             running = true;
 
@@ -221,8 +224,8 @@ namespace Asteroids
                 {
                     this.InvokeAction(() =>
                     {
-                        foreach (Control control in Global.STATE_MENU[Global.PREVIOUS_STATE].Controls) this.Controls.Remove(control);
-                        foreach (Control control in Global.STATE_MENU[Global.CURRENT_STATE].Controls)  this.Controls.Add(control);
+                        foreach (Control control in Global.STATE_MENU[Global.PREVIOUS_STATE].Controls) control.Hide();
+                        foreach (Control control in Global.STATE_MENU[Global.CURRENT_STATE].Controls)  control.Show();
                     });
 
                     if (Global.CURRENT_STATE != GameState.Playing && Global.PREVIOUS_STATE == GameState.Playing)
@@ -519,8 +522,8 @@ namespace Asteroids
             if (!Directory.Exists(Global.DATA_PATH + Global.KEYBIND_PATH_BASE))
                 Directory.CreateDirectory(Global.DATA_PATH + Global.KEYBIND_PATH_BASE);
 
-            if (!Directory.Exists(Global.DATA_PATH + Global.FONT_PATH_BASE))
-                Directory.CreateDirectory(Global.DATA_PATH + Global.FONT_PATH_BASE);
+            if (!Directory.Exists(Global.DATA_PATH + Global.FONT_PATH))
+                Directory.CreateDirectory(Global.DATA_PATH + Global.FONT_PATH);
 
             string ScoreboardPath = Global.DATA_PATH + Global.SCOREBOARD_PATH;
             string ConfigPath = Global.DATA_PATH + Global.CONFIG_PATH;

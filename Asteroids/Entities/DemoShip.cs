@@ -1,4 +1,4 @@
-﻿using SharpDX.XInput;
+﻿    using SharpDX.XInput;
 using System.Numerics;
 
 namespace Asteroids.Entities
