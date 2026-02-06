@@ -3,16 +3,11 @@ using System.Numerics;
 
 namespace Asteroids.Entities
 {
-    internal class DemoShip : Ship
+    internal class DemoShip(Vector2 startPosition) : Ship(startPosition)
     {
-
         private const float SCARE_DISTANCE = 135f;
         private const float SHOOT_COOLDOWN = 0.5f;
-        private float SHOOT_TIME = SHOOT_COOLDOWN;
-
-        public DemoShip(Vector2 startPosition) : base(startPosition)
-        {
-        }
+        private float _shootTime = SHOOT_COOLDOWN;
 
         internal override void Respawn()
         {
@@ -39,8 +34,8 @@ namespace Asteroids.Entities
                 return;
             }
 
-            if (SHOOT_TIME > 0)
-                SHOOT_TIME -= dt;
+            if (_shootTime > 0)
+                _shootTime -= dt;
 
             Vector2 closestWrapable = new(0, -100000000);
             Wrapable? closestWrapableObject = null;
@@ -85,7 +80,7 @@ namespace Asteroids.Entities
                 }
             }
 
-            Vector2 targetDir = new(1, 0);
+            Vector2 targetDir;
 
             // scared
             if (scared) targetDir = -Global.Normalize(offset);
@@ -96,9 +91,9 @@ namespace Asteroids.Entities
 
             if (scared && Vector2.Dot(lookDir, targetDir) > 0.2)
                 velocity += lookDir * ACCELERATION * dt;
-            else if (closestWrapableObject != null && Vector2.Dot(targetDir, lookDir) > 0 && SHOOT_TIME <= 0)
+            else if (closestWrapableObject != null && Vector2.Dot(targetDir, lookDir) > 0 && _shootTime <= 0)
             {
-                SHOOT_TIME = (SHOOT_TIME + SHOOT_COOLDOWN) % SHOOT_COOLDOWN;
+                _shootTime = (_shootTime + SHOOT_COOLDOWN) % SHOOT_COOLDOWN;
                 Shoot();
             }
 

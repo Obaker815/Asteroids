@@ -2,7 +2,6 @@
 using Asteroids.JSONs;
 using Asteroids.Menus;
 using System.Numerics;
-using System.Web;
 
 namespace Asteroids
 {
@@ -20,7 +19,6 @@ namespace Asteroids
         public const string SCOREBOARD_PATH = "/scoreboard.json";
         public const string KEYBIND_PATH_BASE = "/Keybinds/";
         public const string FONT_PATH_BASE = "/Fonts/";
-
         public const string DEFAULT_KEYBIND_FILE = "default_keybinds.json";
 
         public static bool SUPPRESS_OPTION_CHANGED_EVENT = false;
