@@ -27,7 +27,7 @@ namespace Asteroids.Entities
         /// The update method for the <see cref="Entity"/> class
         /// </summary>
         /// <param name="dt">Deltatime in seconds</param>
-        public void Update(float dt)
+        public virtual void Update(float dt)
         {
             if (velocity.LengthSquared() < 2f * dt)
                 velocity = Vector2.Zero;

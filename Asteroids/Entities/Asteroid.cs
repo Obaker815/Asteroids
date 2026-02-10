@@ -124,7 +124,7 @@ namespace Asteroids.Entities
         /// The update procedure for the <see cref="Asteroid"/> class
         /// </summary>
         /// <param name="dt">Deltatime in seconds</param>
-        public new void Update(float dt)
+        public override void Update(float dt)
         {
             for (int i = 0; i < points.Length; i++)
             {
@@ -133,17 +133,16 @@ namespace Asteroids.Entities
 
             Entity? collided = CollisionCheck(this, typeof(Bullet));
 
-            if (collided is not null && collided is Bullet)
+            if ((collided as Bullet)?.Parent is Ship)
             {
-                Bullet? collidedBullet = collided as Bullet;
-                if (collidedBullet?.Parent is Ship)
-                {
-                    LevelManager.Instance.AddScore(SizePropertyDict[size].score);
-                    collidedBullet.Collided = true;
-                    toRemove.Add(this);
-                }
+                LevelManager.Instance.AddScore(SizePropertyDict[size].score);
+                (collided as Bullet)!.Collided = true;
+
+                toRemove.Add(this);
                 toRemove.Add(collided);
             }
+
+            base.Update(dt);
         }            
 
         /// <summary>

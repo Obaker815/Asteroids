@@ -60,7 +60,7 @@ namespace Asteroids.Entities
         /// <summary>
         /// The update method for the <see cref="Saucer"/> class
         /// </summary>
-        public new void Update(float dt)
+        public override void Update(float dt)
         {
             shootTime += dt;
 
@@ -97,6 +97,8 @@ namespace Asteroids.Entities
                     toRemove.Add(this);
                 }
             }
+
+            base.Update(dt);
         }
 
         /// <summary>

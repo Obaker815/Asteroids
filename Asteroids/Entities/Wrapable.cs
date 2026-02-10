@@ -153,6 +153,12 @@ namespace Asteroids.Entities
             return positions[0];
         }
 
+        public override void Update(float dt)
+        {
+            WrapPosition();
+            base.Update(dt);
+        }
+
         public override void Remove()
         {
             base.Remove();

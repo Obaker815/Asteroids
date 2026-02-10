@@ -201,6 +201,17 @@ namespace Asteroids.Entities
             }
         }
 
+        public override void Update(float dt)
+        {
+            if (GameForm.ActiveGameform != null)
+                this.Update(
+                    GameForm.ActiveGameform!.Keymap.ToDictionary(),
+                    GameForm.ActiveGameform!.Controller,
+                    dt
+                    );
+            base.Update(dt);
+        }
+
         /// <summary>
         /// Handles all the updating logic of the <see cref="Ship"/> class
         /// </summary>
