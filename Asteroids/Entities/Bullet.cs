@@ -61,13 +61,15 @@ namespace Asteroids.Entities
         /// <summary>
         /// The update method of the <see cref="Bullet"/> class
         /// </summary>
-        public void Update()
+        public override void Update(float dt)
         {
             if (disposing) return;
             if (lifeTimer.Elapsed.TotalMilliseconds >= removeTime)
             {
                 Dispose();
             }
+
+            base.Update(dt);
         }
 
         /// <summary>

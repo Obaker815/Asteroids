@@ -13,7 +13,7 @@ namespace Asteroids
     public partial class GameForm : Form
     {
         public static readonly PrivateFontCollection? PublicFonts = new();
-        private readonly Controller controller = new(UserIndex.One);
+        public readonly Controller Controller = new(UserIndex.One);
         private readonly Dictionary<string, Keybind> OptionBindings = new()
         {
             { "Exit",               new Keybind(Keys.Escape )},
@@ -267,46 +267,11 @@ namespace Asteroids
                 }
                 LevelManager.Instance.SaucerUpdate(dt);
 
-                // Update Ships
-                Ship[] ships = [.. Ship.Ships];
-                foreach (Ship ship in ships)
-                {
-                    ship?.Update(Keymap.keybinds, controller, dt);
-                }
-
-                // Update Saucers
-                Saucer[] saucers = [.. Saucer.Saucers];
-                foreach (Saucer saucer in saucers)
-                {
-                    saucer?.Update(dt);
-                }
-
-                // Update Asteroids
-                Asteroid[] asteroids = [.. Asteroid.AsteroidEntities];
-                foreach (Asteroid asteroid in asteroids)
-                {
-                    asteroid?.Update(dt);
-                }
-
-                // Update Bullets
-                Bullet[] bullets = [.. Bullet.Bullets];
-                foreach (Bullet bullet in bullets)
-                {
-                    bullet?.Update();
-                }
-
                 // Update all entities
                 Entity[] entities = [.. Entity.Entities];
                 foreach (Entity entity in entities)
                 {
                     entity?.Update(dt);
-                }
-
-                // Wrap all wrapables
-                Wrapable[] wrapables = [.. Wrapable.Wrapables];
-                foreach (Wrapable wrapable in wrapables)
-                {
-                    wrapable?.WrapPosition();
                 }
 
                 // Update all particles
@@ -432,7 +397,9 @@ namespace Asteroids
             {
                 g.ScaleTransform(0.5f, 0.5f);
                 g.TranslateTransform(preferredSize.Width / 2, preferredSize.Height / 2);
-                if (Global.DEBUG_PARTICLE_DRAW)
+
+                float tmp = 1;
+                while (Global.DEBUG_PARTICLE_DRAW && tmp-- > 0)
                     Effect.DebugDrawAll(g);
             }
 
