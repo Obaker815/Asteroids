@@ -552,13 +552,12 @@ namespace Asteroids
                 Scoreboard tempScoreboard = new()
                 {
                     // Create 10 default entries
-                    Entries = Enumerable.Range(0, 10)
+                    Entries = [.. Enumerable.Range(0, 10)
                         .Select(_ => new ScoreboardEntry
                         {
                             Name = "_____",
                             Score = 0,
-                        })
-                        .ToArray()
+                        })]
                 };
 
                 Manager.WriteJson(ScoreboardPath, tempScoreboard);

@@ -5,6 +5,8 @@ namespace Asteroids.Entities
 {
     internal class DemoShip(Vector2 startPosition) : Ship(startPosition)
     {
+        private Vector2 _wishDir = Vector2.Zero;
+
         private const float SCARE_DISTANCE = 135f;
         private const float SHOOT_COOLDOWN = 0.5f;
         private float _shootTime = SHOOT_COOLDOWN;
@@ -13,6 +15,20 @@ namespace Asteroids.Entities
         {
             lives++;
             base.Respawn();
+        }
+
+        public override void Draw(Graphics g, Vector2 Position, Color color)
+        {
+            if (Global.DEBUG)
+            {
+                g.DrawLine(Pens.Yellow, 
+                    position.X, 
+                    position.Y, 
+                    position.X + _wishDir.X * radius * Global.DEBUG_DIRECTION_LINE_LENGTH, 
+                    position.Y + _wishDir.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
+            }
+
+            base.Draw(g, Position, color);
         }
 
         public override void Update(Dictionary<string, Keybind> Keys, Controller controller, float dt)
@@ -102,6 +118,7 @@ namespace Asteroids.Entities
             if (base.velocity.LengthSquared() > maxVel * maxVel)
                 base.velocity = Global.Normalize(base.velocity) * maxVel;
 
+            _wishDir = targetDir;
 
             void collisionHandle(Entity collided)
             {
