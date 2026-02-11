@@ -269,10 +269,7 @@ namespace Asteroids
 
                 // Update all entities
                 Entity[] entities = [.. Entity.Entities];
-                foreach (Entity entity in entities)
-                {
-                    entity?.Update(dt);
-                }
+                foreach (Entity entity in entities) { entity?.Update(dt); }
                 Entity.RemoveAll();
 
                 // Update all the particles

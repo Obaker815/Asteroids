@@ -57,7 +57,7 @@ namespace Asteroids.Particles
 
         public static void UpdateAll(float dt)
         {
-            Parallel.ForEach(Particles, (p) => { p.Update(dt); });
+           foreach (var particle in Particles) particle.Update(dt);
         }
 
         /// <summary>
