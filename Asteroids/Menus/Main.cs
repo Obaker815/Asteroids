@@ -40,6 +40,8 @@ namespace Asteroids.Menus
 
         public void Draw(Graphics g)
         {
+            if (Global.DEBUG) return;
+
             // Format for the header
             using StringFormat headerFormat = new()
             {
