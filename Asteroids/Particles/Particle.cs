@@ -3,7 +3,7 @@
 namespace Asteroids.Particles
 {
     internal class Particle
-{
+    {
         public static List<Particle> Particles = [];
         public static List<Particle> toRemove = [];
 
@@ -53,6 +53,11 @@ namespace Asteroids.Particles
             {
                 Remove();
             }
+        }
+
+        public static void UpdateAll(float dt)
+        {
+            Parallel.ForEach(Particles, (p) => { p.Update(dt); });
         }
 
         /// <summary>
