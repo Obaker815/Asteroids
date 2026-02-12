@@ -16,8 +16,9 @@ namespace Asteroids.Entities
         /// Constructor for the <see cref="Entity"/> class
         /// </summary>
         /// <param name="startPosition">The starting position of the Entity</param>
-        public Entity(Vector2 startPosition)
+        public Entity(Vector2 startPosition, float radius)
         {
+            this.radius = radius;
             position = startPosition;
             velocity = Vector2.Zero;
             Entities.Add(this);

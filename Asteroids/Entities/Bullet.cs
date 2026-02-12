@@ -46,12 +46,11 @@ namespace Asteroids.Entities
         /// <param name="speed">The <see cref="float"/> speed of the <see cref="Bullet"/></param>
         /// <param name="RemoveTime">the <see cref="int"/> lifetime of the <see cref="Bullet"/> in milliseconds</param>
         /// <param name="Parent">the <see cref="object"/> parent of the <see cref="Bullet"/></param>
-        public Bullet(Vector2 Position, Vector2 InitialVelocity, Vector2 Direction, float speed, int RemoveTime, object Parent) : base(Position)
+        public Bullet(Vector2 Position, Vector2 InitialVelocity, Vector2 Direction, float speed, int RemoveTime, object Parent) : base(Position, 2)
         {
             velocity = Direction * speed + InitialVelocity;
             removeTime = RemoveTime;
             parent = Parent;
-            radius = 2;
 
             Bullets.Add(this);
 

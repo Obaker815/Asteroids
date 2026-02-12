@@ -72,11 +72,10 @@ namespace Asteroids.Entities
         /// Constructor for the <see cref="Ship"/> class
         /// </summary>
         /// <param name="startPosition">The start, and respawn <see cref="Vector2"/> position of the <see cref="Ship"/></param>
-        public Ship(Vector2 startPosition) : base(startPosition)
+        public Ship(Vector2 startPosition) : base(startPosition, 10)
         {
             respawnLocation = startPosition;
             Ships.Add(this);
-            base.radius = 10f;
             iFrames = 1f;
         }
 

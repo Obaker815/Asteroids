@@ -107,11 +107,10 @@ namespace Asteroids.Entities
         /// </summary>
         /// <param name="startPosition">The <see cref="Vector2"/> position for the <see cref="Asteroid"/> to spawn</param>
         /// <param name="rnd">The <see cref="Random"/> used for velocity angle</param>
-        public Asteroid(Vector2 startPosition, int size, Random rnd) : base(startPosition)
+        public Asteroid(Vector2 startPosition, int size, Random rnd) : base(startPosition, SizePropertyDict[size].radius)
         {
             float velocityAngle = 2 * (float)rnd.NextDouble() * float.Pi;
             base.velocity = Vector2.Transform(new(1, 0), Matrix3x2.CreateRotation(velocityAngle)) * SizePropertyDict[size].speed;
-            base.radius = SizePropertyDict[size].radius;
 
             this.angularVelocity = (((float)rnd.NextDouble() * 2) - 1f) * SizePropertyDict[size].rotateSpeed;
             this.size = size;

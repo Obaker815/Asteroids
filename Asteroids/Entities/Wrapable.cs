@@ -12,6 +12,7 @@ namespace Asteroids.Entities
         /// </summary>
         /// <param name="s">Size of the screen</param>
         public static void SetBounds(Size s) => SetBounds(s.Width, s.Height);
+        private RectangleF _wrapRectangle;
 
         /// <summary>
         /// Set the bounds of the screen for wrapping
@@ -29,7 +30,7 @@ namespace Asteroids.Entities
         /// Constructor for the <see cref="Wrapable"/> class
         /// </summary>
         /// <param name="startPosition">The starting <see cref="Vector2"/> position of the <see cref="Wrapable"/> object</param>
-        public Wrapable(Vector2 startPosition) : base(startPosition)
+        public Wrapable(Vector2 startPosition, float radius) : base(startPosition, radius)
         {
             if (Bounds.Width == 0) throw new Exception("Wrapable Width not set");
             else if (Bounds.Height == 0) throw new Exception("Wrapable Bounds.Height not set");
@@ -37,6 +38,13 @@ namespace Asteroids.Entities
             {
                 Wrapables.Add(this);
             }
+
+            _wrapRectangle = new(
+                radius * 1.5f,
+                radius * 1.5f,
+                Bounds.Width  - radius * 2 * 1.5f,
+                Bounds.Height - radius * 2 * 1.5f
+                );
         }
 
         /// <summary>
@@ -78,13 +86,20 @@ namespace Asteroids.Entities
                 ? Color.Gray 
                 : Color.White;
 
-            Vector2[] positions = GetPositions();
+            if (_wrapRectangle.Contains(new PointF(position)))
+            {
+                Draw(g, position + new Vector2(Bounds.X, Bounds.Y), c );
+            }
+            else
+            {
+                Vector2[] positions = GetPositions();
 
-            // Draw in the 4 directions
-            Draw(g, positions[0] + new Vector2(Bounds.X, Bounds.Y), c );
-            Draw(g, positions[1] + new Vector2(Bounds.X, Bounds.Y), c );
-            Draw(g, positions[2] + new Vector2(Bounds.X, Bounds.Y), c );
-            Draw(g, positions[3] + new Vector2(Bounds.X, Bounds.Y), c );
+                // Draw in the 4 directions
+                Draw(g, positions[0] + new Vector2(Bounds.X, Bounds.Y), c );
+                Draw(g, positions[1] + new Vector2(Bounds.X, Bounds.Y), c );
+                Draw(g, positions[2] + new Vector2(Bounds.X, Bounds.Y), c );
+                Draw(g, positions[3] + new Vector2(Bounds.X, Bounds.Y), c );
+            }
 
             if (Global.DEBUG)
             {
@@ -102,6 +117,7 @@ namespace Asteroids.Entities
                     Bounds.Y + position.Y + velocity.Y * radius * Global.DEBUG_DIRECTION_LINE_LENGTH);
 
                 g.DrawRectangle(Pens.Blue, Bounds);
+                g.DrawRectangle(Pens.Red, _wrapRectangle);
             }
         }
 

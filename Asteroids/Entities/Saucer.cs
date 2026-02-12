@@ -38,7 +38,7 @@ namespace Asteroids.Entities
         /// </summary>
         /// <param name="isSmall">Is the saucer small?</param>
         /// <param name="startPosition">The position for the saucer to spawn</param>
-        public Saucer(bool isSmall, Vector2 startPosition) : base(startPosition)
+        public Saucer(bool isSmall, Vector2 startPosition) : base(startPosition, (isSmall)? 8: 12)
         {
             Saucers.Add(this);
             shootDir = new Vector2(1,0);
@@ -46,13 +46,11 @@ namespace Asteroids.Entities
             if (isSmall)
             {
                 speed = 125;
-                radius = 8;
                 ShootInterval = 1;
             }
             else
             {
                 speed = 75;
-                radius = 12;
                 ShootInterval = 1.5f;
             }
         }

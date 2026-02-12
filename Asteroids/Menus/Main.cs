@@ -34,12 +34,14 @@ namespace Asteroids.Menus
                 BackColor = Color.Transparent,
                 Font = new Font(GameForm.PublicFonts!.Families[0], 20),
                 Location = new Point(10, 10),
-                Text = $"Exit : Esc \nOptions : {MenuKeys["Settings"].Key.ToString()}".ToUpper()
+                Text = $"Exit : Esc \nOptions : {MenuKeys["Settings"].Key}".ToUpper()
             });
         }
 
         public void Draw(Graphics g)
         {
+            if (Global.DEBUG) return;
+
             // Format for the header
             using StringFormat headerFormat = new()
             {
@@ -130,7 +132,7 @@ namespace Asteroids.Menus
 
             // Draw start text
             float StartTextY = scoreboardRectangele.Bottom + height * 1;
-            g.DrawString($"-- {MenuKeys["Start"].Key.ToString()} to start game --".ToUpper(), font, Brushes.White,
+            g.DrawString($"-- {MenuKeys["Start"].Key} to start game --".ToUpper(), font, Brushes.White,
                          new RectangleF(scoreboardRectangele.Left, StartTextY, scoreboardRectangele.Width, fontHeight * 1.3f),
                          headerFormat);
         }
