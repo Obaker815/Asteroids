@@ -204,7 +204,7 @@ namespace Asteroids.Entities
         {
             if (GameForm.ActiveGameform != null)
                 this.Update(
-                    GameForm.ActiveGameform!.Keymap.ToDictionary(),
+                    GameForm.ActiveGameform!.Keymap.keybinds,
                     GameForm.ActiveGameform!.Controller,
                     dt
                     );
