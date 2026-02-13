@@ -274,25 +274,21 @@ namespace Asteroids
                 Particle.RemoveAll();
 
                 // Update keybinds
-                foreach (string Key in OptionBindings.Keys)
+                void UpdateKeybinds(Dictionary<string, Keybind> dict)
                 {
-                    Keybind kb = OptionBindings[Key];
-                    if (kb.FirstPress)
+                    foreach (string Key in dict.Keys)
                     {
-                        kb.FirstPress = false;
+                        Keybind kb = dict[Key];
+                        if (kb.FirstPress)
+                        {
+                            kb.FirstPress = false;
+                        }
+                        dict[Key] = kb;
                     }
-                    OptionBindings[Key] = kb;
                 }
 
-                foreach (string Key in Keymap.keybinds.Keys)
-                {
-                    Keybind kb = Keymap.keybinds[Key];
-                    if (kb.FirstPress)
-                    {
-                        kb.FirstPress = false;
-                    }
-                    Keymap.keybinds[Key] = kb;
-                }
+                UpdateKeybinds(OptionBindings);
+                UpdateKeybinds(Keymap.keybinds);
 
                 // Redraw the screen
                 InvokeAction(this.Invalidate);
