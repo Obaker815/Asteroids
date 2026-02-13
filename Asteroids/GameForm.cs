@@ -244,9 +244,7 @@ namespace Asteroids
                 }
 
                 if (Global.CURRENT_STATE != GameState.Playing)
-                {
                     Global.STATE_MENU[Global.CURRENT_STATE].Update();
-                }
 
                 if (Ship.Ships.Count > 0 && Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
                     Global.CURRENT_STATE = GameState.NameEntryMenu;
