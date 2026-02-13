@@ -522,8 +522,8 @@ namespace Asteroids
             Manager.WriteJson(defaultKeybindPath, new Keymap());
 
             // Load configs and scoreboard
-            Global.CONFIGS      = Manager.ReadJson<Configs> (ConfigPath);
-            Main.Scoreboard = Manager.ReadJson<Scoreboard>  (ScoreboardPath);
+            Global.CONFIGS  = Manager.ReadJson<Configs>    (ConfigPath);
+            Main.Scoreboard = Manager.ReadJson<Scoreboard> (ScoreboardPath);
             Main.Scoreboard.SortEntries();
 
             // If the last used keymap is invalid, set it to the default keymap
