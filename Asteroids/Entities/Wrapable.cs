@@ -86,6 +86,7 @@ namespace Asteroids.Entities
                 ? Color.Gray 
                 : Color.White;
 
+            // Check if drawing multiple times is necessary (if the object is close enough to the edge of the screen)
             if (_wrapRectangle.Contains(new PointF(position)))
             {
                 Draw(g, position + new Vector2(Bounds.X, Bounds.Y), c );

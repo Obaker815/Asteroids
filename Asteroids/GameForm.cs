@@ -268,8 +268,7 @@ namespace Asteroids
                 LevelManager.Instance.SaucerUpdate(dt);
 
                 // Update all entities
-                Entity[] entities = [.. Entity.Entities];
-                foreach (Entity entity in entities) { entity?.Update(dt); }
+                Entity.UpdateAll(dt);
                 Entity.RemoveAll();
 
                 // Update all the particles

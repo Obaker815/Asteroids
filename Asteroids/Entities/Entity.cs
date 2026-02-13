@@ -6,6 +6,7 @@ namespace Asteroids.Entities
     {
         public static List<Entity> toRemove = [];
         public static List<Entity> Entities = [];
+        private static Entity[] EntityArr = [];
 
         // properties
         internal Vector2 position;
@@ -33,6 +34,19 @@ namespace Asteroids.Entities
             if (velocity.LengthSquared() < 2f * dt)
                 velocity = Vector2.Zero;
             position += velocity * dt;
+        }
+
+        /// <summary>
+        /// Performs the Update function for all entities
+        /// </summary>
+        /// <param name="dt">Deltatime in seconds</param>
+        public static void UpdateAll(float dt)
+        {
+            if (EntityArr is null || 
+                EntityArr.Length != Entities.Count)
+                EntityArr = [.. Entities];
+
+            foreach(var entity in EntityArr) { entity.Update(dt); }
         }
 
         /// <summary>

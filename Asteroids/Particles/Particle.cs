@@ -6,6 +6,7 @@ namespace Asteroids.Particles
     {
         public static List<Particle> Particles = [];
         public static List<Particle> toRemove = [];
+        private static Particle[] ParticleArr = [];
 
         private readonly float angularVelocity;
         private readonly Vector2 velocity;
@@ -57,8 +58,11 @@ namespace Asteroids.Particles
 
         public static void UpdateAll(float dt)
         {
-            Particle[] particles = [.. Particles];
-           foreach (var particle in particles) particle.Update(dt);
+            if (ParticleArr is null ||
+                ParticleArr.Length != Particles.Count)
+                ParticleArr = [.. Particles];
+
+            foreach (var particle in ParticleArr) particle.Update(dt);
         }
 
         /// <summary>
