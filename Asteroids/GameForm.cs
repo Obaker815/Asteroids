@@ -274,7 +274,7 @@ namespace Asteroids
                 Particle.RemoveAll();
 
                 // Update keybinds
-                void UpdateKeybinds(Dictionary<string, Keybind> dict)
+                static void UpdateKeybinds(Dictionary<string, Keybind> dict)
                 {
                     foreach (string Key in dict.Keys)
                     {
