@@ -5,6 +5,7 @@ namespace Asteroids.Menus
     internal class Name : IMenu
     {
         public List<Control> Controls { get; set; } = [];
+        public int Score = 0;
 
         public Name()
         {
@@ -43,9 +44,10 @@ namespace Asteroids.Menus
             Submitbtn.Click += (s, e) =>
             {
                 string name = NameInput.Text.Trim();
+                NameInput.Text = "";
                 if (string.IsNullOrEmpty(name)) name = "idiot";
                 if (name.Length > 5) name = name[0..5];
-                if (name.Length < 5) name = name.PadRight(5, '_');
+                if (name.Length < 5) name = name.PadRight(5, ' ');
                 name = name.ToUpper();
 
                 Scoreboard scoreboard = Main.Scoreboard;
@@ -65,20 +67,21 @@ namespace Asteroids.Menus
                 {
                     scoreboard.Entries![index].Score = (int)Math.Max(
                         scoreboard.Entries[index].Score,
-                        LevelManager.Instance.Score);
+                        Score);
                 }
                 else
                 {
                     ScoreboardEntry newEntry = new()
                     {
                         Name = name,
-                        Score = (int)LevelManager.Instance.Score,
+                        Score = Score,
                     };
 
                     scoreboard.Entries = [.. scoreboard.Entries!.Append(newEntry)];
                 }
 
                 scoreboard.SortEntries();
+                Main.Scoreboard = scoreboard;
                 Global.CURRENT_STATE = GameState.MainMenu;
             };
 

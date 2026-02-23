@@ -39,10 +39,10 @@ namespace Asteroids
         private static float freezeTime = 0f;
         private static float dtModifier = 1f;
         private static GameForm? activeGameform;
+        private static Button? focusStealer;
 
         public GameForm()
         {
-            InitializeComponent();
             elapsedtimeSW = null!;
             Keymap = null!;
 
@@ -74,6 +74,9 @@ namespace Asteroids
                     (Color.White, 0.5f),
                     ]);
             starsEffect.Start();
+
+
+            InitializeComponent();
         }
 
         private void GameForm_GotFocus(object sender, EventArgs e)
@@ -84,6 +87,13 @@ namespace Asteroids
         private void GameForm_Shown(object sender, EventArgs e)
         {
             this.Focus();
+
+            focusStealer = new()
+            {
+                Location = new(-50, -50),
+                Size = new(10, 10)
+            };
+            Controls.Add(focusStealer);
 
             Wrapable.SetBounds(preferredSize);
 
@@ -171,7 +181,10 @@ namespace Asteroids
             }
 
             if (OptionBindings["Exit"].FirstPress)
+            {
                 Global.CURRENT_STATE = Global.STATE_RETURN[Global.CURRENT_STATE];
+                InvokeAction(() => { focusStealer!.Focus(); });
+            }
 
             if (OptionBindings["Fullscreen"].FirstPress)
                 Global.CONFIGS.Fullscreen = !Global.CONFIGS.Fullscreen;
@@ -247,7 +260,10 @@ namespace Asteroids
                     Global.STATE_MENU[Global.CURRENT_STATE].Update();
 
                 if (Ship.Ships.Count > 0 && Ship.Ships[0].lives == 0 && !Ship.Ships[0].Respawning)
+                {
                     Global.CURRENT_STATE = GameState.NameEntryMenu;
+                    (Global.STATE_MENU[GameState.NameEntryMenu] as Menus.Name)!.Score = (int)LevelManager.Instance.Score;
+                }
 
                 if (Asteroid.AsteroidEntities.Count == 0 && !roundStarting)
                 {
@@ -356,6 +372,8 @@ namespace Asteroids
         /// <param name="e">The paint event arguments</param>
         private void GameForm_Paint(object sender, PaintEventArgs e)
         {
+            if (!running) return;
+
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 

@@ -62,7 +62,11 @@ namespace Asteroids.Particles
                 ParticleArr.Length != Particles.Count)
                 ParticleArr = [.. Particles];
 
-            foreach (var particle in ParticleArr) particle.Update(dt);
+            foreach (var particle in ParticleArr)
+            {
+                if (particle == null) continue;
+                particle.Update(dt);
+            }
         }
 
         /// <summary>

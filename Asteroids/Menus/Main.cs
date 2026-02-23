@@ -52,11 +52,10 @@ namespace Asteroids.Menus
             float height = scoreboardRectangele.Height / (Scoreboard.Entries!.Length + 1);
             Font font = new(GameForm.PublicFonts!.Families[0], fontSize);
 
-            string[] lines = Scoreboard.Entries.Select(e => 
+            string[] lines = [.. Scoreboard.Entries.Select(e => 
                                       (e.Name + "     ")[0.. 5].ToUpper() + 
                                       " ---------------- " + 
-                                      e.Score.ToString("D8"))
-                                      .ToArray();
+                                      e.Score.ToString("D8"))];
 
             // Maximum number of characters in any line
             int maxChars;
