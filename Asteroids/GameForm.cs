@@ -43,6 +43,8 @@ namespace Asteroids
 
         public GameForm()
         {
+            InitializeComponent();
+
             elapsedtimeSW = null!;
             Keymap = null!;
 
@@ -74,9 +76,6 @@ namespace Asteroids
                     (Color.White, 0.5f),
                     ]);
             starsEffect.Start();
-
-
-            InitializeComponent();
         }
 
         private void GameForm_GotFocus(object sender, EventArgs e)
@@ -489,9 +488,6 @@ namespace Asteroids
 
             if (!Directory.Exists(Global.DATA_PATH + Global.KEYBIND_PATH_BASE))
                 Directory.CreateDirectory(Global.DATA_PATH + Global.KEYBIND_PATH_BASE);
-
-            if (!Directory.Exists(Global.DATA_PATH + Global.FONT_PATH))
-                Directory.CreateDirectory(Global.DATA_PATH + Global.FONT_PATH);
 
             string ScoreboardPath = Global.DATA_PATH + Global.SCOREBOARD_PATH;
             string ConfigPath = Global.DATA_PATH + Global.CONFIG_PATH;
