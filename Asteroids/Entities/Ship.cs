@@ -211,6 +211,8 @@ namespace Asteroids.Entities
             base.Update(dt);
         }
 
+        bool lastFrameShoot = false;
+
         /// <summary>
         /// Handles all the updating logic of the <see cref="Ship"/> class
         /// </summary>
@@ -291,6 +293,13 @@ namespace Asteroids.Entities
                 {
                     TwoStick(Lstick, Rstick);
                 }
+                
+                if (gamepad.LeftTrigger > 100 && !lastFrameShoot)
+                {
+                    Shoot();
+                    lastFrameShoot = true;
+                }
+                else { lastFrameShoot = false; }
             }
             else
             {
