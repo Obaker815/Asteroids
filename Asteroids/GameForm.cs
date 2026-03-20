@@ -327,23 +327,60 @@ namespace Asteroids
         // key down and key up event
         private void GameForm_KeyDown(object sender, KeyEventArgs e)
         {
-            void CheckDict(Dictionary<string, Keybind> dict)
+            foreach (string Key in Keymap.keybinds.Keys)
             {
-                foreach (string Key in dict.Keys)
-                    // check if the key pressed matches any keybinds
-                    if (e.KeyCode == dict[Key].Key)
+                // check if the key pressed matches any keybinds
+                if (e.KeyCode == Keymap.keybinds[Key].Key)
+                {
+                    if (e.KeyCode == Keys.Right)
                     {
-                        // edit the Keybind in the dictionary
-                        Keybind kb = dict[Key];
-                        kb.FirstPress = true;
-                        kb.IsPressed = true;
-                        dict[Key] = kb;
+                        throw new Exception("was Right");
                     }
+
+                    // edit the Keybind in the Keymap.keybindsionary
+                    Keybind kb = Keymap.keybinds[Key];
+                    kb.FirstPress = true;
+                    kb.IsPressed = true;
+                    Keymap.keybinds[Key] = kb;
+                }
             }
 
-            CheckDict(Keymap.keybinds);
-            CheckDict(OptionBindings);
-            if (Global.CURRENT_STATE == GameState.MainMenu) CheckDict(Main.MenuKeys);
+            foreach (string Key in OptionBindings.Keys)
+            {
+                // check if the key pressed matches any keybinds
+                if (e.KeyCode == OptionBindings[Key].Key)
+                {
+                    if (e.KeyCode == Keys.Right)
+                    {
+                        throw new Exception("was Right");
+                    }
+
+                    // edit the Keybind in the OptionBindingsionary
+                    Keybind kb = OptionBindings[Key];
+                    kb.FirstPress = true;
+                    kb.IsPressed = true;
+                    OptionBindings[Key] = kb;
+                }
+            }
+
+            if (Global.CURRENT_STATE == GameState.MainMenu) 
+                foreach (string Key in Main.MenuKeys.Keys)
+                {
+                    // check if the key pressed matches any keybinds
+                    if (e.KeyCode == Main.MenuKeys[Key].Key)
+                    {
+                        if (e.KeyCode == Keys.Right)
+                        {
+                            throw new Exception("was Right");
+                        }
+
+                        // edit the Keybind in the Main.MenuKeysionary
+                        Keybind kb = Main.MenuKeys[Key];
+                        kb.FirstPress = true;
+                        kb.IsPressed = true;
+                        Main.MenuKeys[Key] = kb;
+                    }
+                }
             
             if (Global.CURRENT_STATE == GameState.KeybindsMenu)
                 ((Keybinds)Global.STATE_MENU[GameState.KeybindsMenu]).LastPressedKey = e.KeyCode;
@@ -351,7 +388,7 @@ namespace Asteroids
 
         private void GameForm_KeyUp(object sender, KeyEventArgs e)
         {
-            foreach (string Key in Keymap.keybinds.Keys)
+            foreach ( string Key in Keymap.keybinds.Keys)
             {
                 // check if the key pressed matches any keybinds
                 if (e.KeyCode == Keymap.keybinds[Key].Key)
