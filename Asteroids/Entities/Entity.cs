@@ -98,6 +98,5 @@ namespace Asteroids.Entities
         {
             Entities.Remove(this);
         }
-
     }
 }

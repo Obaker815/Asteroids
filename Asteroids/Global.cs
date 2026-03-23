@@ -14,12 +14,13 @@ namespace Asteroids
         public const float DEBUG_DIRECTION_LINE_LENGTH = 3f;
         public const bool PLAYER_COLLISION = true;
 
-        public const string DATA_PATH = "./data";
-        public const string FONT_PATH = "./Fonts/";
-        public const string CONFIG_PATH = "/config.json";
-        public const string SCOREBOARD_PATH = "/scoreboard.json";
-        public const string KEYBIND_PATH_BASE = "/Keybinds/";
-        public const string DEFAULT_KEYBIND_FILE = "default_keybinds.json";
+        public const string
+            DATA_PATH            = "./data",
+            FONT_PATH            = "./Fonts/",
+            CONFIG_PATH          = "/config.json",
+            SCOREBOARD_PATH      = "/scoreboard.json",
+            KEYBIND_PATH_BASE    = "/Keybinds/",
+            DEFAULT_KEYBIND_FILE = "default_keybinds.json";
 
         public static bool SUPPRESS_OPTION_CHANGED_EVENT = false;
         public static Configs CONFIGS = null!;

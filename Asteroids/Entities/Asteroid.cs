@@ -169,6 +169,12 @@ namespace Asteroids.Entities
             return Task.FromResult(shape.ToArray());
         }
 
+        /// <summary>
+        /// The override draw from Wrappable
+        /// </summary>
+        /// <param name="g">The graphics object to be drawn to (unused here)</param>
+        /// <param name="Position">the Position to be drawn</param>
+        /// <param name="color">the color to draw in</param>
         public override void Draw(Graphics g, Vector2 Position, Color color)
         {
             async void draw()
@@ -187,6 +193,10 @@ namespace Asteroids.Entities
             draw();
         }
 
+        /// <summary>
+        /// Draws the final processed asteroids to the graphics
+        /// </summary>
+        /// <param name="g">graphics to draw to</param>
         public static void FinalDraw(Graphics g)
         {
             Pen p = new(Global.DEMO_ENABLED

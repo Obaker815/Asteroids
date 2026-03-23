@@ -31,6 +31,12 @@ namespace Asteroids.Entities
             base.Draw(g, Position, color);
         }
 
+        /// <summary>
+        /// The override updatre thingy for ship
+        /// </summary>
+        /// <param name="Keys">the keybind dictionary (unused)</param>
+        /// <param name="controller">the controller (unused)</param>
+        /// <param name="dt">deltatime</param>
         public override void Update(Dictionary<string, Keybind> Keys, Controller controller, float dt)
         {
             if (respawning)
@@ -98,7 +104,7 @@ namespace Asteroids.Entities
 
             Vector2 targetDir;
 
-            // scared
+            // imscared
             if (scared) targetDir = -Global.Normalize(offset);
             else targetDir = Global.Normalize(offset);
 

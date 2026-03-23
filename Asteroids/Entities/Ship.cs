@@ -183,6 +183,9 @@ namespace Asteroids.Entities
             moveDir = new(0, -1);
         }
 
+        /// <summary>
+        /// Shoots a bullet from the ship in the direction of the shit
+        /// </summary>
         internal void Shoot()
         {
             if (numBullets < 0) numBullets = 0;
@@ -200,6 +203,10 @@ namespace Asteroids.Entities
             }
         }
 
+        /// <summary>
+        /// The overide Update for Wrappable
+        /// </summary>
+        /// <param name="dt">the time of processing and drawing of the last frame in seconds</param>
         public override void Update(float dt)
         {
             if (GameForm.ActiveGameform != null)
